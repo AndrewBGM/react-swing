@@ -1,4 +1,4 @@
-package io.github.andrewbgm.reactswingserver.message
+package io.github.andrewbgm.reactswingserver.gson
 
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
@@ -7,6 +7,7 @@ import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
+import io.github.andrewbgm.reactswingserver.messages.IMessage
 import java.lang.reflect.Type
 import kotlin.reflect.KClass
 

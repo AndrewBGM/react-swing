@@ -1,7 +1,7 @@
-package io.github.andrewbgm.reactswingserver.message
+package io.github.andrewbgm.reactswingserver.messages
 
 import com.google.gson.annotations.Expose
 
-data class UnhideInstanceMessage(
+data class HideInstanceMessage(
   @Expose val instanceId: Int,
 ) : IMessage

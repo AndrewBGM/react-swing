@@ -1,4 +1,4 @@
-package io.github.andrewbgm.reactswingserver.message
+package io.github.andrewbgm.reactswingserver.messages
 
 import com.google.gson.annotations.Expose
 
