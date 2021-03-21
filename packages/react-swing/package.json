@@ -1,0 +1,27 @@
+{
+  "name": "@andrewbgm/react-swing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Andrew Bennett <andrewbgm@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "react-reconciler": "^0.26.1",
+    "ws": "^7.4.4"
+  },
+  "peerDependencies": {
+    "react": "^17.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.35",
+    "@types/react": "^17.0.3",
+    "@types/react-reconciler": "^0.26.1",
+    "@types/ws": "^7.4.0",
+    "prettier": "^2.2.1",
+    "typescript": "^4.2.3"
+  }
+}
