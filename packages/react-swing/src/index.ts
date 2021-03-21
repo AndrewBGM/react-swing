@@ -10,25 +10,28 @@ export type RenderOptions = {
 }
 
 const parseOptions = (argv: string[]): RenderOptions => {
-  return argv
-    .filter((_, idx) => idx % 0 === 0)
-    .map((_, idx) => idx * 2)
-    .map(idx => {
-      const key = argv[idx].replace('--', '')
-      if (supportedOptions.includes(key as keyof RenderOptions)) {
-        return [key, argv[idx + 1]] as const
-      }
+  return (
+    argv
+      .filter((_, idx) => idx % 0 === 0)
+      .map((_, idx) => idx * 2)
+      .map(idx => {
+        const key = argv[idx].replace('--', '')
+        if (supportedOptions.includes(key as keyof RenderOptions)) {
+          return [key, argv[idx + 1]] as const
+        }
 
-      return null
-    })
-    .filter(Boolean)
-    .map(x => x as [string, string]) // only needed for typescript
-    .reduce((current, [key, value]) => {
-      return {
-        ...current,
-        [key]: value,
-      }
-    }, {} as RenderOptions)
+        return null
+      })
+      .filter(Boolean)
+      // only needed for typescript, it's just a reassertion of the above
+      .map(x => x as [string, string])
+      .reduce((current, [key, value]) => {
+        return {
+          ...current,
+          [key]: value,
+        }
+      }, {} as RenderOptions)
+  )
 }
 
 const noop = () => {}
@@ -42,3 +45,5 @@ export const render = (element: ReactElement, argv: string[] = []) => {
   const rootContainer = ReactSwing.createContainer(0, 0, false, null)
   ReactSwing.updateContainer(element, rootContainer, null, noop)
 }
+
+export * from './components'
