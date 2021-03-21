@@ -61,8 +61,7 @@ const createHostConfig = (
     hostContext: HostContext,
     internalHandle: OpaqueHandle
   ): TextInstance {
-    const id = nextInstanceId++
-    return id
+    throw new Error('Text instances are not supported.')
   },
 
   appendInitialChild(
