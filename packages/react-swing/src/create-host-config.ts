@@ -2,7 +2,7 @@ import { performance } from 'perf_hooks'
 import { HostConfig } from 'react-reconciler'
 import WebSocket from 'ws'
 
-export type Type = number
+export type Type = string
 export type Props = Record<string, unknown>
 export type Container = number
 export type Instance = number
@@ -51,8 +51,17 @@ const createHostConfig = (
     hostContext: HostContext,
     internalHandle: OpaqueHandle
   ): Instance {
-    const id = nextInstanceId++
-    return id
+    const instanceId = nextInstanceId++
+    ws.send({
+      type: 'CREATE_INSTANCE',
+      payload: {
+        instanceId,
+        type,
+        props,
+      },
+    })
+
+    return instanceId
   },
 
   createTextInstance(
@@ -64,10 +73,15 @@ const createHostConfig = (
     throw new Error('Text instances are not supported.')
   },
 
-  appendInitialChild(
-    parentInstance: Instance,
-    child: Instance | TextInstance
-  ) {},
+  appendInitialChild(parentId: Instance, childId: Instance | TextInstance) {
+    ws.send({
+      type: 'APPEND_INITIAL_CHILD',
+      payload: {
+        parentId,
+        childId,
+      },
+    })
+  },
 
   finalizeInitialChildren(
     instance: Instance,
@@ -120,37 +134,84 @@ const createHostConfig = (
 
   supportsMutation: true,
 
-  appendChild(
-    parentInstance: Instance,
-    child: Instance | TextInstance
-  ): void {},
+  appendChild(parentId: Instance, childId: Instance | TextInstance): void {
+    ws.send({
+      type: 'APPEND_CHILD',
+      payload: {
+        parentId,
+        childId,
+      },
+    })
+  },
 
   appendChildToContainer(
-    container: Container,
-    child: Instance | TextInstance
-  ): void {},
+    containerId: Container,
+    childId: Instance | TextInstance
+  ): void {
+    ws.send({
+      type: 'APPEND_CHILD_TO_CONTAINER',
+      payload: {
+        containerId,
+        childId,
+      },
+    })
+  },
 
   insertBefore(
-    parentInstance: Instance,
-    child: Instance | TextInstance,
-    beforeChild: Instance | TextInstance | SuspenseInstance
-  ): void {},
+    parentId: Instance,
+    childId: Instance | TextInstance,
+    beforeChildId: Instance | TextInstance | SuspenseInstance
+  ): void {
+    ws.send({
+      type: 'INSERT_BEFORE',
+      payload: {
+        parentId,
+        childId,
+        beforeChildId,
+      },
+    })
+  },
 
   insertInContainerBefore(
-    container: Container,
-    child: Instance | TextInstance,
-    beforeChild: Instance | TextInstance | SuspenseInstance
-  ): void {},
+    containerId: Container,
+    childId: Instance | TextInstance,
+    beforeChildId: Instance | TextInstance | SuspenseInstance
+  ): void {
+    ws.send({
+      type: 'INSERT_IN_CONTAINER_BEFORE',
+      payload: {
+        containerId,
+        childId,
+        beforeChildId,
+      },
+    })
+  },
 
   removeChild(
-    parentInstance: Instance,
-    child: Instance | TextInstance | SuspenseInstance
-  ): void {},
+    parentId: Instance,
+    childId: Instance | TextInstance | SuspenseInstance
+  ): void {
+    ws.send({
+      type: 'REMOVE_CHILD',
+      payload: {
+        parentId,
+        childId,
+      },
+    })
+  },
 
   removeChildFromContainer(
-    container: Container,
-    child: Instance | TextInstance | SuspenseInstance
-  ): void {},
+    containerId: Container,
+    childId: Instance | TextInstance | SuspenseInstance
+  ): void {
+    ws.send({
+      type: 'REMOVE_CHILD_FROM_CONTAINER',
+      payload: {
+        containerId,
+        childId,
+      },
+    })
+  },
 
   resetTextContent(instance: Instance): void {},
 
@@ -168,23 +229,53 @@ const createHostConfig = (
   ): void {},
 
   commitUpdate(
-    instance: Instance,
+    instanceId: Instance,
     updatePayload: UpdatePayload,
     type: Type,
     prevProps: Props,
     nextProps: Props,
     internalHandle: OpaqueHandle
-  ): void {},
+  ): void {
+    ws.send({
+      type: 'COMMIT_UPDATE',
+      payload: {
+        instanceId,
+        prevProps,
+        nextProps,
+      },
+    })
+  },
 
-  hideInstance(instance: Instance): void {},
+  hideInstance(instanceId: Instance): void {
+    ws.send({
+      type: 'HIDE_INSTANCE',
+      payload: {
+        instanceId,
+      },
+    })
+  },
 
   hideTextInstance(textInstance: TextInstance): void {},
 
-  unhideInstance(instance: Instance, props: Props): void {},
+  unhideInstance(instanceId: Instance, props: Props): void {
+    ws.send({
+      type: 'UNHIDE_INSTANCE',
+      payload: {
+        instanceId,
+      },
+    })
+  },
 
   unhideTextInstance(textInstance: TextInstance, text: string): void {},
 
-  clearContainer(container: Container): void {},
+  clearContainer(containerId: Container): void {
+    ws.send({
+      type: 'CLEAR_CONTAINER',
+      payload: {
+        containerId,
+      },
+    })
+  },
 
   supportsHydration: false,
 
