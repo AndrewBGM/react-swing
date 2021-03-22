@@ -1,3 +1,4 @@
+import parseOptions from 'minimist'
 import type { ReactElement } from 'react'
 import ReactReconciler from 'react-reconciler'
 import WebSocket from 'ws'
@@ -9,36 +10,16 @@ export type RenderOptions = {
   [K in typeof supportedOptions[number]]: string
 }
 
-const parseOptions = (argv: string[]): RenderOptions => {
-  return (
-    argv
-      .filter((_, idx) => idx % 0 === 0)
-      .map((_, idx) => idx * 2)
-      .map(idx => {
-        const key = argv[idx].replace('--', '')
-        if (supportedOptions.includes(key as keyof RenderOptions)) {
-          return [key, argv[idx + 1]] as const
-        }
-
-        return null
-      })
-      .filter(Boolean)
-      // only needed for typescript, it's just a reassertion of the above
-      .map(x => x as [string, string])
-      .reduce((current, [key, value]) => {
-        return {
-          ...current,
-          [key]: value,
-        }
-      }, {} as RenderOptions)
-  )
-}
-
 const noop = () => {}
 
 export const render = (element: ReactElement, argv: string[] = []) => {
-  const options = parseOptions(argv)
-  const ws = new WebSocket(options.host)
+  const { host } = parseOptions<RenderOptions>(argv, {
+    default: {
+      host: 'ws://localhost:8080/ws',
+    },
+  })
+
+  const ws = new WebSocket(host)
   const hostConfig = createHostConfig(ws)
 
   const ReactSwing = ReactReconciler(hostConfig)
