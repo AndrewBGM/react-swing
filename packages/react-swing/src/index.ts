@@ -4,10 +4,8 @@ import ReactReconciler from 'react-reconciler'
 import WebSocket from 'ws'
 import createHostConfig from './create-host-config'
 
-const supportedOptions = ['host'] as const
-
 export type RenderOptions = {
-  [K in typeof supportedOptions[number]]: string
+  host: string
 }
 
 const noop = () => {}
