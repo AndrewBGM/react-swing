@@ -25,3 +25,10 @@ jobs:
       - name: Build with Gradle
         working-directory: ./packages/react-swing-server
         run: ./gradlew build
+
+      - name: Upload artifact
+        working-directory: ./packages/react-swing-server
+      - uses: actions/upload-artifact@v2
+        with:
+          name: react-swing-server.jar
+          path: ./build/libs/react-swing-server.jar
