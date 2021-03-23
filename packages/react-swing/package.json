@@ -11,11 +11,11 @@
   "license": "MIT",
   "dependencies": {
     "minimist": "^1.2.5",
-    "react-reconciler": "^0.26.1",
+    "react-reconciler": "^0.26.2",
     "ws": "^7.4.4"
   },
   "peerDependencies": {
-    "react": "^17.0.1"
+    "react": "^17.0.2"
   },
   "devDependencies": {
     "@types/minimist": "^1.2.1",
