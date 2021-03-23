@@ -1,8 +1,8 @@
-package io.github.andrewbgm.reactswingserver.messages
+package io.github.andrewbgm.reactswingserver.message
 
 import com.google.gson.annotations.Expose
 
-data class AppendChildMessage(
+data class RemoveChildMessage(
   @Expose val parentId: Int,
   @Expose val childId: Int,
 ) : IMessage

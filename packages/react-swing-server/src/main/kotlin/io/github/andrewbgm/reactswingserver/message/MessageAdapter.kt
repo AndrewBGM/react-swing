@@ -1,4 +1,4 @@
-package io.github.andrewbgm.reactswingserver.gson
+package io.github.andrewbgm.reactswingserver.message
 
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
@@ -7,18 +7,17 @@ import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
-import io.github.andrewbgm.reactswingserver.messages.IMessage
 import java.lang.reflect.Type
 import kotlin.reflect.KClass
 
 class MessageAdapter(
-  vararg mappings: Pair<String, KClass<out IMessage>>,
+  vararg messages: KClass<out IMessage>,
 ) : JsonDeserializer<IMessage>, JsonSerializer<IMessage> {
   private val mappedNamesByType: MutableMap<KClass<out IMessage>, String> = mutableMapOf()
   private val mappedTypesByName: MutableMap<String, KClass<out IMessage>> = mutableMapOf()
 
   init {
-    mappings.forEach { registerMessageType(it.first, it.second) }
+    messages.forEach { registerMessageType(it) }
   }
 
   override fun deserialize(
@@ -55,10 +54,17 @@ class MessageAdapter(
   }
 
   private fun registerMessageType(
-    name: String,
     type: KClass<out IMessage>,
   ) {
+    val name = convertTypeToName(type)
+
     mappedNamesByType[type] = name
     mappedTypesByName[name] = type
   }
+
+  private fun convertTypeToName(
+    type: KClass<*>,
+  ): String = Regex("[A-Z]").split(type.simpleName!!)
+    .dropLast(1)
+    .joinToString("_") { it.toUpperCase() }
 }
