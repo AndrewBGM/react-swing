@@ -30,6 +30,10 @@ export type TimeoutHandle = number
 export type NoTimeout = -1
 export type OpaqueHandle = unknown
 
+export interface BridgeOptions {
+  host: string
+}
+
 class Bridge
   implements
     HostConfig<
@@ -47,6 +51,7 @@ class Bridge
       TimeoutHandle,
       NoTimeout
     > {
+  private ws!: WebSocket
   private nextInstanceId = 0
   private rootHostContext = {}
 
@@ -61,7 +66,15 @@ class Bridge
   readonly noTimeout = -1
   readonly queueMicrotask = queueMicrotask
 
-  constructor(readonly ws: WebSocket) {}
+  constructor(readonly options: BridgeOptions) {}
+
+  connect() {
+    const { host } = this.options
+    return new Promise(resolve => {
+      this.ws = new WebSocket(host)
+      this.ws.on('open', resolve)
+    })
+  }
 
   createInstance(
     type: Type,
