@@ -31,7 +31,7 @@ class MessageAdapter(
 
     val obj = json.asJsonObject
     val type = obj.get("type").asString
-    val payload = obj.getAsJsonPrimitive("payload")
+    val payload = obj.get("payload").asJsonObject
     val mappedType = mappedTypesByName[type] ?: error("No mapping exists for $type")
 
     return ctx.deserialize(payload, mappedType.java)
