@@ -2,7 +2,7 @@ import parseOptions from 'minimist'
 import type { ReactElement } from 'react'
 import ReactReconciler from 'react-reconciler'
 import WebSocket from 'ws'
-import createHostConfig from './create-host-config'
+import Bridge from './server/bridge'
 
 export type RenderOptions = {
   host: string
@@ -18,9 +18,9 @@ export const render = (element: ReactElement, argv: string[] = []) => {
   })
 
   const ws = new WebSocket(host)
-  const hostConfig = createHostConfig(ws)
+  const bridge = new Bridge(ws)
 
-  const ReactSwing = ReactReconciler(hostConfig)
+  const ReactSwing = ReactReconciler(bridge)
   const rootContainer = ReactSwing.createContainer(0, 0, false, null)
   ReactSwing.updateContainer(element, rootContainer, null, noop)
 }

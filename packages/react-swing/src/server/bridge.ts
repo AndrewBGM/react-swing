@@ -1,4 +1,3 @@
-import { performance } from 'perf_hooks'
 import { HostConfig } from 'react-reconciler'
 import WebSocket from 'ws'
 import {
@@ -31,32 +30,38 @@ export type TimeoutHandle = number
 export type NoTimeout = -1
 export type OpaqueHandle = unknown
 
-let nextInstanceId = 0
-const rootHostContext = {}
+class Bridge
+  implements
+    HostConfig<
+      Type,
+      Props,
+      Container,
+      Instance,
+      TextInstance,
+      SuspenseInstance,
+      HydratableInstance,
+      PublicInstance,
+      HostContext,
+      UpdatePayload,
+      ChildSet,
+      TimeoutHandle,
+      NoTimeout
+    > {
+  private nextInstanceId = 0
+  private rootHostContext = {}
 
-const createHostConfig = (
-  ws: WebSocket
-): HostConfig<
-  Type,
-  Props,
-  Container,
-  Instance,
-  TextInstance,
-  SuspenseInstance,
-  HydratableInstance,
-  PublicInstance,
-  HostContext,
-  UpdatePayload,
-  ChildSet,
-  TimeoutHandle,
-  NoTimeout
-> => ({
-  isPrimaryRenderer: true,
-  now: performance.now,
-  scheduleTimeout: setTimeout,
-  cancelTimeout: clearTimeout,
-  noTimeout: -1,
-  queueMicrotask,
+  readonly supportsMutation = true
+  readonly supportsHydration = false
+  readonly supportsPersistence = false
+
+  readonly isPrimaryRenderer = true
+  readonly now = performance.now
+  readonly scheduleTimeout = setTimeout
+  readonly cancelTimeout = clearTimeout
+  readonly noTimeout = -1
+  readonly queueMicrotask = queueMicrotask
+
+  constructor(readonly ws: WebSocket) {}
 
   createInstance(
     type: Type,
@@ -65,10 +70,10 @@ const createHostConfig = (
     hostContext: HostContext,
     internalHandle: OpaqueHandle
   ): Instance {
-    const instanceId = nextInstanceId++
-    ws.send(createInstance(instanceId, type, props))
+    const instanceId = this.nextInstanceId++
+    this.ws.send(createInstance(instanceId, type, props))
     return instanceId
-  },
+  }
 
   createTextInstance(
     text: string,
@@ -77,11 +82,11 @@ const createHostConfig = (
     internalHandle: OpaqueHandle
   ): TextInstance {
     throw new Error('Text instances are not supported.')
-  },
+  }
 
   appendInitialChild(parentId: Instance, childId: Instance | TextInstance) {
-    ws.send(appendInitialChild(parentId, childId))
-  },
+    this.ws.send(appendInitialChild(parentId, childId))
+  }
 
   finalizeInitialChildren(
     instance: Instance,
@@ -91,7 +96,7 @@ const createHostConfig = (
     hostContext: HostContext
   ): boolean {
     return false
-  },
+  }
 
   prepareUpdate(
     instance: Instance,
@@ -102,15 +107,15 @@ const createHostConfig = (
     hostContext: HostContext
   ): UpdatePayload | null {
     return null
-  },
+  }
 
   shouldSetTextContent(type: Type, props: Props): boolean {
     return false
-  },
+  }
 
   getRootHostContext(rootContainer: Container): HostContext | null {
-    return rootHostContext
-  },
+    return this.rootHostContext
+  }
 
   getChildHostContext(
     parentHostContext: HostContext,
@@ -118,77 +123,75 @@ const createHostConfig = (
     rootContainer: Container
   ): HostContext {
     return parentHostContext
-  },
+  }
 
   getPublicInstance(instance: Instance | TextInstance): PublicInstance {
     return instance
-  },
+  }
 
   prepareForCommit(containerInfo: Container): Record<string, any> | null {
     return null
-  },
+  }
 
-  resetAfterCommit(containerInfo: Container) {},
+  resetAfterCommit(containerInfo: Container) {}
 
-  preparePortalMount(containerInfo: Container) {},
-
-  supportsMutation: true,
+  preparePortalMount(containerInfo: Container) {}
 
   appendChild(parentId: Instance, childId: Instance | TextInstance) {
-    ws.send(appendChild(parentId, childId))
-  },
+    this.ws.send(appendChild(parentId, childId))
+  }
 
   appendChildToContainer(
     containerId: Container,
     childId: Instance | TextInstance
   ) {
-    ws.send(appendChildToContainer(containerId, childId))
-  },
+    this.ws.send(appendChildToContainer(containerId, childId))
+  }
 
   insertBefore(
     parentId: Instance,
     childId: Instance | TextInstance,
     beforeChildId: Instance | TextInstance | SuspenseInstance
   ) {
-    ws.send(insertBefore(parentId, childId, beforeChildId))
-  },
+    this.ws.send(insertBefore(parentId, childId, beforeChildId))
+  }
 
   insertInContainerBefore(
     containerId: Container,
     childId: Instance | TextInstance,
     beforeChildId: Instance | TextInstance | SuspenseInstance
   ) {
-    ws.send(insertInContainerBefore(containerId, childId, beforeChildId))
-  },
+    this.ws.send(insertInContainerBefore(containerId, childId, beforeChildId))
+  }
 
   removeChild(
     parentId: Instance,
     childId: Instance | TextInstance | SuspenseInstance
   ) {
-    ws.send(removeChild(parentId, childId))
-  },
+    this.ws.send(removeChild(parentId, childId))
+  }
 
   removeChildFromContainer(
     containerId: Container,
     childId: Instance | TextInstance | SuspenseInstance
   ) {
-    ws.send(removeChildFromContainer(containerId, childId))
-  },
+    this.ws.send(removeChildFromContainer(containerId, childId))
+  }
 
-  resetTextContent(instance: Instance) {},
+  resetTextContent(instance: Instance) {}
 
   commitTextUpdate(
     textInstance: TextInstance,
     oldText: string,
     newText: string
-  ) {},
+  ) {}
 
   commitMount(
     instance: Instance,
     type: Type,
     props: Props,
     internalInstanceHandle: OpaqueHandle
-  ) {},
+  ) {}
 
   commitUpdate(
     instanceId: Instance,
@@ -198,28 +201,24 @@ const createHostConfig = (
     nextProps: Props,
     internalHandle: OpaqueHandle
   ) {
-    ws.send(commitUpdate(instanceId, prevProps, nextProps))
-  },
+    this.ws.send(commitUpdate(instanceId, prevProps, nextProps))
+  }
 
   hideInstance(instanceId: Instance) {
-    ws.send(hideInstance(instanceId))
-  },
+    this.ws.send(hideInstance(instanceId))
+  }
 
-  hideTextInstance(textInstance: TextInstance) {},
+  hideTextInstance(textInstance: TextInstance) {}
 
   unhideInstance(instanceId: Instance, props: Props) {
-    ws.send(unhideInstance(instanceId, props))
-  },
+    this.ws.send(unhideInstance(instanceId, props))
+  }
 
-  unhideTextInstance(textInstance: TextInstance, text: string) {},
+  unhideTextInstance(textInstance: TextInstance, text: string) {}
 
   clearContainer(containerId: Container) {
-    ws.send(clearContainer(containerId))
-  },
+    this.ws.send(clearContainer(containerId))
+  }
+}
 
-  supportsHydration: false,
-
-  supportsPersistence: false,
-})
-
-export default createHostConfig
+export default Bridge
