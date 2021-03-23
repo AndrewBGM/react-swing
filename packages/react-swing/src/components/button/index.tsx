@@ -1,7 +1,7 @@
 import { createElement, ReactNode } from 'react'
 
 export interface ButtonProps {
-  children: ReactNode
+  children?: ReactNode
 }
 
 const Button = ({ children, ...props }: ButtonProps): JSX.Element =>

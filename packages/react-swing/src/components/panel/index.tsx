@@ -1,7 +1,7 @@
 import { createElement, ReactNode } from 'react'
 
 export interface PanelProps {
-  children: ReactNode
+  children?: ReactNode
 }
 
 const Panel = ({ children, ...props }: PanelProps): JSX.Element =>
