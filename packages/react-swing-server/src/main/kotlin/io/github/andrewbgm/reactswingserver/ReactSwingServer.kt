@@ -1,20 +1,7 @@
 package io.github.andrewbgm.reactswingserver
 
 import com.google.gson.GsonBuilder
-import io.github.andrewbgm.reactswingserver.message.MessageAdapter
-import io.github.andrewbgm.reactswingserver.message.AppendChildMessage
-import io.github.andrewbgm.reactswingserver.message.AppendChildToContainerMessage
-import io.github.andrewbgm.reactswingserver.message.AppendInitialChildMessage
-import io.github.andrewbgm.reactswingserver.message.ClearContainerMessage
-import io.github.andrewbgm.reactswingserver.message.CommitUpdateMessage
-import io.github.andrewbgm.reactswingserver.message.CreateInstanceMessage
-import io.github.andrewbgm.reactswingserver.message.HideInstanceMessage
-import io.github.andrewbgm.reactswingserver.message.IMessage
-import io.github.andrewbgm.reactswingserver.message.InsertBeforeMessage
-import io.github.andrewbgm.reactswingserver.message.InsertInContainerBeforeMessage
-import io.github.andrewbgm.reactswingserver.message.RemoveChildFromContainerMessage
-import io.github.andrewbgm.reactswingserver.message.RemoveChildMessage
-import io.github.andrewbgm.reactswingserver.message.UnhideInstanceMessage
+import io.github.andrewbgm.reactswingserver.message.*
 import io.javalin.*
 import io.javalin.plugin.json.*
 import org.slf4j.LoggerFactory
