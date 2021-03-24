@@ -22,7 +22,7 @@ class ReactSwingServer {
   }
 
   private fun createServer(): Javalin {
-    configureGson()
+    configureMessageMapper()
 
     return Javalin.create()
       .ws("/ws") { ws ->
@@ -33,7 +33,7 @@ class ReactSwingServer {
       }
   }
 
-  private fun configureGson() {
+  private fun configureMessageMapper() {
     val gson = GsonBuilder()
       .excludeFieldsWithoutExposeAnnotation()
       .registerTypeAdapter(IMessage::class.java, MessageAdapter(
@@ -62,7 +62,7 @@ class ReactSwingServer {
     JavalinJson.toJsonMapper = object : ToJsonMapper {
       override fun map(
         obj: Any,
-      ): String = gson.toJson(obj)
+      ): String = if (obj is IMessage) gson.toJson(obj, IMessage::class.java) else gson.toJson(obj)
     }
   }
 }
