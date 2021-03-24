@@ -62,7 +62,10 @@ class ReactSwingServer {
     JavalinJson.toJsonMapper = object : ToJsonMapper {
       override fun map(
         obj: Any,
-      ): String = if (obj is IMessage) gson.toJson(obj, IMessage::class.java) else gson.toJson(obj)
+      ): String = when (obj) {
+        is IMessage -> gson.toJson(obj, IMessage::class.java)
+        else -> gson.toJson(obj)
+      }
     }
   }
 }
