@@ -64,7 +64,10 @@ class MessageAdapter(
 
   private fun convertTypeToName(
     type: KClass<*>,
-  ): String = Regex("[A-Z]").split(type.simpleName!!)
+  ): String = Regex("[A-Z][a-z0-9]_+").findAll(type.simpleName!!)
+    .map { it.value }
+    .toList()
     .dropLast(1)
-    .joinToString("_") { it.toUpperCase() }
+    .joinToString("_")
+    .toUpperCase()
 }
