@@ -52,7 +52,7 @@ class Bridge
       NoTimeout
     > {
   private ws!: WebSocket
-  private nextInstanceId = 0
+  private nextInstanceId = 1
   private rootHostContext = {}
 
   readonly supportsMutation = true
