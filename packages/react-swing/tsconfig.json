@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "dist/@types",
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -11,9 +13,10 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
+    "sourceMap": true,
     "strict": true,
     "target": "es6"
   },
-  "exclude": ["node_modules"],
+  "exclude": ["dist", "node_modules"],
   "include": ["**/*.ts"]
 }
