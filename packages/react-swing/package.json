@@ -20,9 +20,9 @@
     "react": "^17.0.2"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-commonjs": "^18.0.0",
     "@types/minimist": "^1.2.1",
-    "@types/node": "^14.14.35",
+    "@types/node": "^14.14.36",
     "@types/react": "^17.0.3",
     "@types/react-reconciler": "^0.26.1",
     "@types/ws": "^7.4.0",
