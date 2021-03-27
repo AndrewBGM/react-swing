@@ -1,7 +1,9 @@
 {
   "name": "@andrewbgm/react-swing",
   "version": "1.0.0",
-  "description": "",
+  "description": "A framework for building Java Swing apps with React.",
+  "author": "Andrew Bennett <andrewbgm@gmail.com>",
+  "license": "MIT",
   "files": [
     "dist"
   ],
@@ -13,8 +15,6 @@
     "build": "rollup -c",
     "prepare": "npm run build"
   },
-  "author": "Andrew Bennett <andrewbgm@gmail.com>",
-  "license": "MIT",
   "dependencies": {
     "minimist": "^1.2.5",
     "react-reconciler": "^0.26.2",
