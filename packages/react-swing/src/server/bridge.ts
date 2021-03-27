@@ -10,6 +10,7 @@ import {
   hideInstance,
   insertBefore,
   insertInContainerBefore,
+  Message,
   removeChild,
   removeChildFromContainer,
   unhideInstance,
@@ -53,6 +54,8 @@ class Bridge
     > {
   private ws!: WebSocket
   private nextInstanceId = 1
+  private nextCallbackId = 1
+  private mappedCallbacks: Record<number, () => void> = {}
   private rootHostContext = {}
 
   readonly supportsMutation = true
@@ -84,7 +87,7 @@ class Bridge
     internalHandle: OpaqueHandle
   ): Instance {
     const instanceId = this.nextInstanceId++
-    this.ws.send(createInstance(instanceId, type, props))
+    this._send(createInstance(instanceId, type, props))
     return instanceId
   }
 
@@ -98,7 +101,7 @@ class Bridge
   }
 
   appendInitialChild(parentId: Instance, childId: Instance | TextInstance) {
-    this.ws.send(appendInitialChild(parentId, childId))
+    this._send(appendInitialChild(parentId, childId))
   }
 
   finalizeInitialChildren(
@@ -151,14 +154,14 @@ class Bridge
   preparePortalMount(containerInfo: Container) {}
 
   appendChild(parentId: Instance, childId: Instance | TextInstance) {
-    this.ws.send(appendChild(parentId, childId))
+    this._send(appendChild(parentId, childId))
   }
 
   appendChildToContainer(
     containerId: Container,
     childId: Instance | TextInstance
   ) {
-    this.ws.send(appendChildToContainer(containerId, childId))
+    this._send(appendChildToContainer(containerId, childId))
   }
 
   insertBefore(
@@ -166,7 +169,7 @@ class Bridge
     childId: Instance | TextInstance,
     beforeChildId: Instance | TextInstance | SuspenseInstance
   ) {
-    this.ws.send(insertBefore(parentId, childId, beforeChildId))
+    this._send(insertBefore(parentId, childId, beforeChildId))
   }
 
   insertInContainerBefore(
@@ -174,21 +177,21 @@ class Bridge
     childId: Instance | TextInstance,
     beforeChildId: Instance | TextInstance | SuspenseInstance
   ) {
-    this.ws.send(insertInContainerBefore(containerId, childId, beforeChildId))
+    this._send(insertInContainerBefore(containerId, childId, beforeChildId))
   }
 
   removeChild(
     parentId: Instance,
     childId: Instance | TextInstance | SuspenseInstance
   ) {
-    this.ws.send(removeChild(parentId, childId))
+    this._send(removeChild(parentId, childId))
   }
 
   removeChildFromContainer(
     containerId: Container,
     childId: Instance | TextInstance | SuspenseInstance
   ) {
-    this.ws.send(removeChildFromContainer(containerId, childId))
+    this._send(removeChildFromContainer(containerId, childId))
   }
 
   resetTextContent(instance: Instance) {}
@@ -214,23 +217,58 @@ class Bridge
     nextProps: Props,
     internalHandle: OpaqueHandle
   ) {
-    this.ws.send(commitUpdate(instanceId, prevProps, nextProps))
+    this._send(commitUpdate(instanceId, prevProps, nextProps))
   }
 
   hideInstance(instanceId: Instance) {
-    this.ws.send(hideInstance(instanceId))
+    this._send(hideInstance(instanceId))
   }
 
   hideTextInstance(textInstance: TextInstance) {}
 
   unhideInstance(instanceId: Instance, props: Props) {
-    this.ws.send(unhideInstance(instanceId, props))
+    this._send(unhideInstance(instanceId, props))
   }
 
   unhideTextInstance(textInstance: TextInstance, text: string) {}
 
   clearContainer(containerId: Container) {
-    this.ws.send(clearContainer(containerId))
+    this._send(clearContainer(containerId))
+  }
+
+  private _send(message: Message) {
+    this.ws.send(this._mapCallbacks(message))
+  }
+
+  private _mapCallbacks(obj: Record<string, unknown>): Record<string, unknown> {
+    return Object.keys(obj).reduce((current, key) => {
+      const value = obj[key]
+      const isCallback = typeof value === 'function'
+      const isObject =
+        Object.prototype.toString.call(value) === '[object Object]'
+
+      if (isCallback) {
+        const callbackId = this.nextCallbackId++
+        this.mappedCallbacks[callbackId] = value as () => void
+
+        return {
+          ...current,
+          [key]: callbackId,
+        }
+      }
+
+      if (isObject) {
+        return {
+          ...current,
+          [key]: this._mapCallbacks(value as Record<string, unknown>),
+        }
+      }
+
+      return {
+        ...current,
+        [key]: obj[key],
+      }
+    }, {})
   }
 }
 
