@@ -2,8 +2,12 @@
   "name": "@andrewbgm/react-swing",
   "version": "1.0.0",
   "description": "",
+  "files": [
+    "dist"
+  ],
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c",
