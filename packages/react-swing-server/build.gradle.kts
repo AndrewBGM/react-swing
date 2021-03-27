@@ -2,6 +2,7 @@ plugins {
   kotlin("jvm") version "1.4.31"
 
   `java-library`
+  `maven-publish`
 }
 
 repositories {
@@ -22,4 +23,23 @@ dependencies {
 
   testImplementation(kotlin("test"))
   testImplementation(kotlin("test-junit"))
+}
+
+publishing {
+  publications {
+    create<MavenPublication>("default") {
+      from(components["java"])
+    }
+  }
+
+  repositories {
+    maven {
+      name = "GitHubPackages"
+      url = uri("https://maven.pkg.github.com/andrewbgm/react-swing")
+      credentials {
+        username = System.getenv("GITHUB_ACTOR")
+        password = System.getenv("GITHUB_TOKEN")
+      }
+    }
+  }
 }
