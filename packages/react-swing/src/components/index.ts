@@ -1,4 +1,8 @@
 export { default as Button } from './button'
 export type { ButtonProps } from './button'
+export { default as Frame } from './frame'
+export type { FrameProps } from './frame'
+export { default as Label } from './label'
+export type { LabelProps } from './label'
 export { default as Panel } from './panel'
 export type { PanelProps } from './panel'
