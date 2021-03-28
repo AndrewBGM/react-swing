@@ -10,6 +10,7 @@
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
   "scripts": {
+    "pretty": "prettier . --write",
     "build": "rollup -c",
     "prepublishOnly": "npm run build"
   },
