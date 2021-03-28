@@ -1,6 +1,6 @@
 {
   "name": "@andrewbgm/react-swing",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A framework for building Java Swing apps with React.",
   "author": "Andrew Bennett <andrewbgm@gmail.com>",
   "license": "MIT",
