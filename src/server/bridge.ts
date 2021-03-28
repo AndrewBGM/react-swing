@@ -161,10 +161,7 @@ class Bridge
     this._send(appendChild(parentId, childId))
   }
 
-  appendChildToContainer(
-    containerId: Container,
-    childId: Instance | TextInstance
-  ) {
+  appendChildToContainer(containerId: Container, childId: Instance | TextInstance) {
     this._send(appendChildToContainer(containerId, childId))
   }
 
@@ -184,10 +181,7 @@ class Bridge
     this._send(insertInContainerBefore(containerId, childId, beforeChildId))
   }
 
-  removeChild(
-    parentId: Instance,
-    childId: Instance | TextInstance | SuspenseInstance
-  ) {
+  removeChild(parentId: Instance, childId: Instance | TextInstance | SuspenseInstance) {
     this._send(removeChild(parentId, childId))
   }
 
@@ -200,18 +194,9 @@ class Bridge
 
   resetTextContent(instance: Instance) {}
 
-  commitTextUpdate(
-    textInstance: TextInstance,
-    oldText: string,
-    newText: string
-  ) {}
+  commitTextUpdate(textInstance: TextInstance, oldText: string, newText: string) {}
 
-  commitMount(
-    instance: Instance,
-    type: Type,
-    props: Props,
-    internalInstanceHandle: OpaqueHandle
-  ) {}
+  commitMount(instance: Instance, type: Type, props: Props, internalInstanceHandle: OpaqueHandle) {}
 
   commitUpdate(
     instanceId: Instance,
@@ -248,8 +233,7 @@ class Bridge
     return Object.keys(obj).reduce((current, key) => {
       const value = obj[key]
       const isCallback = typeof value === 'function'
-      const isObject =
-        Object.prototype.toString.call(value) === '[object Object]'
+      const isObject = Object.prototype.toString.call(value) === '[object Object]'
 
       if (isCallback) {
         const callbackId = this.nextCallbackId++

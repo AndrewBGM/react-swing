@@ -18,10 +18,7 @@ export default [
         useTsconfigDeclarationDir: true,
       }),
     ],
-    external: [
-      ...Object.keys(pkg.dependencies),
-      ...Object.keys(pkg.peerDependencies),
-    ],
+    external: [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDependencies)],
   },
   {
     input: './dist/@types/index.d.ts',
