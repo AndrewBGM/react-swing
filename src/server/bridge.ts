@@ -71,7 +71,7 @@ class Bridge
 
   constructor(readonly options: BridgeOptions) {}
 
-  connect() {
+  connect(): Promise<void> {
     const { host } = this.options
     return new Promise(resolve => {
       this.ws = new WebSocket(host)
