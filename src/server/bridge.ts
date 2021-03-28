@@ -76,6 +76,10 @@ class Bridge
     return new Promise(resolve => {
       this.ws = new WebSocket(host)
       this.ws.on('open', resolve)
+      this.ws.on('message', data => {
+        const message = JSON.parse(data.toString()) as Message
+        console.log(message)
+      })
     })
   }
 

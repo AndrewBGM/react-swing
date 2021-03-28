@@ -7,6 +7,7 @@ import { CreateInstanceMessage } from './create-instance'
 import { HideInstanceMessage } from './hide-instance'
 import { InsertBeforeMessage } from './insert-before'
 import { InsertInContainerBeforeMessage } from './insert-in-container-before'
+import { InvokeCallbackMessage } from './invoke-callback-message'
 import { RemoveChildMessage } from './remove-child'
 import { RemoveChildFromContainerMessage } from './remove-child-from-container'
 import { UnhideInstanceMessage } from './unhide-instance'
@@ -20,6 +21,7 @@ export * from './create-instance'
 export * from './hide-instance'
 export * from './insert-before'
 export * from './insert-in-container-before'
+export * from './invoke-callback-message'
 export * from './remove-child'
 export * from './remove-child-from-container'
 export * from './unhide-instance'
@@ -34,6 +36,7 @@ export type Message =
   | HideInstanceMessage
   | InsertBeforeMessage
   | InsertInContainerBeforeMessage
+  | InvokeCallbackMessage
   | RemoveChildMessage
   | RemoveChildFromContainerMessage
   | UnhideInstanceMessage
