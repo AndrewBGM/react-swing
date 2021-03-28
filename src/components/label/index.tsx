@@ -1,10 +1,10 @@
 import { createElement, ReactNode } from 'react'
 
-export interface LabelProps {
+export interface JLabelProps {
   children?: ReactNode
 }
 
-const Label = ({ children, ...props }: LabelProps): JSX.Element =>
-  createElement('label', props, children)
+const JLabel = ({ children, ...props }: JLabelProps): JSX.Element =>
+  createElement('JLabel', props, children)
 
-export default Label
+export default JLabel

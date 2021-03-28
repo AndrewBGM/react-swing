@@ -1,12 +1,12 @@
 import { createElement, ReactNode } from 'react'
 
-export interface FrameProps {
+export interface JFrameProps {
   title: string
 
   children?: ReactNode
 }
 
-const Frame = ({ children, ...props }: FrameProps): JSX.Element =>
-  createElement('frame', props, children)
+const JFrame = ({ children, ...props }: JFrameProps): JSX.Element =>
+  createElement('JFrame', props, children)
 
-export default Frame
+export default JFrame

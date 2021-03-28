@@ -1,10 +1,10 @@
 import { createElement, ReactNode } from 'react'
 
-export interface PanelProps {
+export interface JPanelProps {
   children?: ReactNode
 }
 
-const Panel = ({ children, ...props }: PanelProps): JSX.Element =>
-  createElement('panel', props, children)
+const JPanel = ({ children, ...props }: JPanelProps): JSX.Element =>
+  createElement('JPanel', props, children)
 
-export default Panel
+export default JPanel

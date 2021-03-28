@@ -1,14 +1,14 @@
 import { createElement, ReactNode } from 'react'
 
-export type ButtonActionHandler = () => void
+export type JButtonActionHandler = () => void
 
-export interface ButtonProps {
-  onAction?: ButtonActionHandler
+export interface JButtonProps {
+  onAction?: JButtonActionHandler
 
   children?: ReactNode
 }
 
-const Button = ({ children, ...props }: ButtonProps): JSX.Element =>
-  createElement('button', props, children)
+const JButton = ({ children, ...props }: JButtonProps): JSX.Element =>
+  createElement('JButton', props, children)
 
-export default Button
+export default JButton
