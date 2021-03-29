@@ -11,7 +11,7 @@
   "main": "dist/index.js",
   "scripts": {
     "pretty": "prettier . --write",
-    "build": "rollup -c",
+    "build": "rollup -c rollup.config.ts",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
