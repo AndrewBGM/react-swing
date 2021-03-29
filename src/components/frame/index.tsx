@@ -1,4 +1,4 @@
-import { createElement, ReactNode } from 'react'
+import { createElement, forwardRef, ReactNode } from 'react'
 
 export interface JFrameProps {
   title: string
@@ -6,7 +6,8 @@ export interface JFrameProps {
   children?: ReactNode
 }
 
-const JFrame = ({ children, ...props }: JFrameProps): JSX.Element =>
-  createElement('JFrame', props, children)
+const JFrame = forwardRef<number, JFrameProps>(({ children, ...props }, ref) =>
+  createElement('JFrame', { ...props, ref }, children)
+)
 
 export default JFrame

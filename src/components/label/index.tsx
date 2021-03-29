@@ -1,10 +1,11 @@
-import { createElement, ReactNode } from 'react'
+import { createElement, forwardRef, ReactNode } from 'react'
 
 export interface JLabelProps {
   children?: ReactNode
 }
 
-const JLabel = ({ children, ...props }: JLabelProps): JSX.Element =>
-  createElement('JLabel', props, children)
+const JLabel = forwardRef<number, JLabelProps>(({ children, ...props }, ref) =>
+  createElement('JLabel', { ...props, ref }, children)
+)
 
 export default JLabel

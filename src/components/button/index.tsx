@@ -1,4 +1,4 @@
-import { createElement, ReactNode } from 'react'
+import { createElement, forwardRef, ReactNode } from 'react'
 
 export type JButtonActionHandler = () => void
 
@@ -8,7 +8,8 @@ export interface JButtonProps {
   children?: ReactNode
 }
 
-const JButton = ({ children, ...props }: JButtonProps): JSX.Element =>
-  createElement('JButton', props, children)
+const JButton = forwardRef<number, JButtonProps>(({ children, ...props }, ref) =>
+  createElement('JButton', { ...props, ref }, children)
+)
 
 export default JButton
