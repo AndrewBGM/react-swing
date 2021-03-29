@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 import ReactReconciler from 'react-reconciler'
-import Bridge, { BridgeOptions } from './server/bridge'
+import Bridge, { BridgeOptions } from './network/bridge'
 
 const defaultOptions: BridgeOptions = {
   host: 'ws://localhost:8080/ws',
