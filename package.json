@@ -3,12 +3,13 @@
   "version": "0.0.1",
   "description": "A framework for building Java Swing apps with React.",
   "author": "Andrew Bennett <andrewbgm@gmail.com>",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "license": "MIT",
   "files": [
     "dist"
   ],
-  "types": "dist/index.d.ts",
-  "main": "dist/index.js",
   "scripts": {
     "pretty": "prettier . --write",
     "build": "rollup -c rollup.config.ts",
