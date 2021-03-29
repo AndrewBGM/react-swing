@@ -1,3 +1,4 @@
+import { performance } from 'perf_hooks'
 import { HostConfig } from 'react-reconciler'
 import WebSocket from 'ws'
 import {
