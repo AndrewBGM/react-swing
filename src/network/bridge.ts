@@ -28,7 +28,7 @@ export type PublicInstance = number
 export type HostContext = Record<string, unknown>
 export type UpdatePayload = unknown
 export type ChildSet = unknown
-export type TimeoutHandle = number
+export type TimeoutHandle = NodeJS.Timeout
 export type NoTimeout = -1
 export type OpaqueHandle = unknown
 

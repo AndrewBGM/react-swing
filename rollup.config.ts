@@ -1,4 +1,4 @@
-import commonjs from '@rollup/plugin-commonjs'
+import { builtinModules } from 'module'
 import del from 'rollup-plugin-delete'
 import dts from 'rollup-plugin-dts'
 import typescript from 'rollup-plugin-typescript2'
@@ -13,12 +13,15 @@ export default [
       sourcemap: true,
     },
     plugins: [
-      commonjs(),
       typescript({
         useTsconfigDeclarationDir: true,
       }),
     ],
-    external: [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDependencies)],
+    external: [
+      ...builtinModules,
+      ...Object.keys(pkg.dependencies),
+      ...Object.keys(pkg.peerDependencies),
+    ],
   },
   {
     input: './dist/@types/index.d.ts',
