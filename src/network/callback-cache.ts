@@ -7,10 +7,12 @@ const isObject = (arg: unknown): arg is Record<string, unknown> =>
 
 class CallbackCache {
   private nextCallbackId = 1
+
   private mappedCallbacksById: Record<number, Callback | undefined> = {}
 
   map<T extends unknown>(obj: T): T {
     if (Array.isArray(obj)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return obj.map(x => this.map(x)) as T
     }
 
@@ -19,7 +21,8 @@ class CallbackCache {
         const value = obj[key]
 
         if (isCallback(value)) {
-          const callbackId = this.nextCallbackId++
+          const callbackId = this.nextCallbackId
+          this.nextCallbackId += 1
           this.mappedCallbacksById[callbackId] = value
 
           return {

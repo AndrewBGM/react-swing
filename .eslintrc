@@ -1,0 +1,44 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "eslint-plugin-tsdoc", "prettier"],
+  "extends": [
+    "airbnb-typescript",
+    "airbnb/hooks",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    // ...
+    "prettier"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_" }
+    ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": [
+          "**/*.test.ts",
+          "**/*.test.tsx",
+          "**/*.stories.ts",
+          "**/*.stories.tsx"
+        ]
+      }
+    ],
+    "prettier/prettier": "error",
+    "react/jsx-key": "error",
+    "react/prop-types": [
+      "error",
+      {
+        "skipUndeclared": true
+      }
+    ],
+    "react/react-in-jsx-scope": "off",
+    "tsdoc/syntax": "warn"
+  }
+}

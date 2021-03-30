@@ -49,7 +49,7 @@ const generateHostConfig = (
     ws.send(JSON.stringify(callbackCache.map(message)))
   }
 
-  ws.on('ping', ws.pong)
+  ws.on('ping', data => ws.pong(data))
 
   return {
     supportsMutation: true,
@@ -57,20 +57,22 @@ const generateHostConfig = (
     supportsPersistence: false,
 
     isPrimaryRenderer: true,
-    now: performance.now,
+    now: () => performance.now(),
     scheduleTimeout: setTimeout,
     cancelTimeout: clearTimeout,
     noTimeout: -1,
-    queueMicrotask: queueMicrotask,
+    queueMicrotask: (callback: () => void) => queueMicrotask(callback),
 
     createInstance(
       type: Type,
       props: Props,
-      rootContainer: Container,
-      hostContext: HostContext,
-      internalHandle: OpaqueHandle
+      _rootContainer: Container,
+      _hostContext: HostContext,
+      _internalHandle: OpaqueHandle
     ): Instance {
-      const instanceId = nextInstanceId++
+      const instanceId = nextInstanceId
+      nextInstanceId += 1
+
       send({
         type: MessageType.CREATE_INSTANCE,
         payload: {
@@ -84,10 +86,10 @@ const generateHostConfig = (
     },
 
     createTextInstance(
-      text: string,
-      rootContainer: Container,
-      hostContext: HostContext,
-      internalHandle: OpaqueHandle
+      _text: string,
+      _rootContainer: Container,
+      _hostContext: HostContext,
+      _internalHandle: OpaqueHandle
     ): TextInstance {
       throw new Error('Text instances are not supported.')
     },
@@ -103,38 +105,38 @@ const generateHostConfig = (
     },
 
     finalizeInitialChildren(
-      instance: Instance,
-      type: Type,
-      props: Props,
-      rootContainer: Container,
-      hostContext: HostContext
+      _instance: Instance,
+      _type: Type,
+      _props: Props,
+      _rootContainer: Container,
+      _hostContext: HostContext
     ): boolean {
       return false
     },
 
     prepareUpdate(
-      instance: Instance,
-      type: Type,
-      oldProps: Props,
-      newProps: Props,
-      rootContainer: Container,
-      hostContext: HostContext
+      _instance: Instance,
+      _type: Type,
+      _oldProps: Props,
+      _newProps: Props,
+      _rootContainer: Container,
+      _hostContext: HostContext
     ): UpdatePayload | null {
       return null
     },
 
-    shouldSetTextContent(type: Type, props: Props): boolean {
+    shouldSetTextContent(_type: Type, _props: Props): boolean {
       return false
     },
 
-    getRootHostContext(rootContainer: Container): HostContext | null {
+    getRootHostContext(_rootContainer: Container): HostContext | null {
       return rootHostContext
     },
 
     getChildHostContext(
       parentHostContext: HostContext,
-      type: Type,
-      rootContainer: Container
+      _type: Type,
+      _rootContainer: Container
     ): HostContext {
       return parentHostContext
     },
@@ -143,13 +145,15 @@ const generateHostConfig = (
       return instance
     },
 
-    prepareForCommit(containerInfo: Container): Record<string, any> | null {
+    prepareForCommit(
+      _containerInfo: Container
+    ): Record<string, unknown> | null {
       return null
     },
 
-    resetAfterCommit(containerInfo: Container) {},
+    resetAfterCommit(_containerInfo: Container) {},
 
-    preparePortalMount(containerInfo: Container) {},
+    preparePortalMount(_containerInfo: Container) {},
 
     appendChild(parentId: Instance, childId: Instance | TextInstance) {
       send({
@@ -230,28 +234,28 @@ const generateHostConfig = (
       })
     },
 
-    resetTextContent(instance: Instance) {},
+    resetTextContent(_instance: Instance) {},
 
     commitTextUpdate(
-      textInstance: TextInstance,
-      oldText: string,
-      newText: string
+      _textInstance: TextInstance,
+      _oldText: string,
+      _newText: string
     ) {},
 
     commitMount(
-      instance: Instance,
-      type: Type,
-      props: Props,
-      internalInstanceHandle: OpaqueHandle
+      _instance: Instance,
+      _type: Type,
+      _props: Props,
+      _internalInstanceHandle: OpaqueHandle
     ) {},
 
     commitUpdate(
       instanceId: Instance,
-      updatePayload: UpdatePayload,
-      type: Type,
+      _updatePayload: UpdatePayload,
+      _type: Type,
       prevProps: Props,
       nextProps: Props,
-      internalHandle: OpaqueHandle
+      _internalHandle: OpaqueHandle
     ) {
       // TODO: Could probably send a diff of the props rather than both.
       send({
@@ -273,7 +277,7 @@ const generateHostConfig = (
       })
     },
 
-    hideTextInstance(textInstance: TextInstance) {},
+    hideTextInstance(_textInstance: TextInstance) {},
 
     unhideInstance(instanceId: Instance, props: Props) {
       send({
@@ -285,7 +289,7 @@ const generateHostConfig = (
       })
     },
 
-    unhideTextInstance(textInstance: TextInstance, text: string) {},
+    unhideTextInstance(_textInstance: TextInstance, _text: string) {},
 
     clearContainer(containerId: Container) {
       send({
@@ -316,11 +320,10 @@ const createHostConfig = async (
     TimeoutHandle,
     NoTimeout
   >
-> => {
-  return new Promise(resolve => {
+> =>
+  new Promise(resolve => {
     const ws = new WebSocket(host)
     ws.on('open', () => resolve(generateHostConfig(ws)))
   })
-}
 
 export default createHostConfig
