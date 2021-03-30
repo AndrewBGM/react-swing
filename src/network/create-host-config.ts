@@ -193,7 +193,10 @@ const generateHostConfig = (
       send(appendChild(parentId, childId))
     },
 
-    appendChildToContainer(containerId: Container, childId: Instance | TextInstance) {
+    appendChildToContainer(
+      containerId: Container,
+      childId: Instance | TextInstance
+    ) {
       send(appendChildToContainer(containerId, childId))
     },
 
@@ -213,7 +216,10 @@ const generateHostConfig = (
       send(insertInContainerBefore(containerId, childId, beforeChildId))
     },
 
-    removeChild(parentId: Instance, childId: Instance | TextInstance | SuspenseInstance) {
+    removeChild(
+      parentId: Instance,
+      childId: Instance | TextInstance | SuspenseInstance
+    ) {
       send(removeChild(parentId, childId))
     },
 
@@ -226,7 +232,11 @@ const generateHostConfig = (
 
     resetTextContent(instance: Instance) {},
 
-    commitTextUpdate(textInstance: TextInstance, oldText: string, newText: string) {},
+    commitTextUpdate(
+      textInstance: TextInstance,
+      oldText: string,
+      newText: string
+    ) {},
 
     commitMount(
       instance: Instance,
@@ -243,7 +253,9 @@ const generateHostConfig = (
       nextProps: Props,
       internalHandle: OpaqueHandle
     ) {
-      send(commitUpdate(instanceId, filterProps(prevProps), filterProps(nextProps)))
+      send(
+        commitUpdate(instanceId, filterProps(prevProps), filterProps(nextProps))
+      )
     },
 
     hideInstance(instanceId: Instance) {

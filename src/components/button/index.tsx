@@ -8,8 +8,9 @@ export interface JButtonProps {
   children?: ReactNode
 }
 
-const JButton = forwardRef<number, JButtonProps>(({ children, ...props }, ref) =>
-  createElement('JButton', { ...props, ref }, children)
+const JButton = forwardRef<number, JButtonProps>(
+  ({ children, ...props }, ref) =>
+    createElement('JButton', { ...props, ref }, children)
 )
 
 export default JButton

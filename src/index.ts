@@ -12,7 +12,10 @@ const defaultOptions: RenderOptions = {
 
 const noop = () => {}
 
-export const render = async (element: ReactElement, options: RenderOptions = defaultOptions) => {
+export const render = async (
+  element: ReactElement,
+  options: RenderOptions = defaultOptions
+) => {
   const { host } = options
   const hostConfig = await createHostConfig(host)
   const ReactSwing = ReactReconciler(hostConfig)

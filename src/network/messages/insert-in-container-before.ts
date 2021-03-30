@@ -13,4 +13,6 @@ export const insertInContainerBefore = (
   },
 })
 
-export type InsertInContainerBeforeMessage = ReturnType<typeof insertInContainerBefore>
+export type InsertInContainerBeforeMessage = ReturnType<
+  typeof insertInContainerBefore
+>

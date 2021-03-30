@@ -1,6 +1,9 @@
 export const REMOVE_CHILD_FROM_CONTAINER = 'REMOVE_CHILD_FROM_CONTAINER' as const
 
-export const removeChildFromContainer = (containerId: number, childId: number) => ({
+export const removeChildFromContainer = (
+  containerId: number,
+  childId: number
+) => ({
   type: REMOVE_CHILD_FROM_CONTAINER,
   payload: {
     containerId,
@@ -8,4 +11,6 @@ export const removeChildFromContainer = (containerId: number, childId: number) =
   },
 })
 
-export type RemoveChildFromContainerMessage = ReturnType<typeof removeChildFromContainer>
+export type RemoveChildFromContainerMessage = ReturnType<
+  typeof removeChildFromContainer
+>

@@ -1,6 +1,10 @@
 export const INSERT_BEFORE = 'INSERT_BEFORE' as const
 
-export const insertBefore = (parentId: number, childId: number, beforeChildId: number) => ({
+export const insertBefore = (
+  parentId: number,
+  childId: number,
+  beforeChildId: number
+) => ({
   type: INSERT_BEFORE,
   payload: {
     parentId,
