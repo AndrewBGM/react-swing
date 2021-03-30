@@ -17,6 +17,13 @@ import {
   unhideInstance,
 } from './messages'
 
+type Callback = (...args: unknown[]) => unknown
+
+const isCallback = (arg: unknown): arg is Callback => typeof arg === 'function'
+
+const isObject = (arg: unknown): arg is Record<string, unknown> =>
+  typeof arg === 'object' && arg !== null
+
 export type Type = string
 export type Props = Record<string, unknown>
 export type Container = number
@@ -55,10 +62,43 @@ const generateHostConfig = (
   NoTimeout
 > => {
   let nextInstanceId = 1
+  let nextCallbackId = 1
+  const mappedCallbacksById: Record<number, Callback | undefined> = {}
+
   const rootHostContext = {}
 
+  // TODO: Could definitely add real typing here with mapped types.
+  const mapCallbacks = <T extends unknown>(obj: T): T => {
+    if (Array.isArray(obj)) {
+      return obj.map(mapCallbacks) as T
+    }
+
+    if (isObject(obj)) {
+      return Object.keys(obj).reduce((current, key) => {
+        const value = obj[key]
+
+        if (isCallback(value)) {
+          const callbackId = nextCallbackId++
+          mappedCallbacksById[callbackId] = value
+
+          return {
+            ...current,
+            [key]: callbackId,
+          }
+        }
+
+        return {
+          ...current,
+          [key]: mapCallbacks(value),
+        }
+      }, {}) as T
+    }
+
+    return obj
+  }
+
   const send = (message: Message) => {
-    ws.send(JSON.stringify(message))
+    ws.send(JSON.stringify(mapCallbacks(message)))
   }
 
   ws.on('ping', ws.pong)
