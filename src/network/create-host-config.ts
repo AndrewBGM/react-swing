@@ -253,6 +253,7 @@ const generateHostConfig = (
       nextProps: Props,
       internalHandle: OpaqueHandle
     ) {
+      // TODO: Could probably send a diff of the props rather than both.
       send(
         commitUpdate(instanceId, filterProps(prevProps), filterProps(nextProps))
       )
