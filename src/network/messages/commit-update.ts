@@ -1,16 +1,12 @@
-export const COMMIT_UPDATE = 'COMMIT_UPDATE' as const
+import MessageType from './message-type'
 
-export const commitUpdate = (
-  instanceId: number,
-  prevProps: Record<string, unknown>,
-  nextProps: Record<string, unknown>
-) => ({
-  type: COMMIT_UPDATE,
+interface CommitUpdateMessage {
+  type: MessageType.COMMIT_UPDATE
   payload: {
-    instanceId,
-    prevProps,
-    nextProps,
-  },
-})
+    instanceId: number
+    prevProps: Record<string, unknown>
+    nextProps: Record<string, unknown>
+  }
+}
 
-export type CommitUpdateMessage = ReturnType<typeof commitUpdate>
+export default CommitUpdateMessage

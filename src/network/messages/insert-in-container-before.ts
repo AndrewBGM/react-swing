@@ -1,18 +1,12 @@
-export const INSERT_IN_CONTAINER_BEFORE = 'INSERT_IN_CONTAINER_BEFORE' as const
+import MessageType from './message-type'
 
-export const insertInContainerBefore = (
-  containerId: number,
-  childId: number,
-  beforeChildId: number
-) => ({
-  type: INSERT_IN_CONTAINER_BEFORE,
+interface InsertInContainerBeforeMessage {
+  type: MessageType.INSERT_IN_CONTAINER_BEFORE
   payload: {
-    containerId,
-    childId,
-    beforeChildId,
-  },
-})
+    containerId: number
+    childId: number
+    beforeChildId: number
+  }
+}
 
-export type InsertInContainerBeforeMessage = ReturnType<
-  typeof insertInContainerBefore
->
+export default InsertInContainerBeforeMessage

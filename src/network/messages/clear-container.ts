@@ -1,10 +1,10 @@
-export const CLEAR_CONTAINER = 'CLEAR_CONTAINER' as const
+import MessageType from './message-type'
 
-export const clearContainer = (containerId: number) => ({
-  type: CLEAR_CONTAINER,
+interface ClearContainerMessage {
+  type: MessageType.CLEAR_CONTAINER
   payload: {
-    containerId,
-  },
-})
+    containerId: number
+  }
+}
 
-export type ClearContainerMessage = ReturnType<typeof clearContainer>
+export default ClearContainerMessage

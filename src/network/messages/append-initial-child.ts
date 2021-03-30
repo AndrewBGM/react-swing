@@ -1,11 +1,11 @@
-export const APPEND_INITIAL_CHILD = 'APPEND_INITIAL_CHILD' as const
+import MessageType from './message-type'
 
-export const appendInitialChild = (parentId: number, childId: number) => ({
-  type: APPEND_INITIAL_CHILD,
+interface AppendInitialChildMessage {
+  type: MessageType.APPEND_INITIAL_CHILD
   payload: {
-    parentId,
-    childId,
-  },
-})
+    parentId: number
+    childId: number
+  }
+}
 
-export type AppendInitialChildMessage = ReturnType<typeof appendInitialChild>
+export default AppendInitialChildMessage

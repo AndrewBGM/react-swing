@@ -1,21 +1,8 @@
 import { performance } from 'perf_hooks'
 import { HostConfig } from 'react-reconciler'
 import WebSocket from 'ws'
-import {
-  appendChild,
-  appendChildToContainer,
-  appendInitialChild,
-  clearContainer,
-  commitUpdate,
-  createInstance,
-  hideInstance,
-  insertBefore,
-  insertInContainerBefore,
-  Message,
-  removeChild,
-  removeChildFromContainer,
-  unhideInstance,
-} from './messages'
+import { Message } from './messages'
+import MessageType from './messages/message-type'
 
 type Callback = (...args: unknown[]) => unknown
 
@@ -123,7 +110,15 @@ const generateHostConfig = (
       internalHandle: OpaqueHandle
     ): Instance {
       const instanceId = nextInstanceId++
-      send(createInstance(instanceId, type, filterProps(props)))
+      send({
+        type: MessageType.CREATE_INSTANCE,
+        payload: {
+          instanceId,
+          type,
+          props: filterProps(props),
+        },
+      })
+
       return instanceId
     },
 
@@ -137,7 +132,13 @@ const generateHostConfig = (
     },
 
     appendInitialChild(parentId: Instance, childId: Instance | TextInstance) {
-      send(appendInitialChild(parentId, childId))
+      send({
+        type: MessageType.APPEND_INITIAL_CHILD,
+        payload: {
+          parentId,
+          childId,
+        },
+      })
     },
 
     finalizeInitialChildren(
@@ -190,14 +191,26 @@ const generateHostConfig = (
     preparePortalMount(containerInfo: Container) {},
 
     appendChild(parentId: Instance, childId: Instance | TextInstance) {
-      send(appendChild(parentId, childId))
+      send({
+        type: MessageType.APPEND_CHILD,
+        payload: {
+          parentId,
+          childId,
+        },
+      })
     },
 
     appendChildToContainer(
       containerId: Container,
       childId: Instance | TextInstance
     ) {
-      send(appendChildToContainer(containerId, childId))
+      send({
+        type: MessageType.APPEND_CHILD_TO_CONTAINER,
+        payload: {
+          containerId,
+          childId,
+        },
+      })
     },
 
     insertBefore(
@@ -205,7 +218,14 @@ const generateHostConfig = (
       childId: Instance | TextInstance,
       beforeChildId: Instance | TextInstance | SuspenseInstance
     ) {
-      send(insertBefore(parentId, childId, beforeChildId))
+      send({
+        type: MessageType.INSERT_BEFORE,
+        payload: {
+          parentId,
+          childId,
+          beforeChildId,
+        },
+      })
     },
 
     insertInContainerBefore(
@@ -213,21 +233,40 @@ const generateHostConfig = (
       childId: Instance | TextInstance,
       beforeChildId: Instance | TextInstance | SuspenseInstance
     ) {
-      send(insertInContainerBefore(containerId, childId, beforeChildId))
+      send({
+        type: MessageType.INSERT_IN_CONTAINER_BEFORE,
+        payload: {
+          containerId,
+          childId,
+          beforeChildId,
+        },
+      })
     },
 
     removeChild(
       parentId: Instance,
       childId: Instance | TextInstance | SuspenseInstance
     ) {
-      send(removeChild(parentId, childId))
+      send({
+        type: MessageType.REMOVE_CHILD,
+        payload: {
+          parentId,
+          childId,
+        },
+      })
     },
 
     removeChildFromContainer(
       containerId: Container,
       childId: Instance | TextInstance | SuspenseInstance
     ) {
-      send(removeChildFromContainer(containerId, childId))
+      send({
+        type: MessageType.REMOVE_CHILD_FROM_CONTAINER,
+        payload: {
+          containerId,
+          childId,
+        },
+      })
     },
 
     resetTextContent(instance: Instance) {},
@@ -254,25 +293,46 @@ const generateHostConfig = (
       internalHandle: OpaqueHandle
     ) {
       // TODO: Could probably send a diff of the props rather than both.
-      send(
-        commitUpdate(instanceId, filterProps(prevProps), filterProps(nextProps))
-      )
+      send({
+        type: MessageType.COMMIT_UPDATE,
+        payload: {
+          instanceId,
+          prevProps: filterProps(prevProps),
+          nextProps: filterProps(nextProps),
+        },
+      })
     },
 
     hideInstance(instanceId: Instance) {
-      send(hideInstance(instanceId))
+      send({
+        type: MessageType.HIDE_INSTANCE,
+        payload: {
+          instanceId,
+        },
+      })
     },
 
     hideTextInstance(textInstance: TextInstance) {},
 
     unhideInstance(instanceId: Instance, props: Props) {
-      send(unhideInstance(instanceId, filterProps(props)))
+      send({
+        type: MessageType.UNHIDE_INSTANCE,
+        payload: {
+          instanceId,
+          props: filterProps(props),
+        },
+      })
     },
 
     unhideTextInstance(textInstance: TextInstance, text: string) {},
 
     clearContainer(containerId: Container) {
-      send(clearContainer(containerId))
+      send({
+        type: MessageType.CLEAR_CONTAINER,
+        payload: {
+          containerId,
+        },
+      })
     },
   }
 }

@@ -1,14 +1,11 @@
-export const UNHIDE_INSTANCE = 'UNHIDE_INSTANCE' as const
+import MessageType from './message-type'
 
-export const unhideInstance = (
-  instanceId: number,
-  props: Record<string, unknown>
-) => ({
-  type: UNHIDE_INSTANCE,
+interface UnhideInstanceMessage {
+  type: MessageType.UNHIDE_INSTANCE
   payload: {
-    instanceId,
-    props,
-  },
-})
+    instanceId: number
+    props: Record<string, unknown>
+  }
+}
 
-export type UnhideInstanceMessage = ReturnType<typeof unhideInstance>
+export default UnhideInstanceMessage

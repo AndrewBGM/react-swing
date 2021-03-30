@@ -1,11 +1,11 @@
-export const REMOVE_CHILD = 'REMOVE_CHILD' as const
+import MessageType from './message-type'
 
-export const removeChild = (parentId: number, childId: number) => ({
-  type: REMOVE_CHILD,
+interface RemoveChildMessage {
+  type: MessageType.REMOVE_CHILD
   payload: {
-    parentId,
-    childId,
-  },
-})
+    parentId: number
+    childId: number
+  }
+}
 
-export type RemoveChildMessage = ReturnType<typeof removeChild>
+export default RemoveChildMessage

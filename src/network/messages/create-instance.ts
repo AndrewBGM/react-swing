@@ -1,16 +1,12 @@
-export const CREATE_INSTANCE = 'CREATE_INSTANCE' as const
+import MessageType from './message-type'
 
-export const createInstance = (
-  instanceId: number,
-  type: string,
-  props: Record<string, unknown>
-) => ({
-  type: CREATE_INSTANCE,
+interface CreateInstanceMessage {
+  type: MessageType.CREATE_INSTANCE
   payload: {
-    instanceId,
-    type,
-    props,
-  },
-})
+    instanceId: number
+    type: string
+    props: Record<string, unknown>
+  }
+}
 
-export type CreateInstanceMessage = ReturnType<typeof createInstance>
+export default CreateInstanceMessage

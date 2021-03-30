@@ -1,10 +1,10 @@
-export const HIDE_INSTANCE = 'HIDE_INSTANCE' as const
+import MessageType from './message-type'
 
-export const hideInstance = (instanceId: number) => ({
-  type: HIDE_INSTANCE,
+interface HideInstanceMessage {
+  type: MessageType.HIDE_INSTANCE
   payload: {
-    instanceId,
-  },
-})
+    instanceId: number
+  }
+}
 
-export type HideInstanceMessage = ReturnType<typeof hideInstance>
+export default HideInstanceMessage
