@@ -2,11 +2,7 @@ import type { ReactElement } from 'react'
 import ReactReconciler from 'react-reconciler'
 import createHostConfig from './network/create-host-config'
 
-export interface RenderOptions {
-  host: string
-}
-
-const defaultOptions: RenderOptions = {
+const defaultOptions = {
   host: 'ws://localhost:8080/ws',
 }
 
@@ -14,7 +10,7 @@ const noop = () => {}
 
 export const render = async (
   element: ReactElement,
-  options: RenderOptions = defaultOptions
+  options = defaultOptions
 ) => {
   const { host } = options
   const hostConfig = await createHostConfig(host)
