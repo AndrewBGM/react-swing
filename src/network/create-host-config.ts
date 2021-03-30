@@ -1,8 +1,7 @@
 import { performance } from 'perf_hooks'
 import { HostConfig } from 'react-reconciler'
 import WebSocket from 'ws'
-import { Message } from './messages'
-import MessageType from './messages/message-type'
+import { Message, MessageType } from './messages'
 
 type Callback = (...args: unknown[]) => unknown
 

@@ -11,6 +11,7 @@ import { default as InvokeCallbackMessage } from './invoke-callback'
 import { default as RemoveChildMessage } from './remove-child'
 import { default as RemoveChildFromContainerMessage } from './remove-child-from-container'
 import { default as UnhideInstanceMessage } from './unhide-instance'
+export { default as MessageType } from './message-type'
 
 export type Message =
   | AppendChildMessage
