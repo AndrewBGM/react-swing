@@ -39,6 +39,7 @@ export class Bridge {
     return new Promise(resolve => {
       this.ws = new WebSocket(this.host)
       this.ws.once('open', () => resolve())
+      this.ws.on('ping', data => this.ws.pong(data))
     })
   }
 

@@ -10,6 +10,15 @@ class CallbackMapper {
 
   private callbacksById: Record<number, Callback | undefined> = {}
 
+  invoke<R>(id: number, args: unknown[]): R | null {
+    const cb = this.callbacksById[id]
+    if (!cb) {
+      return null
+    }
+
+    return cb(...args) as R
+  }
+
   map<T extends unknown>(obj: T): T {
     if (Array.isArray(obj)) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
