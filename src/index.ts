@@ -3,7 +3,11 @@ import ReactReconciler from 'react-reconciler'
 import { configureBridge } from './bridge'
 import createHostConfig from './create-host-config'
 
-const defaultOptions = {
+export interface RenderOptions {
+  host: string
+}
+
+const defaultOptions: RenderOptions = {
   host: 'ws://localhost:8080/ws',
 }
 
@@ -11,7 +15,7 @@ const noop = () => {}
 
 export const render = async (
   element: ReactElement,
-  options = defaultOptions
+  options: RenderOptions = defaultOptions
 ): Promise<void> => {
   const { host } = options
   const bridge = await configureBridge(host)
