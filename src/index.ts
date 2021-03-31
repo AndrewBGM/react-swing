@@ -15,6 +15,7 @@ export const render = async (
 ): Promise<void> => {
   const { host } = options
   const bridge = await configureBridge(host)
+
   const hostConfig = createHostConfig(bridge)
   const ReactSwing = ReactReconciler(hostConfig)
 

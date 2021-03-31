@@ -1,10 +1,13 @@
 import WebSocket from 'ws'
 import CallbackMapper from './callback-mapper'
 
-const filterProps = <P extends Record<string, unknown>>(props: P): P => ({
-  ...props,
-  children: undefined,
-})
+const filterProps = <P extends Record<string, unknown>>(
+  props: P
+): Omit<P, 'children'> => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { children, ...rest } = props
+  return rest
+}
 
 export type Type = string
 export type Props = Record<string, unknown>
@@ -20,7 +23,6 @@ export type ChildSet = unknown
 export type TimeoutHandle = NodeJS.Timeout
 export type NoTimeout = -1
 export type OpaqueHandle = unknown
-export type Callback = (...args: unknown[]) => unknown
 
 export class Bridge {
   private callbackMapper = new CallbackMapper()
@@ -41,28 +43,60 @@ export class Bridge {
   }
 
   createInstance(
-    _type: Type,
-    _props: Props,
-    _rootContainer: Container,
-    _hostContext: HostContext,
-    _internalHandle: OpaqueHandle
+    type: Type,
+    props: Props,
+    rootContainer: Container,
+    hostContext: HostContext,
+    internalHandle: OpaqueHandle
   ): Instance {
-    throw new Error('Host instances are not supported.')
+    const instanceId = this.getNextInstanceId()
+    this.send({
+      type: 'CREATE_INSTANCE',
+      payload: {
+        type,
+        props: filterProps(props),
+        rootContainer,
+        hostContext,
+        internalHandle,
+      },
+    })
+
+    return instanceId
   }
 
   createTextInstance(
-    _text: string,
-    _rootContainer: Container,
-    _hostContext: HostContext,
-    _internalHandle: OpaqueHandle
+    text: string,
+    rootContainer: Container,
+    hostContext: HostContext,
+    internalHandle: OpaqueHandle
   ): TextInstance {
-    throw new Error('Text instances are not supported.')
+    const instanceId = this.getNextInstanceId()
+    this.send({
+      type: 'CREATE_TEXT_INSTANCE',
+      payload: {
+        instanceId,
+        text,
+        rootContainer,
+        hostContext,
+        internalHandle,
+      },
+    })
+
+    return instanceId
   }
 
   appendInitialChild(
-    _parentId: Instance,
-    _childId: Instance | TextInstance
-  ): void {}
+    parentId: Instance,
+    childId: Instance | TextInstance
+  ): void {
+    this.send({
+      type: 'APPEND_INITIAL_CHILD',
+      payload: {
+        parentId,
+        childId,
+      },
+    })
+  }
 
   finalizeInitialChildren(
     _instance: Instance,
@@ -109,66 +143,182 @@ export class Bridge {
     return null
   }
 
-  resetAfterCommit(_containerInfo: Container): void {}
+  resetAfterCommit(containerInfo: Container): void {
+    this.send({
+      type: 'RESET_AFTER_COMMIT',
+      payload: {
+        containerInfo,
+      },
+    })
+  }
 
-  preparePortalMount(_containerInfo: Container): void {}
+  preparePortalMount(containerInfo: Container): void {
+    this.send({
+      type: 'PREPARE_PORTAL_MOUNT',
+      payload: {
+        containerInfo,
+      },
+    })
+  }
 
-  appendChild(_parentId: Instance, _childId: Instance | TextInstance): void {}
+  appendChild(parentId: Instance, childId: Instance | TextInstance): void {
+    this.send({
+      type: 'APPEND_CHILD',
+      payload: {
+        parentId,
+        childId,
+      },
+    })
+  }
 
   appendChildToContainer(
-    _containerId: Container,
-    _childId: Instance | TextInstance
-  ): void {}
+    containerId: Container,
+    childId: Instance | TextInstance
+  ): void {
+    this.send({
+      type: 'APPEND_CHILD_TO_CONTAINER',
+      payload: {
+        containerId,
+        childId,
+      },
+    })
+  }
 
   insertBefore(
-    _parentId: Instance,
-    _childId: Instance | TextInstance,
-    _beforeChildId: Instance | TextInstance | SuspenseInstance
-  ): void {}
+    parentId: Instance,
+    childId: Instance | TextInstance,
+    beforeChildId: Instance | TextInstance | SuspenseInstance
+  ): void {
+    this.send({
+      type: 'INSERT_BEFORE',
+      payload: {
+        parentId,
+        childId,
+        beforeChildId,
+      },
+    })
+  }
 
   insertInContainerBefore(
-    _containerId: Container,
-    _childId: Instance | TextInstance,
-    _beforeChildId: Instance | TextInstance | SuspenseInstance
-  ): void {}
+    containerId: Container,
+    childId: Instance | TextInstance,
+    beforeChildId: Instance | TextInstance | SuspenseInstance
+  ): void {
+    this.send({
+      type: 'INSERT_IN_CONTAINER_BEFORE',
+      payload: {
+        containerId,
+        childId,
+        beforeChildId,
+      },
+    })
+  }
 
   removeChild(
-    _parentId: Instance,
-    _childId: Instance | TextInstance | SuspenseInstance
-  ): void {}
+    parentId: Instance,
+    childId: Instance | TextInstance | SuspenseInstance
+  ): void {
+    this.send({
+      type: 'REMOVE_CHILD',
+      payload: {
+        parentId,
+        childId,
+      },
+    })
+  }
 
   removeChildFromContainer(
-    _containerId: Container,
-    _childId: Instance | TextInstance | SuspenseInstance
-  ): void {}
+    containerId: Container,
+    childId: Instance | TextInstance | SuspenseInstance
+  ): void {
+    this.send({
+      type: 'REMOVE_CHILD_FROM_CONTAINER',
+      payload: {
+        containerId,
+        childId,
+      },
+    })
+  }
 
-  resetTextContent(_instance: Instance): void {}
+  resetTextContent(instance: Instance): void {
+    this.send({
+      type: 'RESET_TEXT_CONTENT',
+      payload: {
+        instance,
+      },
+    })
+  }
 
   commitTextUpdate(
-    _textInstance: TextInstance,
-    _oldText: string,
-    _newText: string
-  ): void {}
+    textInstance: TextInstance,
+    oldText: string,
+    newText: string
+  ): void {
+    this.send({
+      type: 'COMMIT_TEXT_UPDATE',
+      payload: {
+        textInstance,
+        oldText,
+        newText,
+      },
+    })
+  }
 
   commitMount(
-    _instance: Instance,
-    _type: Type,
-    _props: Props,
-    _internalInstanceHandle: OpaqueHandle
-  ): void {}
+    instance: Instance,
+    type: Type,
+    props: Props,
+    internalInstanceHandle: OpaqueHandle
+  ): void {
+    this.send({
+      type: 'COMMIT_MOUNT',
+      payload: {
+        instance,
+        type,
+        props: filterProps(props),
+        internalInstanceHandle,
+      },
+    })
+  }
 
   commitUpdate(
-    _instanceId: Instance,
-    _updatePayload: UpdatePayload,
-    _type: Type,
-    _prevProps: Props,
-    _nextProps: Props,
-    _internalHandle: OpaqueHandle
-  ): void {}
+    instanceId: Instance,
+    updatePayload: UpdatePayload,
+    type: Type,
+    prevProps: Props,
+    nextProps: Props,
+    internalHandle: OpaqueHandle
+  ): void {
+    this.send({
+      type: 'COMMIT_UPDATE',
+      payload: {
+        instanceId,
+        updatePayload,
+        type,
+        prevProps: filterProps(prevProps),
+        nextProps: filterProps(nextProps),
+        internalHandle,
+      },
+    })
+  }
 
-  hideInstance(_instanceId: Instance): void {}
+  hideInstance(instanceId: Instance): void {
+    this.send({
+      type: 'HIDE_INSTANCE',
+      payload: {
+        instanceId,
+      },
+    })
+  }
 
-  hideTextInstance(_textInstance: TextInstance): void {}
+  hideTextInstance(textInstance: TextInstance): void {
+    this.send({
+      type: 'HIDE_TEXT_INSTANCE',
+      payload: {
+        textInstance,
+      },
+    })
+  }
 
   unhideInstance(instanceId: Instance, props: Props): void {
     this.send({
@@ -190,10 +340,24 @@ export class Bridge {
     })
   }
 
-  clearContainer(_containerId: Container): void {}
+  clearContainer(containerId: Container): void {
+    this.send({
+      type: 'CLEAR_CONTAINER',
+      payload: {
+        containerId,
+      },
+    })
+  }
 
   private send(obj: Record<string, unknown>) {
     this.ws.send(JSON.stringify(this.callbackMapper.map(obj)))
+  }
+
+  private getNextInstanceId(): number {
+    const instanceId = this.nextInstanceId
+    this.nextInstanceId += 1
+
+    return instanceId
   }
 }
 
