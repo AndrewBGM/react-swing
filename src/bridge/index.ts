@@ -46,19 +46,17 @@ export class Bridge {
   createInstance(
     type: Type,
     props: Props,
-    rootContainer: Container,
-    hostContext: HostContext,
-    internalHandle: OpaqueHandle
+    _rootContainer: Container,
+    _hostContext: HostContext,
+    _internalHandle: OpaqueHandle
   ): Instance {
     const instanceId = this.getNextInstanceId()
     this.send({
       type: 'CREATE_INSTANCE',
       payload: {
+        instanceId,
         type,
         props: filterProps(props),
-        rootContainer,
-        hostContext,
-        internalHandle,
       },
     })
 
@@ -67,9 +65,9 @@ export class Bridge {
 
   createTextInstance(
     text: string,
-    rootContainer: Container,
-    hostContext: HostContext,
-    internalHandle: OpaqueHandle
+    _rootContainer: Container,
+    _hostContext: HostContext,
+    _internalHandle: OpaqueHandle
   ): TextInstance {
     const instanceId = this.getNextInstanceId()
     this.send({
@@ -77,9 +75,6 @@ export class Bridge {
       payload: {
         instanceId,
         text,
-        rootContainer,
-        hostContext,
-        internalHandle,
       },
     })
 
@@ -269,7 +264,7 @@ export class Bridge {
     instance: Instance,
     type: Type,
     props: Props,
-    internalInstanceHandle: OpaqueHandle
+    _internalInstanceHandle: OpaqueHandle
   ): void {
     this.send({
       type: 'COMMIT_MOUNT',
@@ -277,28 +272,25 @@ export class Bridge {
         instance,
         type,
         props: filterProps(props),
-        internalInstanceHandle,
       },
     })
   }
 
   commitUpdate(
     instanceId: Instance,
-    updatePayload: UpdatePayload,
+    _updatePayload: UpdatePayload,
     type: Type,
     prevProps: Props,
     nextProps: Props,
-    internalHandle: OpaqueHandle
+    _internalHandle: OpaqueHandle
   ): void {
     this.send({
       type: 'COMMIT_UPDATE',
       payload: {
         instanceId,
-        updatePayload,
         type,
         prevProps: filterProps(prevProps),
         nextProps: filterProps(nextProps),
-        internalHandle,
       },
     })
   }
