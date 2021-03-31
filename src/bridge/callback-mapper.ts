@@ -1,14 +1,14 @@
-type Callback = (...args: unknown[]) => unknown
+export type Callback = (...args: unknown[]) => unknown
 
 const isCallback = (arg: unknown): arg is Callback => typeof arg === 'function'
 
 const isObject = (arg: unknown): arg is Record<string, unknown> =>
-  typeof arg === 'object' && arg !== null
+  Object.prototype.toString.call(arg) === '[Object object]'
 
-class CallbackCache {
+class CallbackMapper {
   private nextCallbackId = 1
 
-  private mappedCallbacksById: Record<number, Callback | undefined> = {}
+  private callbacksById: Record<number, Callback | undefined> = {}
 
   map<T extends unknown>(obj: T): T {
     if (Array.isArray(obj)) {
@@ -22,8 +22,8 @@ class CallbackCache {
 
         if (isCallback(value)) {
           const callbackId = this.nextCallbackId
+          this.callbacksById[callbackId] = value
           this.nextCallbackId += 1
-          this.mappedCallbacksById[callbackId] = value
 
           return {
             ...current,
@@ -42,4 +42,4 @@ class CallbackCache {
   }
 }
 
-export default CallbackCache
+export default CallbackMapper

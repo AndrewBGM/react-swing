@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react'
 import ReactReconciler from 'react-reconciler'
-import createHostConfig from './network/create-host-config'
+import { configureBridge } from './bridge'
+import createHostConfig from './create-host-config'
 
 const defaultOptions = {
   host: 'ws://localhost:8080/ws',
@@ -13,7 +14,8 @@ export const render = async (
   options = defaultOptions
 ): Promise<void> => {
   const { host } = options
-  const hostConfig = await createHostConfig(host)
+  const bridge = await configureBridge(host)
+  const hostConfig = createHostConfig(bridge)
   const ReactSwing = ReactReconciler(hostConfig)
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
