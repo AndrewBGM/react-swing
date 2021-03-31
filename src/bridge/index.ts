@@ -1,5 +1,6 @@
 import WebSocket from 'ws'
 import CallbackMapper from './callback-mapper'
+import { Message, MessageType } from './messages'
 
 const filterProps = <P extends Record<string, unknown>>(
   props: P
@@ -52,7 +53,7 @@ export class Bridge {
   ): Instance {
     const instanceId = this.getNextInstanceId()
     this.send({
-      type: 'CREATE_INSTANCE',
+      type: MessageType.CREATE_INSTANCE,
       payload: {
         instanceId,
         type,
@@ -71,7 +72,7 @@ export class Bridge {
   ): TextInstance {
     const instanceId = this.getNextInstanceId()
     this.send({
-      type: 'CREATE_TEXT_INSTANCE',
+      type: MessageType.CREATE_TEXT_INSTANCE,
       payload: {
         instanceId,
         text,
@@ -86,7 +87,7 @@ export class Bridge {
     childId: Instance | TextInstance
   ): void {
     this.send({
-      type: 'APPEND_INITIAL_CHILD',
+      type: MessageType.APPEND_INITIAL_CHILD,
       payload: {
         parentId,
         childId,
@@ -141,7 +142,7 @@ export class Bridge {
 
   resetAfterCommit(containerInfo: Container): void {
     this.send({
-      type: 'RESET_AFTER_COMMIT',
+      type: MessageType.RESET_AFTER_COMMIT,
       payload: {
         containerInfo,
       },
@@ -150,7 +151,7 @@ export class Bridge {
 
   preparePortalMount(containerInfo: Container): void {
     this.send({
-      type: 'PREPARE_PORTAL_MOUNT',
+      type: MessageType.PREPARE_PORTAL_MOUNT,
       payload: {
         containerInfo,
       },
@@ -159,7 +160,7 @@ export class Bridge {
 
   appendChild(parentId: Instance, childId: Instance | TextInstance): void {
     this.send({
-      type: 'APPEND_CHILD',
+      type: MessageType.APPEND_CHILD,
       payload: {
         parentId,
         childId,
@@ -172,7 +173,7 @@ export class Bridge {
     childId: Instance | TextInstance
   ): void {
     this.send({
-      type: 'APPEND_CHILD_TO_CONTAINER',
+      type: MessageType.APPEND_CHILD_TO_CONTAINER,
       payload: {
         containerId,
         childId,
@@ -186,7 +187,7 @@ export class Bridge {
     beforeChildId: Instance | TextInstance | SuspenseInstance
   ): void {
     this.send({
-      type: 'INSERT_BEFORE',
+      type: MessageType.INSERT_BEFORE,
       payload: {
         parentId,
         childId,
@@ -201,7 +202,7 @@ export class Bridge {
     beforeChildId: Instance | TextInstance | SuspenseInstance
   ): void {
     this.send({
-      type: 'INSERT_IN_CONTAINER_BEFORE',
+      type: MessageType.INSERT_IN_CONTAINER_BEFORE,
       payload: {
         containerId,
         childId,
@@ -215,7 +216,7 @@ export class Bridge {
     childId: Instance | TextInstance | SuspenseInstance
   ): void {
     this.send({
-      type: 'REMOVE_CHILD',
+      type: MessageType.REMOVE_CHILD,
       payload: {
         parentId,
         childId,
@@ -228,7 +229,7 @@ export class Bridge {
     childId: Instance | TextInstance | SuspenseInstance
   ): void {
     this.send({
-      type: 'REMOVE_CHILD_FROM_CONTAINER',
+      type: MessageType.REMOVE_CHILD_FROM_CONTAINER,
       payload: {
         containerId,
         childId,
@@ -238,7 +239,7 @@ export class Bridge {
 
   resetTextContent(instance: Instance): void {
     this.send({
-      type: 'RESET_TEXT_CONTENT',
+      type: MessageType.RESET_TEXT_CONTENT,
       payload: {
         instance,
       },
@@ -251,7 +252,7 @@ export class Bridge {
     newText: string
   ): void {
     this.send({
-      type: 'COMMIT_TEXT_UPDATE',
+      type: MessageType.COMMIT_TEXT_UPDATE,
       payload: {
         textInstance,
         oldText,
@@ -267,7 +268,7 @@ export class Bridge {
     _internalInstanceHandle: OpaqueHandle
   ): void {
     this.send({
-      type: 'COMMIT_MOUNT',
+      type: MessageType.COMMIT_MOUNT,
       payload: {
         instance,
         type,
@@ -285,7 +286,7 @@ export class Bridge {
     _internalHandle: OpaqueHandle
   ): void {
     this.send({
-      type: 'COMMIT_UPDATE',
+      type: MessageType.COMMIT_UPDATE,
       payload: {
         instanceId,
         type,
@@ -297,7 +298,7 @@ export class Bridge {
 
   hideInstance(instanceId: Instance): void {
     this.send({
-      type: 'HIDE_INSTANCE',
+      type: MessageType.HIDE_INSTANCE,
       payload: {
         instanceId,
       },
@@ -306,7 +307,7 @@ export class Bridge {
 
   hideTextInstance(textInstance: TextInstance): void {
     this.send({
-      type: 'HIDE_TEXT_INSTANCE',
+      type: MessageType.HIDE_TEXT_INSTANCE,
       payload: {
         textInstance,
       },
@@ -315,7 +316,7 @@ export class Bridge {
 
   unhideInstance(instanceId: Instance, props: Props): void {
     this.send({
-      type: 'UNHIDE_INSTANCE',
+      type: MessageType.UNHIDE_INSTANCE,
       payload: {
         instanceId,
         props: filterProps(props),
@@ -325,7 +326,7 @@ export class Bridge {
 
   unhideTextInstance(textInstance: TextInstance, text: string): void {
     this.send({
-      type: 'UNHIDE_TEXT_INSTANCE',
+      type: MessageType.UNHIDE_TEXT_INSTANCE,
       payload: {
         textInstance,
         text,
@@ -335,15 +336,16 @@ export class Bridge {
 
   clearContainer(containerId: Container): void {
     this.send({
-      type: 'CLEAR_CONTAINER',
+      type: MessageType.CLEAR_CONTAINER,
       payload: {
         containerId,
       },
     })
   }
 
-  private send(obj: Record<string, unknown>) {
-    this.ws.send(JSON.stringify(this.callbackMapper.map(obj)))
+  private send(message: Message) {
+    // TODO: Don't like how this is done.
+    this.ws.send(JSON.stringify(this.callbackMapper.map(message)))
   }
 
   private getNextInstanceId(): number {
