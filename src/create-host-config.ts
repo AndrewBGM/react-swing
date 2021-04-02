@@ -1,6 +1,7 @@
 import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
 import WebSocket from 'ws'
+import { createInstanceIdFactory, filterProps, sendMessage } from './utils'
 
 export type HostType = string
 export type HostProps = Record<string, unknown>
@@ -15,41 +16,6 @@ export type HostUpdatePayload = Record<string, unknown>
 export type HostChildSet = unknown
 export type HostTimeoutHandle = NodeJS.Timeout
 export type HostNoTimeout = -1
-
-const createInstanceIdFactory = () => {
-  let nextInstanceId = 1
-  return () => {
-    const instanceId = nextInstanceId
-    nextInstanceId += 1
-
-    return instanceId
-  }
-}
-
-const filterProps = (props: HostProps): HostProps => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { children, ...rest } = props
-  if (typeof children === 'string' || typeof children === 'number') {
-    return {
-      ...rest,
-      children: String(children),
-    }
-  }
-
-  return rest
-}
-
-const sendMessage = (
-  ws: WebSocket,
-  type: string,
-  payload: Record<string, unknown>,
-) =>
-  ws.send(
-    JSON.stringify({
-      type,
-      payload,
-    }),
-  )
 
 const createHostConfig = (
   ws: WebSocket,
