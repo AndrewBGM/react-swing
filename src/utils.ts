@@ -15,14 +15,8 @@ export const createInstanceIdFactory = (): InstanceIdFactory => {
 export const filterProps = (
   props: Record<string, unknown>,
 ): Record<string, unknown> => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { children, ...rest } = props
-  if (typeof children === 'string' || typeof children === 'number') {
-    return {
-      ...rest,
-      children: String(children),
-    }
-  }
-
   return rest
 }
 
