@@ -146,9 +146,8 @@ const createHostConfig = (
       return null
     },
 
-    shouldSetTextContent(_type: HostType, props: HostProps): boolean {
-      const { children } = props
-      return typeof children === 'string' || typeof children === 'number'
+    shouldSetTextContent(_type: HostType, _props: HostProps): boolean {
+      return false
     },
 
     getRootHostContext(_rootContainer: HostContainer): HostContext | null {
@@ -247,10 +246,8 @@ const createHostConfig = (
       })
     },
 
-    resetTextContent(instanceId: HostInstance) {
-      sendMessage(ws, 'RESET_TEXT_CONTENT', {
-        instanceId,
-      })
+    resetTextContent(_instanceId: HostInstance) {
+      throw new Error('Not yet implemented')
     },
 
     commitTextUpdate(
