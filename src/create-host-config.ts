@@ -78,7 +78,7 @@ const createHostConfig = (
       _internalHandle: OpaqueHandle,
     ): HostInstance {
       const instanceId = createInstanceId()
-      sendMessage(ws, 'createInstance', {
+      sendMessage(ws, 'CREATE_INSTANCE', {
         instanceId,
         type,
         props,
@@ -100,7 +100,7 @@ const createHostConfig = (
       parentId: HostInstance,
       childId: HostInstance | HostTextInstance,
     ) {
-      sendMessage(ws, 'appendChild', {
+      sendMessage(ws, 'APPEND_CHILD', {
         parentId,
         childId,
       })
@@ -167,7 +167,7 @@ const createHostConfig = (
       parentId: HostInstance,
       childId: HostInstance | HostTextInstance,
     ) {
-      sendMessage(ws, 'appendChild', {
+      sendMessage(ws, 'APPEND_CHILD', {
         parentId,
         childId,
       })
@@ -177,7 +177,7 @@ const createHostConfig = (
       containerId: HostContainer,
       childId: HostInstance | HostTextInstance,
     ) {
-      sendMessage(ws, 'appendChildToContainer', {
+      sendMessage(ws, 'APPEND_CHILD_TO_CONTAINER', {
         containerId,
         childId,
       })
@@ -188,7 +188,7 @@ const createHostConfig = (
       childId: HostInstance | HostTextInstance,
       beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
     ) {
-      sendMessage(ws, 'insertBefore', {
+      sendMessage(ws, 'INSERT_BEFORE', {
         parentId,
         childId,
         beforeChildId,
@@ -200,7 +200,7 @@ const createHostConfig = (
       childId: HostInstance | HostTextInstance,
       beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
     ) {
-      sendMessage(ws, 'insertInContainerBefore', {
+      sendMessage(ws, 'INSERT_IN_CONTAINER_BEFORE', {
         containerId,
         childId,
         beforeChildId,
@@ -211,7 +211,7 @@ const createHostConfig = (
       parentId: HostInstance,
       childId: HostInstance | HostTextInstance | HostSuspenseInstance,
     ) {
-      sendMessage(ws, 'removeChild', {
+      sendMessage(ws, 'REMOVE_CHILD', {
         parentId,
         childId,
       })
@@ -221,7 +221,7 @@ const createHostConfig = (
       containerId: HostContainer,
       childId: HostInstance | HostTextInstance | HostSuspenseInstance,
     ) {
-      sendMessage(ws, 'removeChildFromContainer', {
+      sendMessage(ws, 'REMOVE_CHILD_FROM_CONTAINER', {
         containerId,
         childId,
       })
@@ -256,7 +256,7 @@ const createHostConfig = (
       nextProps: HostProps,
       _internalHandle: OpaqueHandle,
     ) {
-      sendMessage(ws, 'commitUpdate', {
+      sendMessage(ws, 'COMMIT_UPDATE', {
         instanceId,
         type,
         prevProps,
@@ -281,7 +281,7 @@ const createHostConfig = (
     },
 
     clearContainer(containerId: HostContainer) {
-      sendMessage(ws, 'clearContainer', {
+      sendMessage(ws, 'CLEAR_CONTAINER', {
         containerId,
       })
     },
