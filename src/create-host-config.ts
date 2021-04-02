@@ -32,7 +32,7 @@ const filterProps = (props: HostProps): HostProps => {
   if (typeof children === 'string' || typeof children === 'number') {
     return {
       ...rest,
-      children,
+      children: String(children),
     }
   }
 
