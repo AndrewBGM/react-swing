@@ -13,8 +13,8 @@
   "scripts": {
     "pretty": "prettier . --write",
     "lint": "eslint .",
+    "watch": "rollup -c -w",
     "build": "rollup -c",
-    "sample": "babel-node --presets @babel/preset-env,@babel/preset-react ./samples/hello-world.js",
     "prepublishOnly": "npm run pretty && npm run lint && npm run build"
   },
   "dependencies": {

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowJs": false,
     "declaration": true,
     "declarationDir": "dist/@types",
     "esModuleInterop": true,
