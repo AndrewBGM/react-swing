@@ -5,7 +5,7 @@ export interface JPanelProps {
 }
 
 const JPanel = forwardRef<number, JPanelProps>(({ children, ...props }, ref) =>
-  createElement('JPanel', { ...props, ref }, children)
+  createElement('JPanel', { ...props, ref }, children),
 )
 
 export default JPanel

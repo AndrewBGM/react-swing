@@ -15,7 +15,7 @@ const noop = () => {}
 
 export const render = async (
   element: ReactElement,
-  options: RenderOptions = defaultOptions
+  options: RenderOptions = defaultOptions,
 ): Promise<void> => {
   const { host } = options
   const bridge = await configureBridge(host)

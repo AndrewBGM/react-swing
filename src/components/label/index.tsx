@@ -5,7 +5,7 @@ export interface JLabelProps {
 }
 
 const JLabel = forwardRef<number, JLabelProps>(({ children, ...props }, ref) =>
-  createElement('JLabel', { ...props, ref }, children)
+  createElement('JLabel', { ...props, ref }, children),
 )
 
 export default JLabel

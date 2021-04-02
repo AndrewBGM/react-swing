@@ -18,7 +18,7 @@ import {
 } from './bridge'
 
 const createHostConfig = (
-  bridge: Bridge
+  bridge: Bridge,
 ): HostConfig<
   Type,
   Props,
@@ -50,14 +50,14 @@ const createHostConfig = (
     props: Props,
     rootContainer: Container,
     hostContext: HostContext,
-    internalHandle: OpaqueHandle
+    internalHandle: OpaqueHandle,
   ): Instance {
     return bridge.createInstance(
       type,
       props,
       rootContainer,
       hostContext,
-      internalHandle
+      internalHandle,
     )
   },
 
@@ -65,13 +65,13 @@ const createHostConfig = (
     text: string,
     rootContainer: Container,
     hostContext: HostContext,
-    internalHandle: OpaqueHandle
+    internalHandle: OpaqueHandle,
   ): TextInstance {
     return bridge.createTextInstance(
       text,
       rootContainer,
       hostContext,
-      internalHandle
+      internalHandle,
     )
   },
 
@@ -84,14 +84,14 @@ const createHostConfig = (
     type: Type,
     props: Props,
     rootContainer: Container,
-    hostContext: HostContext
+    hostContext: HostContext,
   ): boolean {
     return bridge.finalizeInitialChildren(
       instance,
       type,
       props,
       rootContainer,
-      hostContext
+      hostContext,
     )
   },
 
@@ -101,7 +101,7 @@ const createHostConfig = (
     oldProps: Props,
     newProps: Props,
     rootContainer: Container,
-    hostContext: HostContext
+    hostContext: HostContext,
   ): UpdatePayload | null {
     return bridge.prepareUpdate(
       instance,
@@ -109,7 +109,7 @@ const createHostConfig = (
       oldProps,
       newProps,
       rootContainer,
-      hostContext
+      hostContext,
     )
   },
 
@@ -124,7 +124,7 @@ const createHostConfig = (
   getChildHostContext(
     parentHostContext: HostContext,
     type: Type,
-    rootContainer: Container
+    rootContainer: Container,
   ): HostContext {
     return bridge.getChildHostContext(parentHostContext, type, rootContainer)
   },
@@ -151,7 +151,7 @@ const createHostConfig = (
 
   appendChildToContainer(
     containerId: Container,
-    childId: Instance | TextInstance
+    childId: Instance | TextInstance,
   ) {
     bridge.appendChildToContainer(containerId, childId)
   },
@@ -159,7 +159,7 @@ const createHostConfig = (
   insertBefore(
     parentId: Instance,
     childId: Instance | TextInstance,
-    beforeChildId: Instance | TextInstance | SuspenseInstance
+    beforeChildId: Instance | TextInstance | SuspenseInstance,
   ) {
     bridge.insertBefore(parentId, childId, beforeChildId)
   },
@@ -167,21 +167,21 @@ const createHostConfig = (
   insertInContainerBefore(
     containerId: Container,
     childId: Instance | TextInstance,
-    beforeChildId: Instance | TextInstance | SuspenseInstance
+    beforeChildId: Instance | TextInstance | SuspenseInstance,
   ) {
     bridge.insertBefore(containerId, childId, beforeChildId)
   },
 
   removeChild(
     parentId: Instance,
-    childId: Instance | TextInstance | SuspenseInstance
+    childId: Instance | TextInstance | SuspenseInstance,
   ) {
     bridge.removeChild(parentId, childId)
   },
 
   removeChildFromContainer(
     containerId: Container,
-    childId: Instance | TextInstance | SuspenseInstance
+    childId: Instance | TextInstance | SuspenseInstance,
   ) {
     bridge.removeChild(containerId, childId)
   },
@@ -193,7 +193,7 @@ const createHostConfig = (
   commitTextUpdate(
     textInstance: TextInstance,
     oldText: string,
-    newText: string
+    newText: string,
   ) {
     bridge.commitTextUpdate(textInstance, oldText, newText)
   },
@@ -202,7 +202,7 @@ const createHostConfig = (
     instance: Instance,
     type: Type,
     props: Props,
-    internalInstanceHandle: OpaqueHandle
+    internalInstanceHandle: OpaqueHandle,
   ) {
     bridge.commitMount(instance, type, props, internalInstanceHandle)
   },
@@ -213,7 +213,7 @@ const createHostConfig = (
     type: Type,
     prevProps: Props,
     nextProps: Props,
-    internalHandle: OpaqueHandle
+    internalHandle: OpaqueHandle,
   ) {
     bridge.commitUpdate(
       instanceId,
@@ -221,7 +221,7 @@ const createHostConfig = (
       type,
       prevProps,
       nextProps,
-      internalHandle
+      internalHandle,
     )
   },
 

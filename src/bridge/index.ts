@@ -3,7 +3,7 @@ import CallbackMapper from './callback-mapper'
 import { Message, MessageType } from './messages'
 
 const filterProps = <P extends Record<string, unknown>>(
-  props: P
+  props: P,
 ): Omit<P, 'children'> => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { children, ...rest } = props
@@ -49,7 +49,7 @@ export class Bridge {
     props: Props,
     _rootContainer: Container,
     _hostContext: HostContext,
-    _internalHandle: OpaqueHandle
+    _internalHandle: OpaqueHandle,
   ): Instance {
     const instanceId = this.getNextInstanceId()
     this.send({
@@ -68,7 +68,7 @@ export class Bridge {
     text: string,
     _rootContainer: Container,
     _hostContext: HostContext,
-    _internalHandle: OpaqueHandle
+    _internalHandle: OpaqueHandle,
   ): TextInstance {
     const instanceId = this.getNextInstanceId()
     this.send({
@@ -84,7 +84,7 @@ export class Bridge {
 
   appendInitialChild(
     parentId: Instance,
-    childId: Instance | TextInstance
+    childId: Instance | TextInstance,
   ): void {
     this.send({
       type: MessageType.APPEND_INITIAL_CHILD,
@@ -100,7 +100,7 @@ export class Bridge {
     _type: Type,
     _props: Props,
     _rootContainer: Container,
-    _hostContext: HostContext
+    _hostContext: HostContext,
   ): boolean {
     return false
   }
@@ -111,7 +111,7 @@ export class Bridge {
     _oldProps: Props,
     _newProps: Props,
     _rootContainer: Container,
-    _hostContext: HostContext
+    _hostContext: HostContext,
   ): UpdatePayload | null {
     return null
   }
@@ -127,7 +127,7 @@ export class Bridge {
   getChildHostContext(
     parentHostContext: HostContext,
     _type: Type,
-    _rootContainer: Container
+    _rootContainer: Container,
   ): HostContext {
     return parentHostContext
   }
@@ -170,7 +170,7 @@ export class Bridge {
 
   appendChildToContainer(
     containerId: Container,
-    childId: Instance | TextInstance
+    childId: Instance | TextInstance,
   ): void {
     this.send({
       type: MessageType.APPEND_CHILD_TO_CONTAINER,
@@ -184,7 +184,7 @@ export class Bridge {
   insertBefore(
     parentId: Instance,
     childId: Instance | TextInstance,
-    beforeChildId: Instance | TextInstance | SuspenseInstance
+    beforeChildId: Instance | TextInstance | SuspenseInstance,
   ): void {
     this.send({
       type: MessageType.INSERT_BEFORE,
@@ -199,7 +199,7 @@ export class Bridge {
   insertInContainerBefore(
     containerId: Container,
     childId: Instance | TextInstance,
-    beforeChildId: Instance | TextInstance | SuspenseInstance
+    beforeChildId: Instance | TextInstance | SuspenseInstance,
   ): void {
     this.send({
       type: MessageType.INSERT_IN_CONTAINER_BEFORE,
@@ -213,7 +213,7 @@ export class Bridge {
 
   removeChild(
     parentId: Instance,
-    childId: Instance | TextInstance | SuspenseInstance
+    childId: Instance | TextInstance | SuspenseInstance,
   ): void {
     this.send({
       type: MessageType.REMOVE_CHILD,
@@ -226,7 +226,7 @@ export class Bridge {
 
   removeChildFromContainer(
     containerId: Container,
-    childId: Instance | TextInstance | SuspenseInstance
+    childId: Instance | TextInstance | SuspenseInstance,
   ): void {
     this.send({
       type: MessageType.REMOVE_CHILD_FROM_CONTAINER,
@@ -249,7 +249,7 @@ export class Bridge {
   commitTextUpdate(
     textInstance: TextInstance,
     oldText: string,
-    newText: string
+    newText: string,
   ): void {
     this.send({
       type: MessageType.COMMIT_TEXT_UPDATE,
@@ -265,7 +265,7 @@ export class Bridge {
     instance: Instance,
     type: Type,
     props: Props,
-    _internalInstanceHandle: OpaqueHandle
+    _internalInstanceHandle: OpaqueHandle,
   ): void {
     this.send({
       type: MessageType.COMMIT_MOUNT,
@@ -283,7 +283,7 @@ export class Bridge {
     type: Type,
     prevProps: Props,
     nextProps: Props,
-    _internalHandle: OpaqueHandle
+    _internalHandle: OpaqueHandle,
   ): void {
     this.send({
       type: MessageType.COMMIT_UPDATE,

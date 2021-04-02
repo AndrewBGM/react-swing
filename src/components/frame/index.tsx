@@ -7,7 +7,7 @@ export interface JFrameProps {
 }
 
 const JFrame = forwardRef<number, JFrameProps>(({ children, ...props }, ref) =>
-  createElement('JFrame', { ...props, ref }, children)
+  createElement('JFrame', { ...props, ref }, children),
 )
 
 export default JFrame

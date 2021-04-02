@@ -10,7 +10,7 @@ export interface JButtonProps {
 
 const JButton = forwardRef<number, JButtonProps>(
   ({ children, ...props }, ref) =>
-    createElement('JButton', { ...props, ref }, children)
+    createElement('JButton', { ...props, ref }, children),
 )
 
 export default JButton
