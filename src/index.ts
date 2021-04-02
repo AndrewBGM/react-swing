@@ -1,7 +1,7 @@
-import type { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import ReactReconciler from 'react-reconciler'
+import configureWebSocket from './configure-web-socket'
 import createHostConfig from './create-host-config'
-import { configureRPCClient } from './rpc-client'
 
 export interface RenderOptions {
   host: string
@@ -18,9 +18,8 @@ export const render = async (
   options: RenderOptions = defaultOptions,
 ): Promise<void> => {
   const { host } = options
-  const rpc = await configureRPCClient(host)
-  const hostConfig = createHostConfig(rpc)
-  const ReactSwing = ReactReconciler(hostConfig)
+  const ws = await configureWebSocket(host)
+  const ReactSwing = ReactReconciler(createHostConfig(ws))
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const rootContainer = ReactSwing.createContainer(0, 0, false, null)

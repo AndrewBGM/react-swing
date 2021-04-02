@@ -1,6 +1,6 @@
 import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
-import RPCClient from './rpc-client'
+import WebSocket from 'ws'
 
 export type HostType = string
 export type HostProps = Record<string, unknown>
@@ -26,8 +26,20 @@ const creatInstanceIdFactory = () => {
   }
 }
 
+const sendMessage = (
+  ws: WebSocket,
+  type: string,
+  payload: Record<string, unknown>,
+) =>
+  ws.send(
+    JSON.stringify({
+      type,
+      payload,
+    }),
+  )
+
 const createHostConfig = (
-  rpc: RPCClient,
+  ws: WebSocket,
 ): HostConfig<
   HostType,
   HostProps,
@@ -66,7 +78,7 @@ const createHostConfig = (
       _internalHandle: OpaqueHandle,
     ): HostInstance {
       const instanceId = createInstanceId()
-      rpc.send('createTextInstance', {
+      sendMessage(ws, 'createInstance', {
         instanceId,
         type,
         props,
@@ -76,25 +88,19 @@ const createHostConfig = (
     },
 
     createTextInstance(
-      text: string,
+      _text: string,
       _rootContainer: HostContainer,
       _hostContext: HostContext,
       _internalHandle: OpaqueHandle,
     ): HostTextInstance {
-      const instanceId = createInstanceId()
-      rpc.send('createTextInstance', {
-        instanceId,
-        text,
-      })
-
-      return instanceId
+      throw new Error('Not yet implemented.')
     },
 
     appendInitialChild(
       parentId: HostInstance,
       childId: HostInstance | HostTextInstance,
     ) {
-      rpc.send('appendInitialChild', {
+      sendMessage(ws, 'appendChild', {
         parentId,
         childId,
       })
@@ -149,15 +155,19 @@ const createHostConfig = (
       return null
     },
 
-    resetAfterCommit(_containerInfo: HostContainer) {},
+    resetAfterCommit(_containerInfo: HostContainer) {
+      // NOOP
+    },
 
-    preparePortalMount(_containerInfo: HostContainer) {},
+    preparePortalMount(_containerInfo: HostContainer) {
+      // NOOP
+    },
 
     appendChild(
       parentId: HostInstance,
       childId: HostInstance | HostTextInstance,
     ) {
-      rpc.send('appendChild', {
+      sendMessage(ws, 'appendChild', {
         parentId,
         childId,
       })
@@ -167,7 +177,7 @@ const createHostConfig = (
       containerId: HostContainer,
       childId: HostInstance | HostTextInstance,
     ) {
-      rpc.send('appendChildToContainer', {
+      sendMessage(ws, 'appendChildToContainer', {
         containerId,
         childId,
       })
@@ -178,7 +188,7 @@ const createHostConfig = (
       childId: HostInstance | HostTextInstance,
       beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
     ) {
-      rpc.send('insertBefore', {
+      sendMessage(ws, 'insertBefore', {
         parentId,
         childId,
         beforeChildId,
@@ -190,7 +200,7 @@ const createHostConfig = (
       childId: HostInstance | HostTextInstance,
       beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
     ) {
-      rpc.send('insertInContainerBefore', {
+      sendMessage(ws, 'insertInContainerBefore', {
         containerId,
         childId,
         beforeChildId,
@@ -201,7 +211,7 @@ const createHostConfig = (
       parentId: HostInstance,
       childId: HostInstance | HostTextInstance | HostSuspenseInstance,
     ) {
-      rpc.send('removeChild', {
+      sendMessage(ws, 'removeChild', {
         parentId,
         childId,
       })
@@ -211,26 +221,32 @@ const createHostConfig = (
       containerId: HostContainer,
       childId: HostInstance | HostTextInstance | HostSuspenseInstance,
     ) {
-      rpc.send('removeChildFromContainer', {
+      sendMessage(ws, 'removeChildFromContainer', {
         containerId,
         childId,
       })
     },
 
-    resetTextContent(_instance: HostInstance) {},
+    resetTextContent(_instance: HostInstance) {
+      throw new Error('Not yet implemented.')
+    },
 
     commitTextUpdate(
       _textInstance: HostTextInstance,
       _oldText: string,
       _newText: string,
-    ) {},
+    ) {
+      throw new Error('Not yet implemented.')
+    },
 
     commitMount(
       _instance: HostInstance,
       _type: HostType,
       _props: HostProps,
       _internalInstanceHandle: OpaqueHandle,
-    ) {},
+    ) {
+      throw new Error('Not yet implemented.')
+    },
 
     commitUpdate(
       instanceId: HostInstance,
@@ -240,7 +256,7 @@ const createHostConfig = (
       nextProps: HostProps,
       _internalHandle: OpaqueHandle,
     ) {
-      rpc.send('commitUpdate', {
+      sendMessage(ws, 'commitUpdate', {
         instanceId,
         type,
         prevProps,
@@ -248,16 +264,24 @@ const createHostConfig = (
       })
     },
 
-    hideInstance(_instanceId: HostInstance) {},
+    hideInstance(_instanceId: HostInstance) {
+      throw new Error('Not yet implemented.')
+    },
 
-    hideTextInstance(_textInstance: HostTextInstance) {},
+    hideTextInstance(_textInstance: HostTextInstance) {
+      throw new Error('Not yet implemented.')
+    },
 
-    unhideInstance(_instanceId: HostInstance, _props: HostProps) {},
+    unhideInstance(_instanceId: HostInstance, _props: HostProps) {
+      throw new Error('Not yet implemented.')
+    },
 
-    unhideTextInstance(_textInstance: HostTextInstance, _text: string) {},
+    unhideTextInstance(_textInstance: HostTextInstance, _text: string) {
+      throw new Error('Not yet implemented.')
+    },
 
     clearContainer(containerId: HostContainer) {
-      rpc.send('clearContainer', {
+      sendMessage(ws, 'clearContainer', {
         containerId,
       })
     },
