@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react'
 import ReactReconciler from 'react-reconciler'
-import { configureBridge } from './bridge'
 import createHostConfig from './create-host-config'
+import { configureRPCClient } from './rpc-client'
 
 export interface RenderOptions {
   host: string
@@ -18,9 +18,8 @@ export const render = async (
   options: RenderOptions = defaultOptions,
 ): Promise<void> => {
   const { host } = options
-  const bridge = await configureBridge(host)
-
-  const hostConfig = createHostConfig(bridge)
+  const rpc = await configureRPCClient(host)
+  const hostConfig = createHostConfig(rpc)
   const ReactSwing = ReactReconciler(hostConfig)
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

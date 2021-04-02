@@ -1,249 +1,267 @@
 import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
-import {
-  Bridge,
-  ChildSet,
-  Container,
-  HostContext,
-  HydratableInstance,
-  Instance,
-  NoTimeout,
-  Props,
-  PublicInstance,
-  SuspenseInstance,
-  TextInstance,
-  TimeoutHandle,
-  Type,
-  UpdatePayload,
-} from './bridge'
+import RPCClient from './rpc-client'
+
+export type HostType = string
+export type HostProps = Record<string, unknown>
+export type HostContainer = number
+export type HostInstance = number
+export type HostTextInstance = number
+export type HostSuspenseInstance = number
+export type HostHydratableInstance = number
+export type HostPublicInstance = number
+export type HostContext = Record<string, unknown>
+export type HostUpdatePayload = Record<string, unknown>
+export type HostChildSet = unknown
+export type HostTimeoutHandle = NodeJS.Timeout
+export type HostNoTimeout = -1
+
+const creatInstanceIdFactory = () => {
+  let nextInstanceId = 1
+  return () => {
+    const instanceId = nextInstanceId
+    nextInstanceId += 1
+
+    return instanceId
+  }
+}
 
 const createHostConfig = (
-  bridge: Bridge,
+  rpc: RPCClient,
 ): HostConfig<
-  Type,
-  Props,
-  Container,
-  Instance,
-  TextInstance,
-  SuspenseInstance,
-  HydratableInstance,
-  PublicInstance,
+  HostType,
+  HostProps,
+  HostContainer,
+  HostInstance,
+  HostTextInstance,
+  HostSuspenseInstance,
+  HostHydratableInstance,
+  HostPublicInstance,
   HostContext,
-  UpdatePayload,
-  ChildSet,
-  TimeoutHandle,
-  NoTimeout
-> => ({
-  supportsMutation: true,
-  supportsHydration: false,
-  supportsPersistence: false,
+  HostUpdatePayload,
+  HostChildSet,
+  HostTimeoutHandle,
+  HostNoTimeout
+> => {
+  const createInstanceId = creatInstanceIdFactory()
+  const rootHostContext: HostContext = {}
 
-  isPrimaryRenderer: true,
-  now: () => performance.now(),
-  scheduleTimeout: setTimeout,
-  cancelTimeout: clearTimeout,
-  noTimeout: -1,
-  queueMicrotask,
+  return {
+    supportsMutation: true,
+    supportsHydration: false,
+    supportsPersistence: false,
 
-  createInstance(
-    type: Type,
-    props: Props,
-    rootContainer: Container,
-    hostContext: HostContext,
-    internalHandle: OpaqueHandle,
-  ): Instance {
-    return bridge.createInstance(
-      type,
-      props,
-      rootContainer,
-      hostContext,
-      internalHandle,
-    )
-  },
+    isPrimaryRenderer: true,
+    now: () => performance.now(),
+    scheduleTimeout: setTimeout,
+    cancelTimeout: clearTimeout,
+    noTimeout: -1,
+    queueMicrotask,
 
-  createTextInstance(
-    text: string,
-    rootContainer: Container,
-    hostContext: HostContext,
-    internalHandle: OpaqueHandle,
-  ): TextInstance {
-    return bridge.createTextInstance(
-      text,
-      rootContainer,
-      hostContext,
-      internalHandle,
-    )
-  },
+    createInstance(
+      type: HostType,
+      props: HostProps,
+      _rootContainer: HostContainer,
+      _hostContext: HostContext,
+      _internalHandle: OpaqueHandle,
+    ): HostInstance {
+      const instanceId = createInstanceId()
+      rpc.send('createTextInstance', {
+        instanceId,
+        type,
+        props,
+      })
 
-  appendInitialChild(parentId: Instance, childId: Instance | TextInstance) {
-    bridge.appendInitialChild(parentId, childId)
-  },
+      return instanceId
+    },
 
-  finalizeInitialChildren(
-    instance: Instance,
-    type: Type,
-    props: Props,
-    rootContainer: Container,
-    hostContext: HostContext,
-  ): boolean {
-    return bridge.finalizeInitialChildren(
-      instance,
-      type,
-      props,
-      rootContainer,
-      hostContext,
-    )
-  },
+    createTextInstance(
+      text: string,
+      _rootContainer: HostContainer,
+      _hostContext: HostContext,
+      _internalHandle: OpaqueHandle,
+    ): HostTextInstance {
+      const instanceId = createInstanceId()
+      rpc.send('createTextInstance', {
+        instanceId,
+        text,
+      })
 
-  prepareUpdate(
-    instance: Instance,
-    type: Type,
-    oldProps: Props,
-    newProps: Props,
-    rootContainer: Container,
-    hostContext: HostContext,
-  ): UpdatePayload | null {
-    return bridge.prepareUpdate(
-      instance,
-      type,
-      oldProps,
-      newProps,
-      rootContainer,
-      hostContext,
-    )
-  },
+      return instanceId
+    },
 
-  shouldSetTextContent(type: Type, props: Props): boolean {
-    return bridge.shouldSetTextContent(type, props)
-  },
+    appendInitialChild(
+      parentId: HostInstance,
+      childId: HostInstance | HostTextInstance,
+    ) {
+      rpc.send('appendInitialChild', {
+        parentId,
+        childId,
+      })
+    },
 
-  getRootHostContext(rootContainer: Container): HostContext | null {
-    return bridge.getRootHostContext(rootContainer)
-  },
+    finalizeInitialChildren(
+      _instance: HostInstance,
+      _type: HostType,
+      _props: HostProps,
+      _rootContainer: HostContainer,
+      _hostContext: HostContext,
+    ): boolean {
+      return false
+    },
 
-  getChildHostContext(
-    parentHostContext: HostContext,
-    type: Type,
-    rootContainer: Container,
-  ): HostContext {
-    return bridge.getChildHostContext(parentHostContext, type, rootContainer)
-  },
+    prepareUpdate(
+      _instance: HostInstance,
+      _type: HostType,
+      _oldProps: HostProps,
+      _newProps: HostProps,
+      _rootContainer: HostContainer,
+      _hostContext: HostContext,
+    ): HostUpdatePayload | null {
+      return null
+    },
 
-  getPublicInstance(instance: Instance | TextInstance): PublicInstance {
-    return bridge.getPublicInstance(instance)
-  },
+    shouldSetTextContent(_type: HostType, _props: HostProps): boolean {
+      return false
+    },
 
-  prepareForCommit(containerInfo: Container): Record<string, unknown> | null {
-    return bridge.prepareForCommit(containerInfo)
-  },
+    getRootHostContext(_rootContainer: HostContainer): HostContext | null {
+      return rootHostContext
+    },
 
-  resetAfterCommit(containerInfo: Container) {
-    bridge.resetAfterCommit(containerInfo)
-  },
+    getChildHostContext(
+      parentHostContext: HostContext,
+      _type: HostType,
+      _rootContainer: HostContainer,
+    ): HostContext {
+      return parentHostContext
+    },
 
-  preparePortalMount(containerInfo: Container) {
-    bridge.preparePortalMount(containerInfo)
-  },
+    getPublicInstance(
+      instance: HostInstance | HostTextInstance,
+    ): HostPublicInstance {
+      return instance
+    },
 
-  appendChild(parentId: Instance, childId: Instance | TextInstance) {
-    bridge.appendChild(parentId, childId)
-  },
+    prepareForCommit(
+      _containerInfo: HostContainer,
+    ): Record<string, unknown> | null {
+      return null
+    },
 
-  appendChildToContainer(
-    containerId: Container,
-    childId: Instance | TextInstance,
-  ) {
-    bridge.appendChildToContainer(containerId, childId)
-  },
+    resetAfterCommit(_containerInfo: HostContainer) {},
 
-  insertBefore(
-    parentId: Instance,
-    childId: Instance | TextInstance,
-    beforeChildId: Instance | TextInstance | SuspenseInstance,
-  ) {
-    bridge.insertBefore(parentId, childId, beforeChildId)
-  },
+    preparePortalMount(_containerInfo: HostContainer) {},
 
-  insertInContainerBefore(
-    containerId: Container,
-    childId: Instance | TextInstance,
-    beforeChildId: Instance | TextInstance | SuspenseInstance,
-  ) {
-    bridge.insertBefore(containerId, childId, beforeChildId)
-  },
+    appendChild(
+      parentId: HostInstance,
+      childId: HostInstance | HostTextInstance,
+    ) {
+      rpc.send('appendChild', {
+        parentId,
+        childId,
+      })
+    },
 
-  removeChild(
-    parentId: Instance,
-    childId: Instance | TextInstance | SuspenseInstance,
-  ) {
-    bridge.removeChild(parentId, childId)
-  },
+    appendChildToContainer(
+      containerId: HostContainer,
+      childId: HostInstance | HostTextInstance,
+    ) {
+      rpc.send('appendChildToContainer', {
+        containerId,
+        childId,
+      })
+    },
 
-  removeChildFromContainer(
-    containerId: Container,
-    childId: Instance | TextInstance | SuspenseInstance,
-  ) {
-    bridge.removeChild(containerId, childId)
-  },
+    insertBefore(
+      parentId: HostInstance,
+      childId: HostInstance | HostTextInstance,
+      beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
+    ) {
+      rpc.send('insertBefore', {
+        parentId,
+        childId,
+        beforeChildId,
+      })
+    },
 
-  resetTextContent(instance: Instance) {
-    bridge.resetTextContent(instance)
-  },
+    insertInContainerBefore(
+      containerId: HostContainer,
+      childId: HostInstance | HostTextInstance,
+      beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
+    ) {
+      rpc.send('insertInContainerBefore', {
+        containerId,
+        childId,
+        beforeChildId,
+      })
+    },
 
-  commitTextUpdate(
-    textInstance: TextInstance,
-    oldText: string,
-    newText: string,
-  ) {
-    bridge.commitTextUpdate(textInstance, oldText, newText)
-  },
+    removeChild(
+      parentId: HostInstance,
+      childId: HostInstance | HostTextInstance | HostSuspenseInstance,
+    ) {
+      rpc.send('removeChild', {
+        parentId,
+        childId,
+      })
+    },
 
-  commitMount(
-    instance: Instance,
-    type: Type,
-    props: Props,
-    internalInstanceHandle: OpaqueHandle,
-  ) {
-    bridge.commitMount(instance, type, props, internalInstanceHandle)
-  },
+    removeChildFromContainer(
+      containerId: HostContainer,
+      childId: HostInstance | HostTextInstance | HostSuspenseInstance,
+    ) {
+      rpc.send('removeChildFromContainer', {
+        containerId,
+        childId,
+      })
+    },
 
-  commitUpdate(
-    instanceId: Instance,
-    updatePayload: UpdatePayload,
-    type: Type,
-    prevProps: Props,
-    nextProps: Props,
-    internalHandle: OpaqueHandle,
-  ) {
-    bridge.commitUpdate(
-      instanceId,
-      updatePayload,
-      type,
-      prevProps,
-      nextProps,
-      internalHandle,
-    )
-  },
+    resetTextContent(_instance: HostInstance) {},
 
-  hideInstance(instanceId: Instance) {
-    bridge.hideInstance(instanceId)
-  },
+    commitTextUpdate(
+      _textInstance: HostTextInstance,
+      _oldText: string,
+      _newText: string,
+    ) {},
 
-  hideTextInstance(textInstance: TextInstance) {
-    bridge.hideTextInstance(textInstance)
-  },
+    commitMount(
+      _instance: HostInstance,
+      _type: HostType,
+      _props: HostProps,
+      _internalInstanceHandle: OpaqueHandle,
+    ) {},
 
-  unhideInstance(instanceId: Instance, props: Props) {
-    bridge.unhideInstance(instanceId, props)
-  },
+    commitUpdate(
+      instanceId: HostInstance,
+      _updatePayload: HostUpdatePayload,
+      type: HostType,
+      prevProps: HostProps,
+      nextProps: HostProps,
+      _internalHandle: OpaqueHandle,
+    ) {
+      rpc.send('commitUpdate', {
+        instanceId,
+        type,
+        prevProps,
+        nextProps,
+      })
+    },
 
-  unhideTextInstance(textInstance: TextInstance, text: string) {
-    bridge.unhideTextInstance(textInstance, text)
-  },
+    hideInstance(_instanceId: HostInstance) {},
 
-  clearContainer(containerId: Container) {
-    bridge.clearContainer(containerId)
-  },
-})
+    hideTextInstance(_textInstance: HostTextInstance) {},
+
+    unhideInstance(_instanceId: HostInstance, _props: HostProps) {},
+
+    unhideTextInstance(_textInstance: HostTextInstance, _text: string) {},
+
+    clearContainer(containerId: HostContainer) {
+      rpc.send('clearContainer', {
+        containerId,
+      })
+    },
+  }
+}
 
 export default createHostConfig
