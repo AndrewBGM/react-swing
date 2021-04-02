@@ -16,7 +16,7 @@ export type HostChildSet = unknown
 export type HostTimeoutHandle = NodeJS.Timeout
 export type HostNoTimeout = -1
 
-const creatInstanceIdFactory = () => {
+const createInstanceIdFactory = () => {
   let nextInstanceId = 1
   return () => {
     const instanceId = nextInstanceId
@@ -24,6 +24,19 @@ const creatInstanceIdFactory = () => {
 
     return instanceId
   }
+}
+
+const filterProps = (props: HostProps): HostProps => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { children, ...rest } = props
+  if (typeof children === 'string' || typeof children === 'number') {
+    return {
+      ...rest,
+      children,
+    }
+  }
+
+  return rest
 }
 
 const sendMessage = (
@@ -55,7 +68,7 @@ const createHostConfig = (
   HostTimeoutHandle,
   HostNoTimeout
 > => {
-  const createInstanceId = creatInstanceIdFactory()
+  const createInstanceId = createInstanceIdFactory()
   const rootHostContext: HostContext = {}
 
   return {
@@ -81,19 +94,25 @@ const createHostConfig = (
       sendMessage(ws, 'CREATE_INSTANCE', {
         instanceId,
         type,
-        props,
+        props: filterProps(props),
       })
 
       return instanceId
     },
 
     createTextInstance(
-      _text: string,
+      text: string,
       _rootContainer: HostContainer,
       _hostContext: HostContext,
       _internalHandle: OpaqueHandle,
     ): HostTextInstance {
-      throw new Error('Not yet implemented.')
+      const instanceId = createInstanceId()
+      sendMessage(ws, 'CREATE_TEXT_INSTANCE', {
+        instanceId,
+        text,
+      })
+
+      return instanceId
     },
 
     appendInitialChild(
@@ -127,8 +146,9 @@ const createHostConfig = (
       return null
     },
 
-    shouldSetTextContent(_type: HostType, _props: HostProps): boolean {
-      return false
+    shouldSetTextContent(_type: HostType, props: HostProps): boolean {
+      const { children } = props
+      return typeof children === 'string' || typeof children === 'number'
     },
 
     getRootHostContext(_rootContainer: HostContainer): HostContext | null {
@@ -227,16 +247,22 @@ const createHostConfig = (
       })
     },
 
-    resetTextContent(_instance: HostInstance) {
-      throw new Error('Not yet implemented.')
+    resetTextContent(instanceId: HostInstance) {
+      sendMessage(ws, 'RESET_TEXT_CONTENT', {
+        instanceId,
+      })
     },
 
     commitTextUpdate(
-      _textInstance: HostTextInstance,
-      _oldText: string,
-      _newText: string,
+      instanceId: HostTextInstance,
+      oldText: string,
+      newText: string,
     ) {
-      throw new Error('Not yet implemented.')
+      sendMessage(ws, 'COMMIT_TEXT_UPDATE', {
+        instanceId,
+        oldText,
+        newText,
+      })
     },
 
     commitMount(
@@ -259,8 +285,8 @@ const createHostConfig = (
       sendMessage(ws, 'COMMIT_UPDATE', {
         instanceId,
         type,
-        prevProps,
-        nextProps,
+        prevProps: filterProps(prevProps),
+        nextProps: filterProps(nextProps),
       })
     },
 
