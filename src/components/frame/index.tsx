@@ -1,9 +1,13 @@
 import { createElement, forwardRef, ReactNode } from 'react'
 
+export type JFrameCloseHandler = () => void
+
 export type JFrameHost = number
 
 export interface JFrameProps {
-  title: string
+  title?: string
+
+  onClose?: JFrameCloseHandler
 
   children?: ReactNode
 }
