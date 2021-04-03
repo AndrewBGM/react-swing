@@ -46,6 +46,7 @@ export default [
       dts(),
       del({
         hook: 'buildEnd',
+        runOnce: true,
         targets: 'dist/@types',
       }),
     ],
