@@ -32,247 +32,243 @@ const createHostConfig = (
   HostChildSet,
   HostTimeoutHandle,
   HostNoTimeout
-> => {
-  const rootHostContext: HostContext = {}
+> => ({
+  supportsMutation: true,
+  supportsHydration: false,
+  supportsPersistence: false,
 
-  return {
-    supportsMutation: true,
-    supportsHydration: false,
-    supportsPersistence: false,
+  isPrimaryRenderer: true,
+  now: () => performance.now(),
+  scheduleTimeout: setTimeout,
+  cancelTimeout: clearTimeout,
+  noTimeout: -1,
+  queueMicrotask,
 
-    isPrimaryRenderer: true,
-    now: () => performance.now(),
-    scheduleTimeout: setTimeout,
-    cancelTimeout: clearTimeout,
-    noTimeout: -1,
-    queueMicrotask,
+  createInstance(
+    type: HostType,
+    props: HostProps,
+    _rootContainer: HostContainer,
+    _hostContext: HostContext,
+    _internalHandle: OpaqueHandle,
+  ): HostInstance {
+    const instanceId = client.getNextInstanceId()
+    client.send('CREATE_INSTANCE', {
+      instanceId,
+      type,
+      props: client.filterProps(props),
+    })
 
-    createInstance(
-      type: HostType,
-      props: HostProps,
-      _rootContainer: HostContainer,
-      _hostContext: HostContext,
-      _internalHandle: OpaqueHandle,
-    ): HostInstance {
-      const instanceId = client.getNextInstanceId()
-      client.send('CREATE_INSTANCE', {
-        instanceId,
-        type,
-        props: client.filterProps(props),
-      })
+    return instanceId
+  },
 
-      return instanceId
-    },
+  createTextInstance(
+    text: string,
+    _rootContainer: HostContainer,
+    _hostContext: HostContext,
+    _internalHandle: OpaqueHandle,
+  ): HostTextInstance {
+    const instanceId = client.getNextInstanceId()
+    client.send('CREATE_TEXT_INSTANCE', {
+      instanceId,
+      text,
+    })
 
-    createTextInstance(
-      text: string,
-      _rootContainer: HostContainer,
-      _hostContext: HostContext,
-      _internalHandle: OpaqueHandle,
-    ): HostTextInstance {
-      const instanceId = client.getNextInstanceId()
-      client.send('CREATE_TEXT_INSTANCE', {
-        instanceId,
-        text,
-      })
+    return instanceId
+  },
 
-      return instanceId
-    },
+  appendInitialChild(
+    parentId: HostInstance,
+    childId: HostInstance | HostTextInstance,
+  ) {
+    client.send('APPEND_INITIAL_CHILD', {
+      parentId,
+      childId,
+    })
+  },
 
-    appendInitialChild(
-      parentId: HostInstance,
-      childId: HostInstance | HostTextInstance,
-    ) {
-      client.send('APPEND_INITIAL_CHILD', {
-        parentId,
-        childId,
-      })
-    },
+  finalizeInitialChildren(
+    _instance: HostInstance,
+    _type: HostType,
+    _props: HostProps,
+    _rootContainer: HostContainer,
+    _hostContext: HostContext,
+  ): boolean {
+    return false
+  },
 
-    finalizeInitialChildren(
-      _instance: HostInstance,
-      _type: HostType,
-      _props: HostProps,
-      _rootContainer: HostContainer,
-      _hostContext: HostContext,
-    ): boolean {
-      return false
-    },
+  prepareUpdate(
+    _instance: HostInstance,
+    _type: HostType,
+    _oldProps: HostProps,
+    _newProps: HostProps,
+    _rootContainer: HostContainer,
+    _hostContext: HostContext,
+  ): HostUpdatePayload | null {
+    return null
+  },
 
-    prepareUpdate(
-      _instance: HostInstance,
-      _type: HostType,
-      _oldProps: HostProps,
-      _newProps: HostProps,
-      _rootContainer: HostContainer,
-      _hostContext: HostContext,
-    ): HostUpdatePayload | null {
-      return null
-    },
+  shouldSetTextContent(_type: HostType, _props: HostProps): boolean {
+    return false
+  },
 
-    shouldSetTextContent(_type: HostType, _props: HostProps): boolean {
-      return false
-    },
+  getRootHostContext(_rootContainer: HostContainer): HostContext | null {
+    return null
+  },
 
-    getRootHostContext(_rootContainer: HostContainer): HostContext | null {
-      return rootHostContext
-    },
+  getChildHostContext(
+    parentHostContext: HostContext,
+    _type: HostType,
+    _rootContainer: HostContainer,
+  ): HostContext {
+    return parentHostContext
+  },
 
-    getChildHostContext(
-      parentHostContext: HostContext,
-      _type: HostType,
-      _rootContainer: HostContainer,
-    ): HostContext {
-      return parentHostContext
-    },
+  getPublicInstance(
+    instance: HostInstance | HostTextInstance,
+  ): HostPublicInstance {
+    return instance
+  },
 
-    getPublicInstance(
-      instance: HostInstance | HostTextInstance,
-    ): HostPublicInstance {
-      return instance
-    },
+  prepareForCommit(
+    _containerInfo: HostContainer,
+  ): Record<string, unknown> | null {
+    return null
+  },
 
-    prepareForCommit(
-      _containerInfo: HostContainer,
-    ): Record<string, unknown> | null {
-      return null
-    },
+  resetAfterCommit(_containerInfo: HostContainer) {
+    // NOOP
+  },
 
-    resetAfterCommit(_containerInfo: HostContainer) {
-      // NOOP
-    },
+  preparePortalMount(_containerInfo: HostContainer) {
+    // NOOP
+  },
 
-    preparePortalMount(_containerInfo: HostContainer) {
-      // NOOP
-    },
+  appendChild(
+    parentId: HostInstance,
+    childId: HostInstance | HostTextInstance,
+  ) {
+    client.send('APPEND_CHILD', {
+      parentId,
+      childId,
+    })
+  },
 
-    appendChild(
-      parentId: HostInstance,
-      childId: HostInstance | HostTextInstance,
-    ) {
-      client.send('APPEND_CHILD', {
-        parentId,
-        childId,
-      })
-    },
+  appendChildToContainer(
+    containerId: HostContainer,
+    childId: HostInstance | HostTextInstance,
+  ) {
+    client.send('APPEND_CHILD_TO_CONTAINER', {
+      containerId,
+      childId,
+    })
+  },
 
-    appendChildToContainer(
-      containerId: HostContainer,
-      childId: HostInstance | HostTextInstance,
-    ) {
-      client.send('APPEND_CHILD_TO_CONTAINER', {
-        containerId,
-        childId,
-      })
-    },
+  insertBefore(
+    parentId: HostInstance,
+    childId: HostInstance | HostTextInstance,
+    beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
+  ) {
+    client.send('INSERT_BEFORE', {
+      parentId,
+      childId,
+      beforeChildId,
+    })
+  },
 
-    insertBefore(
-      parentId: HostInstance,
-      childId: HostInstance | HostTextInstance,
-      beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
-    ) {
-      client.send('INSERT_BEFORE', {
-        parentId,
-        childId,
-        beforeChildId,
-      })
-    },
+  insertInContainerBefore(
+    containerId: HostContainer,
+    childId: HostInstance | HostTextInstance,
+    beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
+  ) {
+    client.send('INSERT_IN_CONTAINER_BEFORE', {
+      containerId,
+      childId,
+      beforeChildId,
+    })
+  },
 
-    insertInContainerBefore(
-      containerId: HostContainer,
-      childId: HostInstance | HostTextInstance,
-      beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
-    ) {
-      client.send('INSERT_IN_CONTAINER_BEFORE', {
-        containerId,
-        childId,
-        beforeChildId,
-      })
-    },
+  removeChild(
+    parentId: HostInstance,
+    childId: HostInstance | HostTextInstance | HostSuspenseInstance,
+  ) {
+    client.send('REMOVE_CHILD', {
+      parentId,
+      childId,
+    })
+  },
 
-    removeChild(
-      parentId: HostInstance,
-      childId: HostInstance | HostTextInstance | HostSuspenseInstance,
-    ) {
-      client.send('REMOVE_CHILD', {
-        parentId,
-        childId,
-      })
-    },
+  removeChildFromContainer(
+    containerId: HostContainer,
+    childId: HostInstance | HostTextInstance | HostSuspenseInstance,
+  ) {
+    client.send('REMOVE_CHILD_FROM_CONTAINER', {
+      containerId,
+      childId,
+    })
+  },
 
-    removeChildFromContainer(
-      containerId: HostContainer,
-      childId: HostInstance | HostTextInstance | HostSuspenseInstance,
-    ) {
-      client.send('REMOVE_CHILD_FROM_CONTAINER', {
-        containerId,
-        childId,
-      })
-    },
+  resetTextContent(_instanceId: HostInstance) {
+    throw new Error('Not yet implemented')
+  },
 
-    resetTextContent(_instanceId: HostInstance) {
-      throw new Error('Not yet implemented')
-    },
+  commitTextUpdate(
+    instanceId: HostTextInstance,
+    oldText: string,
+    newText: string,
+  ) {
+    client.send('COMMIT_TEXT_UPDATE', {
+      instanceId,
+      oldText,
+      newText,
+    })
+  },
 
-    commitTextUpdate(
-      instanceId: HostTextInstance,
-      oldText: string,
-      newText: string,
-    ) {
-      client.send('COMMIT_TEXT_UPDATE', {
-        instanceId,
-        oldText,
-        newText,
-      })
-    },
+  commitMount(
+    _instance: HostInstance,
+    _type: HostType,
+    _props: HostProps,
+    _internalInstanceHandle: OpaqueHandle,
+  ) {
+    throw new Error('Not yet implemented.')
+  },
 
-    commitMount(
-      _instance: HostInstance,
-      _type: HostType,
-      _props: HostProps,
-      _internalInstanceHandle: OpaqueHandle,
-    ) {
-      throw new Error('Not yet implemented.')
-    },
+  commitUpdate(
+    instanceId: HostInstance,
+    _updatePayload: HostUpdatePayload,
+    type: HostType,
+    prevProps: HostProps,
+    nextProps: HostProps,
+    _internalHandle: OpaqueHandle,
+  ) {
+    client.send('COMMIT_UPDATE', {
+      instanceId,
+      type,
+      prevProps: client.filterProps(prevProps),
+      nextProps: client.filterProps(nextProps),
+    })
+  },
 
-    commitUpdate(
-      instanceId: HostInstance,
-      _updatePayload: HostUpdatePayload,
-      type: HostType,
-      prevProps: HostProps,
-      nextProps: HostProps,
-      _internalHandle: OpaqueHandle,
-    ) {
-      client.send('COMMIT_UPDATE', {
-        instanceId,
-        type,
-        prevProps: client.filterProps(prevProps),
-        nextProps: client.filterProps(nextProps),
-      })
-    },
+  hideInstance(_instanceId: HostInstance) {
+    throw new Error('Not yet implemented.')
+  },
 
-    hideInstance(_instanceId: HostInstance) {
-      throw new Error('Not yet implemented.')
-    },
+  hideTextInstance(_textInstance: HostTextInstance) {
+    throw new Error('Not yet implemented.')
+  },
 
-    hideTextInstance(_textInstance: HostTextInstance) {
-      throw new Error('Not yet implemented.')
-    },
+  unhideInstance(_instanceId: HostInstance, _props: HostProps) {
+    throw new Error('Not yet implemented.')
+  },
 
-    unhideInstance(_instanceId: HostInstance, _props: HostProps) {
-      throw new Error('Not yet implemented.')
-    },
+  unhideTextInstance(_textInstance: HostTextInstance, _text: string) {
+    throw new Error('Not yet implemented.')
+  },
 
-    unhideTextInstance(_textInstance: HostTextInstance, _text: string) {
-      throw new Error('Not yet implemented.')
-    },
-
-    clearContainer(containerId: HostContainer) {
-      client.send('CLEAR_CONTAINER', {
-        containerId,
-      })
-    },
-  }
-}
+  clearContainer(containerId: HostContainer) {
+    client.send('CLEAR_CONTAINER', {
+      containerId,
+    })
+  },
+})
 
 export default createHostConfig
