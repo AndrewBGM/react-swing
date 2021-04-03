@@ -1,7 +1,6 @@
 import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
-import WebSocket from 'ws'
-import { createInstanceIdFactory, filterProps, sendMessage } from './utils'
+import { ReactSwingClient } from './client'
 
 export type HostType = string
 export type HostProps = Record<string, unknown>
@@ -18,7 +17,7 @@ export type HostTimeoutHandle = NodeJS.Timeout
 export type HostNoTimeout = -1
 
 const createHostConfig = (
-  ws: WebSocket,
+  client: ReactSwingClient,
 ): HostConfig<
   HostType,
   HostProps,
@@ -34,7 +33,6 @@ const createHostConfig = (
   HostTimeoutHandle,
   HostNoTimeout
 > => {
-  const createInstanceId = createInstanceIdFactory()
   const rootHostContext: HostContext = {}
 
   return {
@@ -56,11 +54,11 @@ const createHostConfig = (
       _hostContext: HostContext,
       _internalHandle: OpaqueHandle,
     ): HostInstance {
-      const instanceId = createInstanceId()
-      sendMessage(ws, 'CREATE_INSTANCE', {
+      const instanceId = client.getNextInstanceId()
+      client.send('CREATE_INSTANCE', {
         instanceId,
         type,
-        props: filterProps(props),
+        props: client.filterProps(props),
       })
 
       return instanceId
@@ -72,8 +70,8 @@ const createHostConfig = (
       _hostContext: HostContext,
       _internalHandle: OpaqueHandle,
     ): HostTextInstance {
-      const instanceId = createInstanceId()
-      sendMessage(ws, 'CREATE_TEXT_INSTANCE', {
+      const instanceId = client.getNextInstanceId()
+      client.send('CREATE_TEXT_INSTANCE', {
         instanceId,
         text,
       })
@@ -85,7 +83,7 @@ const createHostConfig = (
       parentId: HostInstance,
       childId: HostInstance | HostTextInstance,
     ) {
-      sendMessage(ws, 'APPEND_INITIAL_CHILD', {
+      client.send('APPEND_INITIAL_CHILD', {
         parentId,
         childId,
       })
@@ -152,7 +150,7 @@ const createHostConfig = (
       parentId: HostInstance,
       childId: HostInstance | HostTextInstance,
     ) {
-      sendMessage(ws, 'APPEND_CHILD', {
+      client.send('APPEND_CHILD', {
         parentId,
         childId,
       })
@@ -162,7 +160,7 @@ const createHostConfig = (
       containerId: HostContainer,
       childId: HostInstance | HostTextInstance,
     ) {
-      sendMessage(ws, 'APPEND_CHILD_TO_CONTAINER', {
+      client.send('APPEND_CHILD_TO_CONTAINER', {
         containerId,
         childId,
       })
@@ -173,7 +171,7 @@ const createHostConfig = (
       childId: HostInstance | HostTextInstance,
       beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
     ) {
-      sendMessage(ws, 'INSERT_BEFORE', {
+      client.send('INSERT_BEFORE', {
         parentId,
         childId,
         beforeChildId,
@@ -185,7 +183,7 @@ const createHostConfig = (
       childId: HostInstance | HostTextInstance,
       beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
     ) {
-      sendMessage(ws, 'INSERT_IN_CONTAINER_BEFORE', {
+      client.send('INSERT_IN_CONTAINER_BEFORE', {
         containerId,
         childId,
         beforeChildId,
@@ -196,7 +194,7 @@ const createHostConfig = (
       parentId: HostInstance,
       childId: HostInstance | HostTextInstance | HostSuspenseInstance,
     ) {
-      sendMessage(ws, 'REMOVE_CHILD', {
+      client.send('REMOVE_CHILD', {
         parentId,
         childId,
       })
@@ -206,7 +204,7 @@ const createHostConfig = (
       containerId: HostContainer,
       childId: HostInstance | HostTextInstance | HostSuspenseInstance,
     ) {
-      sendMessage(ws, 'REMOVE_CHILD_FROM_CONTAINER', {
+      client.send('REMOVE_CHILD_FROM_CONTAINER', {
         containerId,
         childId,
       })
@@ -221,7 +219,7 @@ const createHostConfig = (
       oldText: string,
       newText: string,
     ) {
-      sendMessage(ws, 'COMMIT_TEXT_UPDATE', {
+      client.send('COMMIT_TEXT_UPDATE', {
         instanceId,
         oldText,
         newText,
@@ -245,11 +243,11 @@ const createHostConfig = (
       nextProps: HostProps,
       _internalHandle: OpaqueHandle,
     ) {
-      sendMessage(ws, 'COMMIT_UPDATE', {
+      client.send('COMMIT_UPDATE', {
         instanceId,
         type,
-        prevProps: filterProps(prevProps),
-        nextProps: filterProps(nextProps),
+        prevProps: client.filterProps(prevProps),
+        nextProps: client.filterProps(nextProps),
       })
     },
 
@@ -270,7 +268,7 @@ const createHostConfig = (
     },
 
     clearContainer(containerId: HostContainer) {
-      sendMessage(ws, 'CLEAR_CONTAINER', {
+      client.send('CLEAR_CONTAINER', {
         containerId,
       })
     },
