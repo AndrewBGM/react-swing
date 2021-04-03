@@ -1,6 +1,6 @@
 import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
-import RPCClient from './rpc-client'
+import ReactSwingClient from './client'
 
 const filterProps = (
   props: Record<string, unknown>,
@@ -25,7 +25,7 @@ export type HostTimeoutHandle = NodeJS.Timeout
 export type HostNoTimeout = -1
 
 const createHostConfig = (
-  client: RPCClient,
+  client: ReactSwingClient,
 ): HostConfig<
   HostType,
   HostProps,

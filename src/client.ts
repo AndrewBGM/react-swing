@@ -1,6 +1,6 @@
 import WebSocket from 'ws'
 
-class RPCClient {
+class ReactSwingClient {
   constructor(private ws: WebSocket) {}
 
   send(type: string, payload: Record<string, unknown>): void {
@@ -13,12 +13,12 @@ class RPCClient {
   }
 }
 
-export const configureClient = (host: string): Promise<RPCClient> => {
+export const configureClient = (host: string): Promise<ReactSwingClient> => {
   const ws = new WebSocket(host)
   return new Promise(resolve => {
     ws.on('ping', data => ws.pong(data))
-    ws.on('open', () => resolve(new RPCClient(ws)))
+    ws.on('open', () => resolve(new ReactSwingClient(ws)))
   })
 }
 
-export default RPCClient
+export default ReactSwingClient

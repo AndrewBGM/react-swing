@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import ReactReconciler from 'react-reconciler'
+import { configureClient } from './client'
 import createHostConfig from './create-host-config'
-import { configureClient } from './rpc-client'
 
 export interface RenderOptions {
   host: string
