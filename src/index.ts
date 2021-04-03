@@ -23,7 +23,7 @@ export const render = async (
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const rootContainer = ReactSwing.createContainer(0, 0, false, null)
-    ReactSwing.updateContainer(element, rootContainer, null, resolve)
+    ReactSwing.updateContainer(element, rootContainer, null, () => resolve())
   })
 }
 
