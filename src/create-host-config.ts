@@ -1,6 +1,6 @@
 import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
-import { ReactSwingClient } from './client'
+import ReactSwingClient from './client'
 
 export type HostType = string
 export type HostProps = Record<string, unknown>
