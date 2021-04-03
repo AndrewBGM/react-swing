@@ -85,7 +85,7 @@ const createHostConfig = (
       parentId: HostInstance,
       childId: HostInstance | HostTextInstance,
     ) {
-      sendMessage(ws, 'APPEND_CHILD', {
+      sendMessage(ws, 'APPEND_INITIAL_CHILD', {
         parentId,
         childId,
       })
