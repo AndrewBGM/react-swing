@@ -28,7 +28,9 @@ class ReactSwingBridge {
 
   private callbacksById: Record<number, Callback | undefined> = {}
 
-  constructor(private ws: WebSocket) {}
+  constructor(private ws: WebSocket) {
+    ws.on('ping', data => ws.pong(data))
+  }
 
   createInstance(type: HostType, props: HostProps): HostInstance {
     const instanceId = this.getNextInstanceId()
@@ -226,8 +228,7 @@ class ReactSwingBridge {
 export const configureBridge = (host: string): Promise<ReactSwingBridge> => {
   const ws = new WebSocket(host)
   return new Promise(resolve => {
-    ws.on('ping', data => ws.pong(data))
-    ws.on('open', () => resolve(new ReactSwingBridge(ws)))
+    ws.once('open', () => resolve(new ReactSwingBridge(ws)))
   })
 }
 
