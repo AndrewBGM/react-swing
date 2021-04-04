@@ -1,31 +1,23 @@
 import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
-import ReactSwingClient from './client'
-
-const filterProps = (
-  props: Record<string, unknown>,
-): Record<string, unknown> => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { children, ...rest } = props
-  return rest
-}
-
-export type HostType = string
-export type HostProps = Record<string, unknown>
-export type HostContainer = number
-export type HostInstance = number
-export type HostTextInstance = number
-export type HostSuspenseInstance = number
-export type HostHydratableInstance = number
-export type HostPublicInstance = number
-export type HostContext = Record<string, unknown>
-export type HostUpdatePayload = Record<string, unknown>
-export type HostChildSet = unknown
-export type HostTimeoutHandle = NodeJS.Timeout
-export type HostNoTimeout = -1
+import ReactSwingBridge, {
+  HostChildSet,
+  HostContainer,
+  HostContext,
+  HostHydratableInstance,
+  HostInstance,
+  HostNoTimeout,
+  HostProps,
+  HostPublicInstance,
+  HostSuspenseInstance,
+  HostTextInstance,
+  HostTimeoutHandle,
+  HostType,
+  HostUpdatePayload,
+} from './bridge'
 
 const createHostConfig = (
-  client: ReactSwingClient,
+  bridge: ReactSwingBridge,
 ): HostConfig<
   HostType,
   HostProps,
@@ -40,253 +32,196 @@ const createHostConfig = (
   HostChildSet,
   HostTimeoutHandle,
   HostNoTimeout
-> => {
-  let nextInstanceId = 1
-  const getNextInstanceId = () => {
-    const instanceId = nextInstanceId
-    nextInstanceId += 1
+> => ({
+  supportsMutation: true,
+  supportsHydration: false,
+  supportsPersistence: false,
 
-    return instanceId
-  }
+  isPrimaryRenderer: true,
+  now: () => performance.now(),
+  scheduleTimeout: setTimeout,
+  cancelTimeout: clearTimeout,
+  noTimeout: -1,
+  queueMicrotask,
 
-  return {
-    supportsMutation: true,
-    supportsHydration: false,
-    supportsPersistence: false,
+  createInstance(
+    type: HostType,
+    props: HostProps,
+    _rootContainer: HostContainer,
+    _hostContext: HostContext,
+    _internalHandle: OpaqueHandle,
+  ): HostInstance {
+    return bridge.createInstance(type, props)
+  },
 
-    isPrimaryRenderer: true,
-    now: () => performance.now(),
-    scheduleTimeout: setTimeout,
-    cancelTimeout: clearTimeout,
-    noTimeout: -1,
-    queueMicrotask,
+  createTextInstance(
+    text: string,
+    _rootContainer: HostContainer,
+    _hostContext: HostContext,
+    _internalHandle: OpaqueHandle,
+  ): HostTextInstance {
+    return bridge.createTextInstance(text)
+  },
 
-    createInstance(
-      type: HostType,
-      props: HostProps,
-      _rootContainer: HostContainer,
-      _hostContext: HostContext,
-      _internalHandle: OpaqueHandle,
-    ): HostInstance {
-      const instanceId = getNextInstanceId()
-      client.send('CREATE_INSTANCE', {
-        instanceId,
-        type,
-        props: filterProps(props),
-      })
+  appendInitialChild(
+    parentId: HostInstance,
+    childId: HostInstance | HostTextInstance,
+  ) {
+    bridge.appendInitialChild(parentId, childId)
+  },
 
-      return instanceId
-    },
+  finalizeInitialChildren(
+    _instanceId: HostInstance,
+    _type: HostType,
+    _props: HostProps,
+    _rootContainer: HostContainer,
+    _hostContext: HostContext,
+  ): boolean {
+    return false
+  },
 
-    createTextInstance(
-      text: string,
-      _rootContainer: HostContainer,
-      _hostContext: HostContext,
-      _internalHandle: OpaqueHandle,
-    ): HostTextInstance {
-      const instanceId = getNextInstanceId()
-      client.send('CREATE_TEXT_INSTANCE', {
-        instanceId,
-        text,
-      })
+  prepareUpdate(
+    _instance: HostInstance,
+    _type: HostType,
+    _oldProps: HostProps,
+    _newProps: HostProps,
+    _rootContainer: HostContainer,
+    _hostContext: HostContext,
+  ): HostUpdatePayload | null {
+    return null
+  },
 
-      return instanceId
-    },
+  shouldSetTextContent(_type: HostType, _props: HostProps): boolean {
+    return false
+  },
 
-    appendInitialChild(
-      parentId: HostInstance,
-      childId: HostInstance | HostTextInstance,
-    ) {
-      client.send('APPEND_INITIAL_CHILD', {
-        parentId,
-        childId,
-      })
-    },
+  getRootHostContext(_rootContainer: HostContainer): HostContext | null {
+    return null
+  },
 
-    finalizeInitialChildren(
-      _instanceId: HostInstance,
-      _type: HostType,
-      _props: HostProps,
-      _rootContainer: HostContainer,
-      _hostContext: HostContext,
-    ): boolean {
-      return false
-    },
+  getChildHostContext(
+    parentHostContext: HostContext,
+    _type: HostType,
+    _rootContainer: HostContainer,
+  ): HostContext {
+    return parentHostContext
+  },
 
-    prepareUpdate(
-      _instance: HostInstance,
-      _type: HostType,
-      _oldProps: HostProps,
-      _newProps: HostProps,
-      _rootContainer: HostContainer,
-      _hostContext: HostContext,
-    ): HostUpdatePayload | null {
-      return null
-    },
+  getPublicInstance(
+    instance: HostInstance | HostTextInstance,
+  ): HostPublicInstance {
+    return instance
+  },
 
-    shouldSetTextContent(_type: HostType, _props: HostProps): boolean {
-      return false
-    },
+  prepareForCommit(
+    _containerInfo: HostContainer,
+  ): Record<string, unknown> | null {
+    return null
+  },
 
-    getRootHostContext(_rootContainer: HostContainer): HostContext | null {
-      return null
-    },
+  resetAfterCommit(_containerInfo: HostContainer) {
+    // NOOP
+  },
 
-    getChildHostContext(
-      parentHostContext: HostContext,
-      _type: HostType,
-      _rootContainer: HostContainer,
-    ): HostContext {
-      return parentHostContext
-    },
+  preparePortalMount(_containerInfo: HostContainer) {
+    // NOOP
+  },
 
-    getPublicInstance(
-      instance: HostInstance | HostTextInstance,
-    ): HostPublicInstance {
-      return instance
-    },
+  appendChild(
+    parentId: HostInstance,
+    childId: HostInstance | HostTextInstance,
+  ) {
+    bridge.appendChild(parentId, childId)
+  },
 
-    prepareForCommit(
-      _containerInfo: HostContainer,
-    ): Record<string, unknown> | null {
-      return null
-    },
+  appendChildToContainer(
+    containerId: HostContainer,
+    childId: HostInstance | HostTextInstance,
+  ) {
+    bridge.appendChildToContainer(containerId, childId)
+  },
 
-    resetAfterCommit(_containerInfo: HostContainer) {
-      // NOOP
-    },
+  insertBefore(
+    parentId: HostInstance,
+    childId: HostInstance | HostTextInstance,
+    beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
+  ) {
+    bridge.insertBefore(parentId, childId, beforeChildId)
+  },
 
-    preparePortalMount(_containerInfo: HostContainer) {
-      // NOOP
-    },
+  insertInContainerBefore(
+    containerId: HostContainer,
+    childId: HostInstance | HostTextInstance,
+    beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
+  ) {
+    bridge.insertInContainerBefore(containerId, childId, beforeChildId)
+  },
 
-    appendChild(
-      parentId: HostInstance,
-      childId: HostInstance | HostTextInstance,
-    ) {
-      client.send('APPEND_CHILD', {
-        parentId,
-        childId,
-      })
-    },
+  removeChild(
+    parentId: HostInstance,
+    childId: HostInstance | HostTextInstance | HostSuspenseInstance,
+  ) {
+    bridge.removeChild(parentId, childId)
+  },
 
-    appendChildToContainer(
-      containerId: HostContainer,
-      childId: HostInstance | HostTextInstance,
-    ) {
-      client.send('APPEND_CHILD_TO_CONTAINER', {
-        containerId,
-        childId,
-      })
-    },
+  removeChildFromContainer(
+    containerId: HostContainer,
+    childId: HostInstance | HostTextInstance | HostSuspenseInstance,
+  ) {
+    bridge.removeChildFromContainer(containerId, childId)
+  },
 
-    insertBefore(
-      parentId: HostInstance,
-      childId: HostInstance | HostTextInstance,
-      beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
-    ) {
-      client.send('INSERT_BEFORE', {
-        parentId,
-        childId,
-        beforeChildId,
-      })
-    },
+  resetTextContent(_instanceId: HostInstance) {
+    throw new Error('Not yet implemented')
+  },
 
-    insertInContainerBefore(
-      containerId: HostContainer,
-      childId: HostInstance | HostTextInstance,
-      beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
-    ) {
-      client.send('INSERT_IN_CONTAINER_BEFORE', {
-        containerId,
-        childId,
-        beforeChildId,
-      })
-    },
+  commitTextUpdate(
+    instanceId: HostTextInstance,
+    oldText: string,
+    newText: string,
+  ) {
+    bridge.commitTextUpdate(instanceId, oldText, newText)
+  },
 
-    removeChild(
-      parentId: HostInstance,
-      childId: HostInstance | HostTextInstance | HostSuspenseInstance,
-    ) {
-      client.send('REMOVE_CHILD', {
-        parentId,
-        childId,
-      })
-    },
+  commitMount(
+    _instanceId: HostInstance,
+    _type: HostType,
+    _props: HostProps,
+    _internalInstanceHandle: OpaqueHandle,
+  ) {
+    throw new Error('Not yet implemented.')
+  },
 
-    removeChildFromContainer(
-      containerId: HostContainer,
-      childId: HostInstance | HostTextInstance | HostSuspenseInstance,
-    ) {
-      client.send('REMOVE_CHILD_FROM_CONTAINER', {
-        containerId,
-        childId,
-      })
-    },
+  commitUpdate(
+    instanceId: HostInstance,
+    _updatePayload: HostUpdatePayload,
+    type: HostType,
+    prevProps: HostProps,
+    nextProps: HostProps,
+    _internalHandle: OpaqueHandle,
+  ) {
+    bridge.commitUpdate(instanceId, type, prevProps, nextProps)
+  },
 
-    resetTextContent(_instanceId: HostInstance) {
-      throw new Error('Not yet implemented')
-    },
+  hideInstance(_instanceId: HostInstance) {
+    throw new Error('Not yet implemented.')
+  },
 
-    commitTextUpdate(
-      instanceId: HostTextInstance,
-      oldText: string,
-      newText: string,
-    ) {
-      client.send('COMMIT_TEXT_UPDATE', {
-        instanceId,
-        oldText,
-        newText,
-      })
-    },
+  hideTextInstance(_textInstance: HostTextInstance) {
+    throw new Error('Not yet implemented.')
+  },
 
-    commitMount(
-      _instanceId: HostInstance,
-      _type: HostType,
-      _props: HostProps,
-      _internalInstanceHandle: OpaqueHandle,
-    ) {
-      throw new Error('Not yet implemented.')
-    },
+  unhideInstance(_instanceId: HostInstance, _props: HostProps) {
+    throw new Error('Not yet implemented.')
+  },
 
-    commitUpdate(
-      instanceId: HostInstance,
-      _updatePayload: HostUpdatePayload,
-      type: HostType,
-      prevProps: HostProps,
-      nextProps: HostProps,
-      _internalHandle: OpaqueHandle,
-    ) {
-      client.send('COMMIT_UPDATE', {
-        instanceId,
-        type,
-        prevProps: filterProps(prevProps),
-        nextProps: filterProps(nextProps),
-      })
-    },
+  unhideTextInstance(_textInstance: HostTextInstance, _text: string) {
+    throw new Error('Not yet implemented.')
+  },
 
-    hideInstance(_instanceId: HostInstance) {
-      throw new Error('Not yet implemented.')
-    },
-
-    hideTextInstance(_textInstance: HostTextInstance) {
-      throw new Error('Not yet implemented.')
-    },
-
-    unhideInstance(_instanceId: HostInstance, _props: HostProps) {
-      throw new Error('Not yet implemented.')
-    },
-
-    unhideTextInstance(_textInstance: HostTextInstance, _text: string) {
-      throw new Error('Not yet implemented.')
-    },
-
-    clearContainer(containerId: HostContainer) {
-      client.send('CLEAR_CONTAINER', {
-        containerId,
-      })
-    },
-  }
-}
+  clearContainer(containerId: HostContainer) {
+    bridge.clearContainer(containerId)
+  },
+})
 
 export default createHostConfig
