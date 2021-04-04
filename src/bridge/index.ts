@@ -1,5 +1,12 @@
 import WebSocket from 'ws'
 
+type Callback = (...args: unknown[]) => unknown
+
+const isCallback = (arg: unknown): arg is Callback => typeof arg === 'function'
+
+const isObject = (arg: unknown): arg is Record<string, unknown> =>
+  Object.prototype.toString.call(arg) === '[Object object]'
+
 export type HostType = string
 export type HostProps = Record<string, unknown>
 export type HostContainer = number
@@ -16,6 +23,10 @@ export type HostNoTimeout = -1
 
 class ReactSwingBridge {
   private nextInstanceId = 1
+
+  private nextCallbackId = 1
+
+  private callbacksById: Record<number, Callback | undefined> = {}
 
   constructor(private ws: WebSocket) {}
 
@@ -146,6 +157,15 @@ class ReactSwingBridge {
     })
   }
 
+  invokeCallback(callbackId: number, args: unknown[]): unknown {
+    const callback = this.callbacksById[callbackId]
+    if (callback) {
+      return callback(...args)
+    }
+
+    return null
+  }
+
   private send(type: string, payload: Record<string, unknown>): void {
     this.ws.send(
       JSON.stringify({
@@ -158,7 +178,34 @@ class ReactSwingBridge {
   private filterProps(props: HostProps): HostProps {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { children, ...rest } = props
-    return rest
+    return this.mapCallbacks(rest)
+  }
+
+  private mapCallbacks<T>(obj: T): T {
+    if (Array.isArray(obj)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return (obj.map(x => this.mapCallbacks(x)) as unknown) as T
+    }
+
+    if (isCallback(obj)) {
+      const callbackId = this.getNextCallbackId()
+      this.callbacksById[callbackId] = obj
+
+      return (callbackId as unknown) as T
+    }
+
+    if (isObject(obj)) {
+      return Object.keys(obj).reduce((current, key) => {
+        const value = obj[key]
+
+        return {
+          ...current,
+          [key]: this.mapCallbacks(value),
+        }
+      }, {} as T)
+    }
+
+    return obj
   }
 
   private getNextInstanceId(): number {
@@ -166,6 +213,13 @@ class ReactSwingBridge {
     this.nextInstanceId += 1
 
     return instanceId
+  }
+
+  private getNextCallbackId(): number {
+    const callbackId = this.nextCallbackId
+    this.nextCallbackId += 1
+
+    return callbackId
   }
 }
 
