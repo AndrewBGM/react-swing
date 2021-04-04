@@ -5,7 +5,7 @@ type Callback = (...args: unknown[]) => unknown
 const isCallback = (arg: unknown): arg is Callback => typeof arg === 'function'
 
 const isObject = (arg: unknown): arg is Record<string, unknown> =>
-  Object.prototype.toString.call(arg) === '[Object object]'
+  Object.prototype.toString.call(arg) === '[object Object]'
 
 export type HostType = string
 export type HostProps = Record<string, unknown>
