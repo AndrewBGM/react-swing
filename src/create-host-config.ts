@@ -104,13 +104,19 @@ const createHostConfig = (
     },
 
     finalizeInitialChildren(
-      _instance: HostInstance,
-      _type: HostType,
-      _props: HostProps,
+      instanceId: HostInstance,
+      type: HostType,
+      props: HostProps,
       _rootContainer: HostContainer,
       _hostContext: HostContext,
     ): boolean {
-      return false
+      client.send('FINALIZE_INITIAL_CHILDREN', {
+        instanceId,
+        type,
+        props: filterProps(props),
+      })
+
+      return true
     },
 
     prepareUpdate(
@@ -241,12 +247,16 @@ const createHostConfig = (
     },
 
     commitMount(
-      _instance: HostInstance,
-      _type: HostType,
-      _props: HostProps,
+      instanceId: HostInstance,
+      type: HostType,
+      props: HostProps,
       _internalInstanceHandle: OpaqueHandle,
     ) {
-      throw new Error('Not yet implemented.')
+      client.send('COMMIT_MOUNT', {
+        instanceId,
+        type,
+        props: filterProps(props),
+      })
     },
 
     commitUpdate(
