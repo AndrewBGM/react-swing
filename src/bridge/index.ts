@@ -21,12 +21,17 @@ export type HostChildSet = unknown
 export type HostTimeoutHandle = NodeJS.Timeout
 export type HostNoTimeout = -1
 
+interface CallbackData {
+  id: number
+  invoke: Callback
+}
+
 class ReactSwingBridge {
   private nextInstanceId = 1
 
   private nextCallbackId = 1
 
-  private callbacksById: Record<number, Callback | undefined> = {}
+  private mappedCallbacks: CallbackData[] = []
 
   constructor(private ws: WebSocket) {
     ws.on('ping', data => ws.pong(data))
@@ -61,6 +66,33 @@ class ReactSwingBridge {
       parentId,
       childId,
     })
+  }
+
+  prepareUpdate(
+    oldProps: HostProps,
+    newProps: HostProps,
+  ): HostUpdatePayload | null {
+    const prevProps = this.filterProps(oldProps)
+    const nextProps = this.filterProps(newProps)
+    const allKeys = [...Object.keys(prevProps), ...Object.keys(nextProps)]
+    const changedProps: Record<string, unknown> = {}
+
+    allKeys.forEach(key => {
+      const prevValue = prevProps[key]
+      const nextValue = nextProps[key]
+
+      if (prevValue !== nextValue) {
+        changedProps[key] = nextValue
+      }
+    })
+
+    if (Object.keys(changedProps).length === 0) {
+      return null
+    }
+
+    return {
+      changedProps,
+    }
   }
 
   appendChild(
@@ -142,14 +174,12 @@ class ReactSwingBridge {
   commitUpdate(
     instanceId: HostInstance,
     type: HostType,
-    prevProps: HostProps,
-    nextProps: HostProps,
+    updatePayload: HostUpdatePayload,
   ): void {
     this.send('COMMIT_UPDATE', {
       instanceId,
       type,
-      prevProps: this.filterProps(prevProps),
-      nextProps: this.filterProps(nextProps),
+      updatePayload,
     })
   }
 
@@ -160,9 +190,9 @@ class ReactSwingBridge {
   }
 
   invokeCallback(callbackId: number, args: unknown[]): unknown {
-    const callback = this.callbacksById[callbackId]
+    const callback = this.mappedCallbacks.find(x => x.id === callbackId)
     if (callback) {
-      return callback(...args)
+      return callback.invoke(...args)
     }
 
     return null
@@ -190,8 +220,19 @@ class ReactSwingBridge {
     }
 
     if (isCallback(obj)) {
+      const existingCallbackData = this.mappedCallbacks.find(
+        x => x.invoke === obj,
+      )
+
+      if (existingCallbackData) {
+        return (existingCallbackData.id as unknown) as T
+      }
+
       const callbackId = this.getNextCallbackId()
-      this.callbacksById[callbackId] = obj
+      this.mappedCallbacks.push({
+        id: callbackId,
+        invoke: obj,
+      })
 
       return (callbackId as unknown) as T
     }
