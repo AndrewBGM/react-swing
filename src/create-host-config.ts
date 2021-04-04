@@ -82,13 +82,13 @@ const createHostConfig = (
 
   prepareUpdate(
     _instance: HostInstance,
-    _type: HostType,
+    type: HostType,
     oldProps: HostProps,
     newProps: HostProps,
     _rootContainer: HostContainer,
     _hostContext: HostContext,
   ): HostUpdatePayload | null {
-    return bridge.prepareUpdate(oldProps, newProps)
+    return bridge.prepareUpdate(type, oldProps, newProps)
   },
 
   shouldSetTextContent(_type: HostType, _props: HostProps): boolean {
@@ -195,12 +195,12 @@ const createHostConfig = (
   commitUpdate(
     instanceId: HostInstance,
     updatePayload: HostUpdatePayload,
-    type: HostType,
+    _type: HostType,
     _prevProps: HostProps,
     _nextProps: HostProps,
     _internalHandle: OpaqueHandle,
   ) {
-    bridge.commitUpdate(instanceId, type, updatePayload)
+    bridge.commitUpdate(instanceId, updatePayload)
   },
 
   hideInstance(_instanceId: HostInstance) {

@@ -8,7 +8,7 @@ export interface RenderOptions {
 }
 
 const defaultOptions: RenderOptions = {
-  host: 'ws://localhost:8080/ws',
+  host: 'ws://localhost:8080',
 }
 
 export const render = async (

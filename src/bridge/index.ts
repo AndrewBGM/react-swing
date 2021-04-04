@@ -69,6 +69,7 @@ class ReactSwingBridge {
   }
 
   prepareUpdate(
+    type: HostType,
     oldProps: HostProps,
     newProps: HostProps,
   ): HostUpdatePayload | null {
@@ -91,6 +92,7 @@ class ReactSwingBridge {
     }
 
     return {
+      type,
       changedProps,
     }
   }
@@ -173,12 +175,10 @@ class ReactSwingBridge {
 
   commitUpdate(
     instanceId: HostInstance,
-    type: HostType,
     updatePayload: HostUpdatePayload,
   ): void {
     this.send('COMMIT_UPDATE', {
       instanceId,
-      type,
       updatePayload,
     })
   }
