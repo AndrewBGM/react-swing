@@ -104,33 +104,24 @@ const createHostConfig = (
     },
 
     finalizeInitialChildren(
-      instanceId: HostInstance,
-      type: HostType,
-      props: HostProps,
+      _instanceId: HostInstance,
+      _type: HostType,
+      _props: HostProps,
       _rootContainer: HostContainer,
       _hostContext: HostContext,
     ): boolean {
-      client.send('FINALIZE_INITIAL_CHILDREN', {
-        instanceId,
-        type,
-        props: filterProps(props),
-      })
-
-      return true
+      return false
     },
 
     prepareUpdate(
       _instance: HostInstance,
       _type: HostType,
-      oldProps: HostProps,
-      newProps: HostProps,
+      _oldProps: HostProps,
+      _newProps: HostProps,
       _rootContainer: HostContainer,
       _hostContext: HostContext,
     ): HostUpdatePayload | null {
-      return {
-        oldProps: filterProps(oldProps),
-        newProps: filterProps(newProps),
-      }
+      return null
     },
 
     shouldSetTextContent(_type: HostType, _props: HostProps): boolean {
@@ -250,30 +241,27 @@ const createHostConfig = (
     },
 
     commitMount(
-      instanceId: HostInstance,
-      type: HostType,
-      props: HostProps,
+      _instanceId: HostInstance,
+      _type: HostType,
+      _props: HostProps,
       _internalInstanceHandle: OpaqueHandle,
     ) {
-      client.send('COMMIT_MOUNT', {
-        instanceId,
-        type,
-        props: filterProps(props),
-      })
+      throw new Error('Not yet implemented.')
     },
 
     commitUpdate(
       instanceId: HostInstance,
-      updatePayload: HostUpdatePayload,
+      _updatePayload: HostUpdatePayload,
       type: HostType,
-      _prevProps: HostProps,
-      _nextProps: HostProps,
+      prevProps: HostProps,
+      nextProps: HostProps,
       _internalHandle: OpaqueHandle,
     ) {
       client.send('COMMIT_UPDATE', {
         instanceId,
-        updatePayload,
         type,
+        prevProps: filterProps(prevProps),
+        nextProps: filterProps(nextProps),
       })
     },
 
