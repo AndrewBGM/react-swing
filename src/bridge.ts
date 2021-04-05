@@ -35,6 +35,7 @@ class ReactSwingBridge {
 
   constructor(private ws: WebSocket) {
     ws.on('ping', data => ws.pong(data))
+    ws.on('message', data => this.handleData(String(data)))
   }
 
   startApplication(containerId: number): void {
@@ -202,6 +203,18 @@ class ReactSwingBridge {
     }
 
     return null
+  }
+
+  freeCallback(callbackId: number): void {
+    const idx = this.mappedCallbacks.findIndex(x => x.id === callbackId)
+    if (idx >= 0) {
+      this.mappedCallbacks.splice(idx, 1)
+    }
+  }
+
+  private handleData(data: string) {
+    // eslint-disable-next-line no-console
+    console.log(`Message received: ${data}`)
   }
 
   private send(type: string, payload: Record<string, unknown> = {}): void {
