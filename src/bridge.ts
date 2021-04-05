@@ -186,7 +186,7 @@ class ReactSwingBridge {
   ): void {
     this.send('COMMIT_UPDATE', {
       instanceId,
-      updatePayload,
+      ...updatePayload,
     })
   }
 
