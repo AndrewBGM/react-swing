@@ -26,6 +26,11 @@ interface CallbackData {
   invoke: Callback
 }
 
+type IncomingMessage = {
+  type: string
+  payload: Record<string, unknown>
+}
+
 class ReactSwingBridge {
   private nextInstanceId = 1
 
@@ -213,8 +218,11 @@ class ReactSwingBridge {
   }
 
   private handleData(data: string) {
-    // eslint-disable-next-line no-console
-    console.log(`Message received: ${data}`)
+    const message = JSON.parse(data) as IncomingMessage
+    if (message.type === 'INVOKE_CALLBACK') {
+      const { callbackId, args } = message.payload
+      this.invokeCallback(callbackId as number, args as unknown[])
+    }
   }
 
   private send(type: string, payload: Record<string, unknown> = {}): void {
