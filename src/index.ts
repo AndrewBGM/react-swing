@@ -3,17 +3,19 @@ import ReactReconciler from 'react-reconciler'
 import { configureBridge } from './bridge'
 import createHostConfig from './create-host-config'
 
-export interface RenderOptions {
+export interface StartOptions {
   host: string
 }
 
-const defaultOptions: RenderOptions = {
+const ROOT_CONTAINER_ID = 0
+
+const defaultOptions: StartOptions = {
   host: 'ws://localhost:8080',
 }
 
-export const render = async (
+export const startApplication = async (
   element: ReactElement,
-  options: RenderOptions = defaultOptions,
+  options: StartOptions = defaultOptions,
 ): Promise<void> => {
   const { host } = options
   const bridge = await configureBridge(host)
@@ -22,8 +24,17 @@ export const render = async (
     const ReactSwing = ReactReconciler(createHostConfig(bridge))
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const rootContainer = ReactSwing.createContainer(0, 0, false, null)
-    ReactSwing.updateContainer(element, rootContainer, null, () => resolve())
+    const rootContainer = ReactSwing.createContainer(
+      ROOT_CONTAINER_ID,
+      0,
+      false,
+      null,
+    )
+
+    ReactSwing.updateContainer(element, rootContainer, null, () => {
+      bridge.startApplication(ROOT_CONTAINER_ID)
+      resolve()
+    })
   })
 }
 

@@ -7,19 +7,19 @@ const isCallback = (arg: unknown): arg is Callback => typeof arg === 'function'
 const isObject = (arg: unknown): arg is Record<string, unknown> =>
   Object.prototype.toString.call(arg) === '[object Object]'
 
-export type HostType = string
-export type HostProps = Record<string, unknown>
-export type HostContainer = number
-export type HostInstance = number
-export type HostTextInstance = number
-export type HostSuspenseInstance = number
-export type HostHydratableInstance = number
-export type HostPublicInstance = number
-export type HostContext = Record<string, unknown>
-export type HostUpdatePayload = Record<string, unknown>
-export type HostChildSet = unknown
-export type HostTimeoutHandle = NodeJS.Timeout
-export type HostNoTimeout = -1
+export type BridgeType = string
+export type BridgeProps = Record<string, unknown>
+export type BridgeContainer = number
+export type BridgeInstance = number
+export type BridgeTextInstance = number
+export type BridgeSuspenseInstance = number
+export type BridgeHydratableInstance = number
+export type BridgePublicInstance = number
+export type BridgeContext = Record<string, unknown>
+export type BridgeUpdatePayload = Record<string, unknown>
+export type BridgeChildSet = unknown
+export type BridgeTimeoutHandle = NodeJS.Timeout
+export type BridgeNoTimeout = -1
 
 interface CallbackData {
   id: number
@@ -37,7 +37,13 @@ class ReactSwingBridge {
     ws.on('ping', data => ws.pong(data))
   }
 
-  createInstance(type: HostType, props: HostProps): HostInstance {
+  startApplication(containerId: number): void {
+    this.send('START_APPLICATION', {
+      containerId,
+    })
+  }
+
+  createInstance(type: BridgeType, props: BridgeProps): BridgeInstance {
     const instanceId = this.getNextInstanceId()
     this.send('CREATE_INSTANCE', {
       instanceId,
@@ -48,7 +54,7 @@ class ReactSwingBridge {
     return instanceId
   }
 
-  createTextInstance(text: string): HostTextInstance {
+  createTextInstance(text: string): BridgeTextInstance {
     const instanceId = this.getNextInstanceId()
     this.send('CREATE_TEXT_INSTANCE', {
       instanceId,
@@ -59,8 +65,8 @@ class ReactSwingBridge {
   }
 
   appendInitialChild(
-    parentId: HostInstance,
-    childId: HostInstance | HostTextInstance,
+    parentId: BridgeInstance,
+    childId: BridgeInstance | BridgeTextInstance,
   ): void {
     this.send('APPEND_INITIAL_CHILD', {
       parentId,
@@ -69,10 +75,10 @@ class ReactSwingBridge {
   }
 
   prepareUpdate(
-    type: HostType,
-    oldProps: HostProps,
-    newProps: HostProps,
-  ): HostUpdatePayload | null {
+    type: BridgeType,
+    oldProps: BridgeProps,
+    newProps: BridgeProps,
+  ): BridgeUpdatePayload | null {
     const prevProps = this.filterProps(oldProps)
     const nextProps = this.filterProps(newProps)
     const allKeys = [...Object.keys(prevProps), ...Object.keys(nextProps)]
@@ -98,8 +104,8 @@ class ReactSwingBridge {
   }
 
   appendChild(
-    parentId: HostInstance,
-    childId: HostInstance | HostTextInstance,
+    parentId: BridgeInstance,
+    childId: BridgeInstance | BridgeTextInstance,
   ): void {
     this.send('APPEND_CHILD', {
       parentId,
@@ -108,8 +114,8 @@ class ReactSwingBridge {
   }
 
   appendChildToContainer(
-    containerId: HostContainer,
-    childId: HostInstance | HostTextInstance,
+    containerId: BridgeContainer,
+    childId: BridgeInstance | BridgeTextInstance,
   ): void {
     this.send('APPEND_CHILD_TO_CONTAINER', {
       containerId,
@@ -118,9 +124,9 @@ class ReactSwingBridge {
   }
 
   insertBefore(
-    parentId: HostInstance,
-    childId: HostInstance | HostTextInstance,
-    beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
+    parentId: BridgeInstance,
+    childId: BridgeInstance | BridgeTextInstance,
+    beforeChildId: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
   ): void {
     this.send('INSERT_BEFORE', {
       parentId,
@@ -130,9 +136,9 @@ class ReactSwingBridge {
   }
 
   insertInContainerBefore(
-    containerId: HostContainer,
-    childId: HostInstance | HostTextInstance,
-    beforeChildId: HostInstance | HostTextInstance | HostSuspenseInstance,
+    containerId: BridgeContainer,
+    childId: BridgeInstance | BridgeTextInstance,
+    beforeChildId: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
   ): void {
     this.send('INSERT_IN_CONTAINER_BEFORE', {
       containerId,
@@ -142,8 +148,8 @@ class ReactSwingBridge {
   }
 
   removeChild(
-    parentId: HostInstance,
-    childId: HostInstance | HostTextInstance | HostSuspenseInstance,
+    parentId: BridgeInstance,
+    childId: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
   ): void {
     this.send('REMOVE_CHILD', {
       parentId,
@@ -152,8 +158,8 @@ class ReactSwingBridge {
   }
 
   removeChildFromContainer(
-    containerId: HostContainer,
-    childId: HostInstance | HostTextInstance | HostSuspenseInstance,
+    containerId: BridgeContainer,
+    childId: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
   ): void {
     this.send('REMOVE_CHILD_FROM_CONTAINER', {
       containerId,
@@ -162,7 +168,7 @@ class ReactSwingBridge {
   }
 
   commitTextUpdate(
-    instanceId: HostTextInstance,
+    instanceId: BridgeTextInstance,
     oldText: string,
     newText: string,
   ): void {
@@ -174,8 +180,8 @@ class ReactSwingBridge {
   }
 
   commitUpdate(
-    instanceId: HostInstance,
-    updatePayload: HostUpdatePayload,
+    instanceId: BridgeInstance,
+    updatePayload: BridgeUpdatePayload,
   ): void {
     this.send('COMMIT_UPDATE', {
       instanceId,
@@ -183,7 +189,7 @@ class ReactSwingBridge {
     })
   }
 
-  clearContainer(containerId: HostContainer): void {
+  clearContainer(containerId: BridgeContainer): void {
     this.send('CLEAR_CONTAINER', {
       containerId,
     })
@@ -198,7 +204,7 @@ class ReactSwingBridge {
     return null
   }
 
-  private send(type: string, payload: Record<string, unknown>): void {
+  private send(type: string, payload: Record<string, unknown> = {}): void {
     this.ws.send(
       JSON.stringify({
         type,
@@ -207,7 +213,7 @@ class ReactSwingBridge {
     )
   }
 
-  private filterProps(props: HostProps): HostProps {
+  private filterProps(props: BridgeProps): BridgeProps {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { children, ...rest } = props
     return this.mapCallbacks(rest)

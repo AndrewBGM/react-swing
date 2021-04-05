@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react'
-import { JButton, JFrame, JPanel, render } from '../dist'
+import { JButton, JFrame, JPanel, startApplication } from '../dist'
 
 const Counter = () => {
   const [count, setCount] = useState(0)
@@ -17,4 +17,4 @@ const Counter = () => {
   )
 }
 
-render(<Counter />).catch(err => console.error(err))
+startApplication(<Counter />).catch(err => console.error(err))
