@@ -14,6 +14,16 @@ interface CachedCallback {
   invoke: CallableFunction
 }
 
+interface InvokeCallbackMessage {
+  type: 'INVOKE_CALLBACK'
+  payload: {
+    callbackId: number
+    args: unknown[]
+  }
+}
+
+type IncomingMessage = InvokeCallbackMessage
+
 class Bridge {
   private nextCallbackId = 1
 
@@ -23,6 +33,7 @@ class Bridge {
 
   constructor(private ws: WebSocket) {
     ws.on('ping', data => ws.pong(data))
+    ws.on('message', data => this.handleMessage(data.toString()))
   }
 
   createInstance(type: BridgeType, props: BridgeProps): BridgeInstance {
@@ -141,6 +152,24 @@ class Bridge {
     this.send('CLEAR_CONTAINER', {
       containerId,
     })
+  }
+
+  private handleMessage(data: string) {
+    const { type, payload } = JSON.parse(data) as IncomingMessage
+    switch (type) {
+      case 'INVOKE_CALLBACK': {
+        const { callbackId, args } = payload
+        const callback = this.cachedCallbacks.find(x => x.id === callbackId)
+        if (callback) {
+          callback.invoke(...args)
+        }
+
+        break
+      }
+
+      default:
+        break
+    }
   }
 
   private send(type: string, payload: Record<string, unknown>): void {
