@@ -86,7 +86,7 @@ const createHostConfig = (
 
   prepareUpdate(
     _instance: BridgeInstance,
-    type: BridgeType,
+    _type: BridgeType,
     oldProps: BridgeProps,
     newProps: BridgeProps,
     _rootContainer: BridgeContainer,
@@ -110,7 +110,6 @@ const createHostConfig = (
     }
 
     return {
-      type,
       changedProps: withoutChildren(changedProps),
     }
   },
