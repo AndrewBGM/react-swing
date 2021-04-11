@@ -13,9 +13,9 @@
   "scripts": {
     "pretty": "prettier . --write",
     "lint": "eslint .",
-    "sample": "cd samples && npx babel-node --presets @babel/preset-env,@babel/preset-react",
     "watch": "rollup -c -w",
     "build": "rollup -c",
+    "sample": "cd samples && npx babel-node --presets @babel/preset-env,@babel/preset-react",
     "prepublishOnly": "npm run pretty && npm run lint && npm run build"
   },
   "dependencies": {
