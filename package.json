@@ -45,7 +45,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-tsdoc": "^0.2.11",
     "prettier": "^2.2.1",
-    "rollup": "^2.45.0",
+    "rollup": "^2.45.1",
     "rollup-plugin-delete": "^2.0.0",
     "rollup-plugin-dts": "^3.0.1",
     "rollup-plugin-typescript2": "^0.30.0",
