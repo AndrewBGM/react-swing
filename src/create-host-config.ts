@@ -1,20 +1,27 @@
 import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
 import Bridge, {
-  BridgeChildSet,
   BridgeContainer,
-  BridgeHostContext,
-  BridgeHydratableInstance,
   BridgeInstance,
-  BridgeNoTimeout,
   BridgeProps,
-  BridgePublicInstance,
   BridgeSuspenseInstance,
   BridgeTextInstance,
-  BridgeTimeoutHandle,
   BridgeType,
   BridgeUpdatePayload,
 } from './bridge'
+
+type HostContext = Record<string, unknown>
+type HostHydratableInstance = number
+type HostPublicInstance = number
+type HostChildSet = unknown
+type HostTimeoutHandle = NodeJS.Timeout
+type HostNoTimeout = -1
+
+const withoutChildren = (props: BridgeProps): Omit<BridgeProps, 'children'> => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { children, ...rest } = props
+  return rest
+}
 
 const createHostConfig = (
   bridge: Bridge,
@@ -25,13 +32,13 @@ const createHostConfig = (
   BridgeInstance,
   BridgeTextInstance,
   BridgeSuspenseInstance,
-  BridgeHydratableInstance,
-  BridgePublicInstance,
-  BridgeHostContext,
+  HostHydratableInstance,
+  HostPublicInstance,
+  HostContext,
   BridgeUpdatePayload,
-  BridgeChildSet,
-  BridgeTimeoutHandle,
-  BridgeNoTimeout
+  HostChildSet,
+  HostTimeoutHandle,
+  HostNoTimeout
 > => ({
   isPrimaryRenderer: true,
 
@@ -45,16 +52,16 @@ const createHostConfig = (
     type: BridgeType,
     props: BridgeProps,
     _rootContainer: BridgeContainer,
-    _hostContext: BridgeHostContext,
+    _hostContext: HostContext,
     _internalHandle: OpaqueHandle,
   ): BridgeInstance {
-    return bridge.createInstance(type, props)
+    return bridge.createInstance(type, withoutChildren(props))
   },
 
   createTextInstance(
     text: string,
     _rootContainer: BridgeContainer,
-    _hostContext: BridgeHostContext,
+    _hostContext: HostContext,
     _internalHandle: OpaqueHandle,
   ): BridgeTextInstance {
     return bridge.createTextInstance(text)
@@ -72,7 +79,7 @@ const createHostConfig = (
     _type: BridgeType,
     _props: BridgeProps,
     _rootContainer: BridgeContainer,
-    _hostContext: BridgeHostContext,
+    _hostContext: HostContext,
   ): boolean {
     return false
   },
@@ -83,9 +90,29 @@ const createHostConfig = (
     oldProps: BridgeProps,
     newProps: BridgeProps,
     _rootContainer: BridgeContainer,
-    _hostContext: BridgeHostContext,
+    _hostContext: HostContext,
   ): BridgeUpdatePayload | null {
-    return bridge.prepareUpdate(type, oldProps, newProps)
+    const changedProps: Record<string, unknown> = {}
+    const keys = new Set([...Object.keys(oldProps), ...Object.keys(newProps)])
+
+    keys.forEach(key => {
+      const oldValue = oldProps[key]
+      const newValue = newProps[key]
+
+      if (oldValue !== newValue) {
+        changedProps[key] = newValue === undefined ? null : newValue
+      }
+    })
+
+    const needsUpdate = Object.keys(changedProps).length > 0
+    if (!needsUpdate) {
+      return null
+    }
+
+    return {
+      type,
+      changedProps: withoutChildren(changedProps),
+    }
   },
 
   shouldSetTextContent(_type: BridgeType, _props: BridgeProps): boolean {
@@ -94,21 +121,21 @@ const createHostConfig = (
 
   getRootHostContext(
     _rootContainer: BridgeContainer,
-  ): BridgeHostContext | null {
+  ): Record<string, unknown> | null {
     return null
   },
 
   getChildHostContext(
-    parentHostContext: BridgeHostContext,
+    parentHostContext: Record<string, unknown>,
     _type: BridgeType,
     _rootContainer: BridgeContainer,
-  ): BridgeHostContext {
+  ): Record<string, unknown> {
     return parentHostContext
   },
 
   getPublicInstance(
     instance: BridgeInstance | BridgeTextInstance,
-  ): BridgePublicInstance {
+  ): HostPublicInstance {
     return instance
   },
 

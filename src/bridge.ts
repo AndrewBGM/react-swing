@@ -6,19 +6,7 @@ export type BridgeContainer = number
 export type BridgeInstance = number
 export type BridgeTextInstance = number
 export type BridgeSuspenseInstance = number
-export type BridgeHydratableInstance = number
-export type BridgePublicInstance = number
-export type BridgeHostContext = Record<string, unknown>
 export type BridgeUpdatePayload = Record<string, unknown>
-export type BridgeChildSet = unknown
-export type BridgeTimeoutHandle = NodeJS.Timeout
-export type BridgeNoTimeout = -1
-
-const withoutChildren = (props: BridgeProps): Omit<BridgeProps, 'children'> => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { children, ...rest } = props
-  return rest
-}
 
 interface CachedCallback {
   id: number
@@ -42,7 +30,7 @@ class Bridge {
     this.send('CREATE_INSTANCE', {
       instanceId,
       type,
-      props: withoutChildren(props),
+      props,
     })
 
     return instanceId
@@ -66,34 +54,6 @@ class Bridge {
       parentId,
       childId,
     })
-  }
-
-  prepareUpdate(
-    type: BridgeType,
-    oldProps: BridgeProps,
-    newProps: BridgeProps,
-  ): BridgeUpdatePayload | null {
-    const changedProps: Record<string, unknown> = {}
-    const keys = new Set([...Object.keys(oldProps), ...Object.keys(newProps)])
-
-    keys.forEach(key => {
-      const oldValue = oldProps[key]
-      const newValue = newProps[key]
-
-      if (oldValue !== newValue) {
-        changedProps[key] = newValue === undefined ? null : newValue
-      }
-    })
-
-    const needsUpdate = Object.keys(changedProps).length > 0
-    if (!needsUpdate) {
-      return null
-    }
-
-    return {
-      type,
-      changedProps: withoutChildren(changedProps),
-    }
   }
 
   appendChild(
