@@ -203,12 +203,8 @@ const createHostConfig = (
     throw new Error('Not implemented yet.')
   },
 
-  commitTextUpdate(
-    textInstance: BridgeTextInstance,
-    oldText: string,
-    newText: string,
-  ): void {
-    bridge.commitTextUpdate(textInstance, oldText, newText)
+  commitTextUpdate(textInstance: BridgeTextInstance, newText: string): void {
+    bridge.commitTextUpdate(textInstance, newText)
   },
 
   commitMount(

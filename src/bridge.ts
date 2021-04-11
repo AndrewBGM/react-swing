@@ -120,15 +120,10 @@ class Bridge {
     })
   }
 
-  commitTextUpdate(
-    instanceId: BridgeTextInstance,
-    oldText: string,
-    newText: string,
-  ): void {
+  commitTextUpdate(instanceId: BridgeTextInstance, text: string): void {
     this.send('COMMIT_TEXT_UPDATE', {
       instanceId,
-      oldText,
-      newText,
+      text,
     })
   }
 
@@ -138,7 +133,7 @@ class Bridge {
   ): void {
     this.send('COMMIT_UPDATE', {
       instanceId,
-      updatePayload,
+      ...updatePayload,
     })
   }
 
