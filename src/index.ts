@@ -15,13 +15,13 @@ export const render = async (
   host: string,
 ): Promise<void> => {
   const bridge = await configureBridge(host)
-  const hostConfig = createHostConfig(bridge)
-  const ReactSwing = ReactReconciler(hostConfig)
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const root = ReactSwing.createContainer(0, 0, false, null)
 
   return new Promise(resolve => {
+    const hostConfig = createHostConfig(bridge)
+    const ReactSwing = ReactReconciler(hostConfig)
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const root = ReactSwing.createContainer(0, 0, false, null)
     ReactSwing.updateContainer(element, root, null, () => {
       resolve()
     })
