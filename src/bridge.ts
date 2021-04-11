@@ -1,12 +1,5 @@
 import WebSocket from 'ws'
 
-type Callback = (...args: unknown[]) => unknown
-
-const isCallback = (arg: unknown): arg is Callback => typeof arg === 'function'
-
-const isObject = (arg: unknown): arg is Record<string, unknown> =>
-  Object.prototype.toString.call(arg) === '[object Object]'
-
 export type BridgeType = string
 export type BridgeProps = Record<string, unknown>
 export type BridgeContainer = number
@@ -15,53 +8,48 @@ export type BridgeTextInstance = number
 export type BridgeSuspenseInstance = number
 export type BridgeHydratableInstance = number
 export type BridgePublicInstance = number
-export type BridgeContext = Record<string, unknown>
+export type BridgeHostContext = Record<string, unknown>
 export type BridgeUpdatePayload = Record<string, unknown>
 export type BridgeChildSet = unknown
 export type BridgeTimeoutHandle = NodeJS.Timeout
 export type BridgeNoTimeout = -1
 
-interface CallbackData {
+const withoutChildren = (props: BridgeProps): Omit<BridgeProps, 'children'> => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { children, ...rest } = props
+  return rest
+}
+
+interface CachedCallback {
   id: number
-  invoke: Callback
+
+  invoke: CallableFunction
 }
 
-type IncomingMessage = {
-  type: string
-  payload: Record<string, unknown>
-}
-
-class ReactSwingBridge {
-  private nextInstanceId = 1
-
+class Bridge {
   private nextCallbackId = 1
 
-  private mappedCallbacks: CallbackData[] = []
+  private cachedCallbacks: CachedCallback[] = []
+
+  private nextInstanceId = 1
 
   constructor(private ws: WebSocket) {
     ws.on('ping', data => ws.pong(data))
-    ws.on('message', data => this.handleData(String(data)))
-  }
-
-  startApplication(containerId: number): void {
-    this.send('START_APPLICATION', {
-      containerId,
-    })
   }
 
   createInstance(type: BridgeType, props: BridgeProps): BridgeInstance {
-    const instanceId = this.getNextInstanceId()
+    const instanceId = this.generateInstanceId()
     this.send('CREATE_INSTANCE', {
       instanceId,
       type,
-      props: this.filterProps(props),
+      props: withoutChildren(props),
     })
 
     return instanceId
   }
 
   createTextInstance(text: string): BridgeTextInstance {
-    const instanceId = this.getNextInstanceId()
+    const instanceId = this.generateInstanceId()
     this.send('CREATE_TEXT_INSTANCE', {
       instanceId,
       text,
@@ -85,27 +73,26 @@ class ReactSwingBridge {
     oldProps: BridgeProps,
     newProps: BridgeProps,
   ): BridgeUpdatePayload | null {
-    const prevProps = this.filterProps(oldProps)
-    const nextProps = this.filterProps(newProps)
-    const allKeys = [...Object.keys(prevProps), ...Object.keys(nextProps)]
     const changedProps: Record<string, unknown> = {}
+    const keys = new Set([...Object.keys(oldProps), ...Object.keys(newProps)])
 
-    allKeys.forEach(key => {
-      const prevValue = prevProps[key]
-      const nextValue = nextProps[key]
+    keys.forEach(key => {
+      const oldValue = oldProps[key]
+      const newValue = newProps[key]
 
-      if (prevValue !== nextValue) {
-        changedProps[key] = nextValue
+      if (oldValue !== newValue) {
+        changedProps[key] = newValue === undefined ? null : newValue
       }
     })
 
-    if (Object.keys(changedProps).length === 0) {
+    const needsUpdate = Object.keys(changedProps).length > 0
+    if (!needsUpdate) {
       return null
     }
 
     return {
       type,
-      changedProps,
+      changedProps: withoutChildren(changedProps),
     }
   }
 
@@ -191,7 +178,7 @@ class ReactSwingBridge {
   ): void {
     this.send('COMMIT_UPDATE', {
       instanceId,
-      ...updatePayload,
+      updatePayload,
     })
   }
 
@@ -201,103 +188,61 @@ class ReactSwingBridge {
     })
   }
 
-  invokeCallback(callbackId: number, args: unknown[]): unknown {
-    const callback = this.mappedCallbacks.find(x => x.id === callbackId)
-    if (callback) {
-      return callback.invoke(...args)
-    }
-
-    return null
+  private send(type: string, payload: Record<string, unknown>): void {
+    this.ws.send({
+      type,
+      payload: this.patchPayload(payload),
+    })
   }
 
-  freeCallback(callbackId: number): void {
-    const idx = this.mappedCallbacks.findIndex(x => x.id === callbackId)
-    if (idx >= 0) {
-      this.mappedCallbacks.splice(idx, 1)
-    }
-  }
-
-  private handleData(data: string) {
-    const message = JSON.parse(data) as IncomingMessage
-    if (message.type === 'INVOKE_CALLBACK') {
-      const { callbackId, args } = message.payload
-      this.invokeCallback(callbackId as number, args as unknown[])
-    }
-  }
-
-  private send(type: string, payload: Record<string, unknown> = {}): void {
-    this.ws.send(
-      JSON.stringify({
-        type,
-        payload,
-      }),
-    )
-  }
-
-  private filterProps(props: BridgeProps): BridgeProps {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { children, ...rest } = props
-    return this.mapCallbacks(rest)
-  }
-
-  private mapCallbacks<T>(obj: T): T {
-    if (Array.isArray(obj)) {
+  private patchPayload<T extends unknown>(payload: T): T {
+    if (Array.isArray(payload)) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return (obj.map(x => this.mapCallbacks(x)) as unknown) as T
+      return payload.map(x => this.patchPayload(x)) as T
     }
 
-    if (isCallback(obj)) {
-      const existingCallbackData = this.mappedCallbacks.find(
-        x => x.invoke === obj,
-      )
-
-      if (existingCallbackData) {
-        return (existingCallbackData.id as unknown) as T
-      }
-
-      const callbackId = this.getNextCallbackId()
-      this.mappedCallbacks.push({
-        id: callbackId,
-        invoke: obj,
-      })
-
-      return (callbackId as unknown) as T
-    }
-
-    if (isObject(obj)) {
+    if (Object.prototype.toString.call(payload) === '[object Object]') {
+      const obj = payload as Record<string, unknown>
       return Object.keys(obj).reduce((current, key) => {
-        const value = obj[key]
+        const value = this.patchPayload(obj[key])
 
         return {
           ...current,
-          [key]: this.mapCallbacks(value),
+          [key]: value,
         }
-      }, {} as T)
+      }, {}) as T
     }
 
-    return obj
+    if (typeof payload === 'function') {
+      const existing = this.cachedCallbacks.find(x => x.invoke === payload)
+      if (existing) {
+        return existing.id as T
+      }
+
+      return this.cacheCallback(payload) as T
+    }
+
+    return payload
   }
 
-  private getNextInstanceId(): number {
-    const instanceId = this.nextInstanceId
-    this.nextInstanceId += 1
-
-    return instanceId
-  }
-
-  private getNextCallbackId(): number {
-    const callbackId = this.nextCallbackId
+  private cacheCallback(invoke: CallableFunction): number {
+    const id = this.nextCallbackId
     this.nextCallbackId += 1
 
-    return callbackId
+    this.cachedCallbacks.push({
+      id,
+      invoke,
+    })
+
+    return id
+  }
+
+  private generateInstanceId(): number {
+    const id = this.nextInstanceId
+    this.nextInstanceId += 1
+
+    return id
   }
 }
 
-export const configureBridge = (host: string): Promise<ReactSwingBridge> => {
-  const ws = new WebSocket(host)
-  return new Promise(resolve => {
-    ws.once('open', () => resolve(new ReactSwingBridge(ws)))
-  })
-}
-
-export default ReactSwingBridge
+export default Bridge

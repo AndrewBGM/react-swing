@@ -1,9 +1,9 @@
 import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
-import ReactSwingBridge, {
+import Bridge, {
   BridgeChildSet,
   BridgeContainer,
-  BridgeContext,
+  BridgeHostContext,
   BridgeHydratableInstance,
   BridgeInstance,
   BridgeNoTimeout,
@@ -17,7 +17,7 @@ import ReactSwingBridge, {
 } from './bridge'
 
 const createHostConfig = (
-  bridge: ReactSwingBridge,
+  bridge: Bridge,
 ): HostConfig<
   BridgeType,
   BridgeProps,
@@ -27,17 +27,14 @@ const createHostConfig = (
   BridgeSuspenseInstance,
   BridgeHydratableInstance,
   BridgePublicInstance,
-  BridgeContext,
+  BridgeHostContext,
   BridgeUpdatePayload,
   BridgeChildSet,
   BridgeTimeoutHandle,
   BridgeNoTimeout
 > => ({
-  supportsMutation: true,
-  supportsHydration: false,
-  supportsPersistence: false,
-
   isPrimaryRenderer: true,
+
   now: () => performance.now(),
   scheduleTimeout: setTimeout,
   cancelTimeout: clearTimeout,
@@ -48,7 +45,7 @@ const createHostConfig = (
     type: BridgeType,
     props: BridgeProps,
     _rootContainer: BridgeContainer,
-    _hostContext: BridgeContext,
+    _hostContext: BridgeHostContext,
     _internalHandle: OpaqueHandle,
   ): BridgeInstance {
     return bridge.createInstance(type, props)
@@ -57,25 +54,25 @@ const createHostConfig = (
   createTextInstance(
     text: string,
     _rootContainer: BridgeContainer,
-    _hostContext: BridgeContext,
+    _hostContext: BridgeHostContext,
     _internalHandle: OpaqueHandle,
   ): BridgeTextInstance {
     return bridge.createTextInstance(text)
   },
 
   appendInitialChild(
-    parentId: BridgeInstance,
-    childId: BridgeInstance | BridgeTextInstance,
-  ) {
-    bridge.appendInitialChild(parentId, childId)
+    parentInstance: BridgeInstance,
+    child: BridgeInstance | BridgeTextInstance,
+  ): void {
+    bridge.appendInitialChild(parentInstance, child)
   },
 
   finalizeInitialChildren(
-    _instanceId: BridgeInstance,
+    _instance: BridgeInstance,
     _type: BridgeType,
     _props: BridgeProps,
     _rootContainer: BridgeContainer,
-    _hostContext: BridgeContext,
+    _hostContext: BridgeHostContext,
   ): boolean {
     return false
   },
@@ -86,7 +83,7 @@ const createHostConfig = (
     oldProps: BridgeProps,
     newProps: BridgeProps,
     _rootContainer: BridgeContainer,
-    _hostContext: BridgeContext,
+    _hostContext: BridgeHostContext,
   ): BridgeUpdatePayload | null {
     return bridge.prepareUpdate(type, oldProps, newProps)
   },
@@ -95,15 +92,17 @@ const createHostConfig = (
     return false
   },
 
-  getRootHostContext(_rootContainer: BridgeContainer): BridgeContext | null {
+  getRootHostContext(
+    _rootContainer: BridgeContainer,
+  ): BridgeHostContext | null {
     return null
   },
 
   getChildHostContext(
-    parentHostContext: BridgeContext,
+    parentHostContext: BridgeHostContext,
     _type: BridgeType,
     _rootContainer: BridgeContainer,
-  ): BridgeContext {
+  ): BridgeHostContext {
     return parentHostContext
   },
 
@@ -119,109 +118,115 @@ const createHostConfig = (
     return null
   },
 
-  resetAfterCommit(_containerInfo: BridgeContainer) {
-    // NOOP
+  resetAfterCommit(_containerInfo: BridgeContainer): void {
+    // noop
   },
 
-  preparePortalMount(_containerInfo: BridgeContainer) {
-    // NOOP
+  preparePortalMount(_containerInfo: BridgeContainer): void {
+    // noop
   },
+
+  supportsMutation: true,
 
   appendChild(
-    parentId: BridgeInstance,
-    childId: BridgeInstance | BridgeTextInstance,
-  ) {
-    bridge.appendChild(parentId, childId)
+    parentInstance: BridgeInstance,
+    child: BridgeInstance | BridgeTextInstance,
+  ): void {
+    bridge.appendChild(parentInstance, child)
   },
 
   appendChildToContainer(
-    containerId: BridgeContainer,
-    childId: BridgeInstance | BridgeTextInstance,
-  ) {
-    bridge.appendChildToContainer(containerId, childId)
+    container: BridgeContainer,
+    child: BridgeInstance | BridgeTextInstance,
+  ): void {
+    bridge.appendChildToContainer(container, child)
   },
 
   insertBefore(
-    parentId: BridgeInstance,
-    childId: BridgeInstance | BridgeTextInstance,
-    beforeChildId: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
-  ) {
-    bridge.insertBefore(parentId, childId, beforeChildId)
+    parentInstance: BridgeInstance,
+    child: BridgeInstance | BridgeTextInstance,
+    beforeChild: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
+  ): void {
+    bridge.insertBefore(parentInstance, child, beforeChild)
   },
 
   insertInContainerBefore(
-    containerId: BridgeContainer,
-    childId: BridgeInstance | BridgeTextInstance,
-    beforeChildId: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
-  ) {
-    bridge.insertInContainerBefore(containerId, childId, beforeChildId)
+    container: BridgeContainer,
+    child: BridgeInstance | BridgeTextInstance,
+    beforeChild: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
+  ): void {
+    bridge.insertInContainerBefore(container, child, beforeChild)
   },
 
   removeChild(
-    parentId: BridgeInstance,
-    childId: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
-  ) {
-    bridge.removeChild(parentId, childId)
+    parentInstance: BridgeInstance,
+    child: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
+  ): void {
+    bridge.removeChild(parentInstance, child)
   },
 
   removeChildFromContainer(
-    containerId: BridgeContainer,
-    childId: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
-  ) {
-    bridge.removeChildFromContainer(containerId, childId)
+    container: BridgeContainer,
+    child: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
+  ): void {
+    bridge.removeChildFromContainer(container, child)
   },
 
-  resetTextContent(_instanceId: BridgeInstance) {
-    throw new Error('Not yet implemented')
+  resetTextContent(_instance: BridgeInstance): void {
+    throw new Error('Not implemented yet.')
   },
 
   commitTextUpdate(
-    instanceId: BridgeTextInstance,
+    textInstance: BridgeTextInstance,
     oldText: string,
     newText: string,
-  ) {
-    bridge.commitTextUpdate(instanceId, oldText, newText)
+  ): void {
+    bridge.commitTextUpdate(textInstance, oldText, newText)
   },
 
   commitMount(
-    _instanceId: BridgeInstance,
+    _instance: BridgeInstance,
     _type: BridgeType,
     _props: BridgeProps,
     _internalInstanceHandle: OpaqueHandle,
-  ) {
-    throw new Error('Not yet implemented.')
+  ): void {
+    throw new Error('Not implemented yet.')
   },
 
   commitUpdate(
-    instanceId: BridgeInstance,
+    instance: BridgeInstance,
     updatePayload: BridgeUpdatePayload,
     _type: BridgeType,
     _prevProps: BridgeProps,
     _nextProps: BridgeProps,
     _internalHandle: OpaqueHandle,
-  ) {
-    bridge.commitUpdate(instanceId, updatePayload)
+  ): void {
+    bridge.commitUpdate(instance, updatePayload)
   },
 
-  hideInstance(_instanceId: BridgeInstance) {
-    throw new Error('Not yet implemented.')
+  hideInstance(_instance: BridgeInstance): void {
+    throw new Error('Not implemented yet.')
   },
 
-  hideTextInstance(_textInstance: BridgeTextInstance) {
-    throw new Error('Not yet implemented.')
+  hideTextInstance(_textInstance: BridgeTextInstance): void {
+    throw new Error('Not implemented yet.')
   },
 
-  unhideInstance(_instanceId: BridgeInstance, _props: BridgeProps) {
-    throw new Error('Not yet implemented.')
+  unhideInstance(_instance: BridgeInstance, _props: BridgeProps): void {
+    throw new Error('Not implemented yet.')
   },
 
-  unhideTextInstance(_textInstance: BridgeTextInstance, _text: string) {
-    throw new Error('Not yet implemented.')
+  unhideTextInstance(_textInstance: BridgeTextInstance, _text: string): void {
+    throw new Error('Not implemented yet.')
   },
 
-  clearContainer(containerId: BridgeContainer) {
-    bridge.clearContainer(containerId)
+  clearContainer(container: BridgeContainer): void {
+    bridge.clearContainer(container)
   },
+
+  supportsHydration: false,
+
+  supportsPersistence: false,
 })
 
 export default createHostConfig

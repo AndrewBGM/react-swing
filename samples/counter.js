@@ -1,5 +1,6 @@
+// @ts-check
 import React, { useCallback, useState } from 'react'
-import { JButton, JFrame, JPanel, startApplication } from '../dist'
+import { JButton, JFrame, JPanel, render } from '../dist'
 
 const Counter = () => {
   const [count, setCount] = useState(0)
@@ -17,4 +18,6 @@ const Counter = () => {
   )
 }
 
-startApplication(<Counter />).catch(err => console.error(err))
+render(<Counter />, 'ws://localhost:8080/')
+  .then(() => console.log('Application ready'))
+  .catch(e => console.error(e))

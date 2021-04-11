@@ -1,38 +1,28 @@
-import { ReactElement } from 'react'
+import { ReactNode } from 'react'
 import ReactReconciler from 'react-reconciler'
-import { configureBridge } from './bridge'
+import WebSocket from 'ws'
+import Bridge from './bridge'
 import createHostConfig from './create-host-config'
 
-export interface StartOptions {
-  host: string
-}
+const configureBridge = (host: string): Promise<Bridge> =>
+  new Promise(resolve => {
+    const ws = new WebSocket(host)
+    ws.once('open', () => resolve(new Bridge(ws)))
+  })
 
-const ROOT_CONTAINER_ID = 0
-
-const defaultOptions: StartOptions = {
-  host: 'ws://localhost:8080',
-}
-
-export const startApplication = async (
-  element: ReactElement,
-  options: StartOptions = defaultOptions,
+export const render = async (
+  element: ReactNode,
+  host: string,
 ): Promise<void> => {
-  const { host } = options
   const bridge = await configureBridge(host)
+  const hostConfig = createHostConfig(bridge)
+  const ReactSwing = ReactReconciler(hostConfig)
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const root = ReactSwing.createContainer(0, 0, false, null)
 
   return new Promise(resolve => {
-    const ReactSwing = ReactReconciler(createHostConfig(bridge))
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const rootContainer = ReactSwing.createContainer(
-      ROOT_CONTAINER_ID,
-      0,
-      false,
-      null,
-    )
-
-    ReactSwing.updateContainer(element, rootContainer, null, () => {
-      bridge.startApplication(ROOT_CONTAINER_ID)
+    ReactSwing.updateContainer(element, root, null, () => {
       resolve()
     })
   })
