@@ -154,6 +154,10 @@ class Bridge {
     })
   }
 
+  startApplication(): void {
+    this.send('START_APPLICATION')
+  }
+
   private handleMessage(data: string) {
     const { type, payload } = JSON.parse(data) as IncomingMessage
     switch (type) {
@@ -172,7 +176,7 @@ class Bridge {
     }
   }
 
-  private send(type: string, payload: Record<string, unknown>): void {
+  private send(type: string, payload: Record<string, unknown> = {}): void {
     this.ws.send(
       JSON.stringify({
         type,
