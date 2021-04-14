@@ -173,10 +173,12 @@ class Bridge {
   }
 
   private send(type: string, payload: Record<string, unknown>): void {
-    this.ws.send({
-      type,
-      payload: this.patchPayload(payload),
-    })
+    this.ws.send(
+      JSON.stringify({
+        type,
+        payload: this.patchPayload(payload),
+      }),
+    )
   }
 
   private patchPayload<T extends unknown>(payload: T): T {
