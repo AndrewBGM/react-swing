@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "react-reconciler": "^0.26.2",
-    "ws": "^7.4.4"
+    "ws": "^7.4.5"
   },
   "peerDependencies": {
     "react": "^17.0.2"
