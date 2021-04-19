@@ -105,10 +105,13 @@ const createHostConfig = (
     })
 
     const needsUpdate = Object.keys(changedProps).length > 0
+
     if (!needsUpdate) {
       return null
     }
 
+    // TODO: Might be better to send the previous props here,
+    // makes it easier to call freeCallback from JVM
     return {
       changedProps: withoutChildren(changedProps),
     }
@@ -202,7 +205,11 @@ const createHostConfig = (
     throw new Error('Not implemented yet.')
   },
 
-  commitTextUpdate(textInstance: BridgeTextInstance, newText: string): void {
+  commitTextUpdate(
+    textInstance: BridgeTextInstance,
+    _oldText: string,
+    newText: string,
+  ): void {
     bridge.commitTextUpdate(textInstance, newText)
   },
 

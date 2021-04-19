@@ -9,15 +9,27 @@ const Counter = () => {
     setCount(x => x + 1)
   }, [])
 
+  return <JButton onAction={handleClick}>Clicks: {count}</JButton>
+}
+
+const App = () => {
+  const [count, setCount] = useState(0)
+
+  const handleClick = useCallback(() => {
+    setCount(x => x + 1)
+  }, [])
+
   return (
     <JFrame title='Counter'>
       <JPanel>
-        <JButton onAction={handleClick}>Clicks: {count}</JButton>
+        <Counter />
+        <Counter />
+        <Counter />
       </JPanel>
     </JFrame>
   )
 }
 
-render(<Counter />, 'ws://localhost:8080/')
+render(<App />, 'ws://localhost:8080/')
   .then(() => console.log('Application ready'))
   .catch(e => console.error(e))

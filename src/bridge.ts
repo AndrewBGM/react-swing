@@ -160,6 +160,7 @@ class Bridge {
 
   private handleMessage(data: string) {
     const { type, payload } = JSON.parse(data) as IncomingMessage
+
     switch (type) {
       case 'INVOKE_CALLBACK': {
         const { callbackId, args } = payload
