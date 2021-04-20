@@ -14,6 +14,13 @@ interface CachedCallback {
   invoke: CallableFunction
 }
 
+interface FreeCallbackMessage {
+  type: 'FREE_CALLBACK'
+  payload: {
+    callbackId: number
+  }
+}
+
 interface InvokeCallbackMessage {
   type: 'INVOKE_CALLBACK'
   payload: {
@@ -22,7 +29,7 @@ interface InvokeCallbackMessage {
   }
 }
 
-type IncomingMessage = InvokeCallbackMessage
+type IncomingMessage = FreeCallbackMessage | InvokeCallbackMessage
 
 class Bridge {
   private nextCallbackId = 1
@@ -159,14 +166,24 @@ class Bridge {
   }
 
   private handleMessage(data: string) {
-    const { type, payload } = JSON.parse(data) as IncomingMessage
+    const obj = JSON.parse(data) as IncomingMessage
 
-    switch (type) {
+    switch (obj.type) {
       case 'INVOKE_CALLBACK': {
-        const { callbackId, args } = payload
+        const { callbackId, args } = obj.payload
         const callback = this.cachedCallbacks.find(x => x.id === callbackId)
         if (callback) {
           callback.invoke(...args)
+        }
+
+        break
+      }
+
+      case 'FREE_CALLBACK': {
+        const { callbackId } = obj.payload
+        const idx = this.cachedCallbacks.findIndex(x => x.id === callbackId)
+        if (idx >= 0) {
+          this.cachedCallbacks.splice(idx, 1)
         }
 
         break
