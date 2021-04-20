@@ -13,17 +13,9 @@ const Counter = () => {
 }
 
 const App = () => {
-  const [count, setCount] = useState(0)
-
-  const handleClick = useCallback(() => {
-    setCount(x => x + 1)
-  }, [])
-
   return (
     <JFrame title='Counter'>
       <JPanel>
-        <Counter />
-        <Counter />
         <Counter />
       </JPanel>
     </JFrame>

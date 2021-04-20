@@ -92,28 +92,17 @@ const createHostConfig = (
     _rootContainer: BridgeContainer,
     _hostContext: HostContext,
   ): BridgeUpdatePayload | null {
-    const changedProps: Record<string, unknown> = {}
-    const keys = new Set([...Object.keys(oldProps), ...Object.keys(newProps)])
-
-    keys.forEach(key => {
-      const oldValue = oldProps[key]
-      const newValue = newProps[key]
-
-      if (oldValue !== newValue) {
-        changedProps[key] = newValue === undefined ? null : newValue
-      }
-    })
-
-    const needsUpdate = Object.keys(changedProps).length > 0
+    const needsUpdate = Object.keys(newProps)
+      .map(key => oldProps[key] !== newProps[key])
+      .every(Boolean)
 
     if (!needsUpdate) {
       return null
     }
 
-    // TODO: Might be better to send the previous props here,
-    // makes it easier to call freeCallback from JVM
     return {
-      changedProps: withoutChildren(changedProps),
+      oldProps: withoutChildren(oldProps),
+      newProps: withoutChildren(newProps),
     }
   },
 
