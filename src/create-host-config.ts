@@ -94,7 +94,7 @@ const createHostConfig = (
   ): BridgeUpdatePayload | null {
     const needsUpdate = Object.keys(newProps)
       .map(key => oldProps[key] !== newProps[key])
-      .every(Boolean)
+      .some(Boolean)
 
     if (!needsUpdate) {
       return null
