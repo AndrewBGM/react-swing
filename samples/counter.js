@@ -13,12 +13,22 @@ const Counter = () => {
 }
 
 const App = () => {
+  const [isFrameVisible, setFrameVisible] = useState(true)
+
+  const handleClose = useCallback(() => {
+    setFrameVisible(false)
+  }, [])
+
   return (
-    <JFrame title='Counter'>
-      <JPanel>
-        <Counter />
-      </JPanel>
-    </JFrame>
+    <>
+      {isFrameVisible && (
+        <JFrame title='Counter' onClose={handleClose}>
+          <JPanel>
+            <Counter />
+          </JPanel>
+        </JFrame>
+      )}
+    </>
   )
 }
 

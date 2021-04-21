@@ -153,21 +153,21 @@ class Bridge {
     const obj = parseMessage(data)
 
     switch (obj.type) {
-      case 'INVOKE_CALLBACK': {
-        const { callbackId, args = [] } = obj.payload
-        const callback = this.cachedCallbacks.find(x => x.id === callbackId)
-        if (callback) {
-          callback.invoke(...args)
-        }
-
-        break
-      }
-
       case 'FREE_CALLBACK': {
         const { callbackId } = obj.payload
         const idx = this.cachedCallbacks.findIndex(x => x.id === callbackId)
         if (idx >= 0) {
           this.cachedCallbacks.splice(idx, 1)
+        }
+
+        break
+      }
+
+      case 'INVOKE_CALLBACK': {
+        const { callbackId, args = [] } = obj.payload
+        const callback = this.cachedCallbacks.find(x => x.id === callbackId)
+        if (callback) {
+          callback.invoke(...args)
         }
 
         break

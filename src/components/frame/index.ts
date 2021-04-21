@@ -1,7 +1,11 @@
 import { createElement, ReactNode } from 'react'
 
+export type JFrameCloseHandler = () => void
+
 export interface JFrameProps {
   title?: string
+
+  onClose?: JFrameCloseHandler
 
   children?: ReactNode
 }
