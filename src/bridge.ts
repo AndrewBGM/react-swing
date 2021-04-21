@@ -25,7 +25,7 @@ interface InvokeCallbackMessage {
   type: 'INVOKE_CALLBACK'
   payload: {
     callbackId: number
-    args: unknown[]
+    args: unknown[] | undefined
   }
 }
 
@@ -170,7 +170,7 @@ class Bridge {
 
     switch (obj.type) {
       case 'INVOKE_CALLBACK': {
-        const { callbackId, args } = obj.payload
+        const { callbackId, args = [] } = obj.payload
         const callback = this.cachedCallbacks.find(x => x.id === callbackId)
         if (callback) {
           callback.invoke(...args)
