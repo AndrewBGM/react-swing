@@ -1,6 +1,6 @@
 // @ts-check
 import React, { useCallback, useState } from 'react'
-import { JButton, JFrame, JPanel, render } from '../dist'
+import { JButton, JFrame, JPanel, render } from '../'
 
 const Counter = () => {
   const [count, setCount] = useState(0)
