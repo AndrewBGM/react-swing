@@ -1,4 +1,5 @@
 import WebSocket from 'ws'
+import { parseMessage } from './message'
 
 export type BridgeType = string
 export type BridgeProps = Record<string, unknown>
@@ -13,23 +14,6 @@ interface CachedCallback {
 
   invoke: CallableFunction
 }
-
-interface FreeCallbackMessage {
-  type: 'FREE_CALLBACK'
-  payload: {
-    callbackId: number
-  }
-}
-
-interface InvokeCallbackMessage {
-  type: 'INVOKE_CALLBACK'
-  payload: {
-    callbackId: number
-    args: unknown[] | undefined
-  }
-}
-
-type IncomingMessage = FreeCallbackMessage | InvokeCallbackMessage
 
 class Bridge {
   private nextCallbackId = 1
@@ -166,7 +150,7 @@ class Bridge {
   }
 
   private handleMessage(data: string) {
-    const obj = JSON.parse(data) as IncomingMessage
+    const obj = parseMessage(data)
 
     switch (obj.type) {
       case 'INVOKE_CALLBACK': {
