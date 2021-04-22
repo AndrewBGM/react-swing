@@ -1,41 +1,39 @@
 import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
 import Bridge, {
-  BridgeContainer,
   BridgeInstance,
   BridgeProps,
-  BridgeSuspenseInstance,
-  BridgeTextInstance,
   BridgeType,
   BridgeUpdatePayload,
 } from './bridge'
 
+type HostType = BridgeType
+type HostProps = BridgeProps
+type HostContainer = BridgeInstance
+type HostInstance = BridgeInstance
+type HostTextInstance = BridgeInstance
+type HostSuspenseInstance = BridgeInstance
+type HostHydratableInstance = BridgeInstance
+type HostPublicInstance = BridgeInstance
 type HostContext = Record<string, unknown>
-type HostHydratableInstance = number
-type HostPublicInstance = number
+type HostUpdatePayload = BridgeUpdatePayload
 type HostChildSet = unknown
 type HostTimeoutHandle = NodeJS.Timeout
 type HostNoTimeout = -1
 
-const withoutChildren = (props: BridgeProps): Omit<BridgeProps, 'children'> => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { children, ...rest } = props
-  return rest
-}
-
 const createHostConfig = (
   bridge: Bridge,
 ): HostConfig<
-  BridgeType,
-  BridgeProps,
-  BridgeContainer,
-  BridgeInstance,
-  BridgeTextInstance,
-  BridgeSuspenseInstance,
+  HostType,
+  HostProps,
+  HostContainer,
+  HostInstance,
+  HostTextInstance,
+  HostSuspenseInstance,
   HostHydratableInstance,
   HostPublicInstance,
   HostContext,
-  BridgeUpdatePayload,
+  HostUpdatePayload,
   HostChildSet,
   HostTimeoutHandle,
   HostNoTimeout
@@ -49,153 +47,142 @@ const createHostConfig = (
   queueMicrotask,
 
   createInstance(
-    type: BridgeType,
-    props: BridgeProps,
-    _rootContainer: BridgeContainer,
+    type: HostType,
+    props: HostProps,
+    _rootContainer: HostContainer,
     _hostContext: HostContext,
     _internalHandle: OpaqueHandle,
-  ): BridgeInstance {
-    return bridge.createInstance(type, withoutChildren(props))
+  ): HostInstance {
+    return bridge.createInstance(type, props)
   },
 
   createTextInstance(
     text: string,
-    _rootContainer: BridgeContainer,
+    _rootContainer: HostContainer,
     _hostContext: HostContext,
     _internalHandle: OpaqueHandle,
-  ): BridgeTextInstance {
+  ): HostTextInstance {
     return bridge.createTextInstance(text)
   },
 
   appendInitialChild(
-    parentInstance: BridgeInstance,
-    child: BridgeInstance | BridgeTextInstance,
+    parentInstance: HostInstance,
+    child: HostInstance | HostTextInstance,
   ): void {
-    bridge.appendInitialChild(parentInstance, child)
+    bridge.appendChild(parentInstance, child)
   },
 
   finalizeInitialChildren(
-    _instance: BridgeInstance,
-    _type: BridgeType,
-    _props: BridgeProps,
-    _rootContainer: BridgeContainer,
+    _instance: HostInstance,
+    _type: HostType,
+    _props: HostProps,
+    _rootContainer: HostContainer,
     _hostContext: HostContext,
   ): boolean {
     return false
   },
 
   prepareUpdate(
-    _instance: BridgeInstance,
-    _type: BridgeType,
-    oldProps: BridgeProps,
-    newProps: BridgeProps,
-    _rootContainer: BridgeContainer,
+    instance: HostInstance,
+    _type: HostType,
+    oldProps: HostProps,
+    newProps: HostProps,
+    _rootContainer: HostContainer,
     _hostContext: HostContext,
-  ): BridgeUpdatePayload | null {
-    const needsUpdate = Object.keys(newProps)
-      .map(key => oldProps[key] !== newProps[key])
-      .some(Boolean)
-
-    if (!needsUpdate) {
-      return null
-    }
-
-    return {
-      oldProps: withoutChildren(oldProps),
-      newProps: withoutChildren(newProps),
-    }
+  ): HostUpdatePayload | null {
+    return bridge.prepareUpdate(instance, oldProps, newProps)
   },
 
-  shouldSetTextContent(_type: BridgeType, _props: BridgeProps): boolean {
+  shouldSetTextContent(_type: HostType, _props: HostProps): boolean {
     return false
   },
 
   getRootHostContext(
-    _rootContainer: BridgeContainer,
+    _rootContainer: HostContainer,
   ): Record<string, unknown> | null {
     return null
   },
 
   getChildHostContext(
     parentHostContext: Record<string, unknown>,
-    _type: BridgeType,
-    _rootContainer: BridgeContainer,
+    _type: HostType,
+    _rootContainer: HostContainer,
   ): Record<string, unknown> {
     return parentHostContext
   },
 
   getPublicInstance(
-    instance: BridgeInstance | BridgeTextInstance,
+    instance: HostInstance | HostTextInstance,
   ): HostPublicInstance {
     return instance
   },
 
   prepareForCommit(
-    _containerInfo: BridgeContainer,
+    _containerInfo: HostContainer,
   ): Record<string, unknown> | null {
     return null
   },
 
-  resetAfterCommit(_containerInfo: BridgeContainer): void {
+  resetAfterCommit(_containerInfo: HostContainer): void {
     // noop
   },
 
-  preparePortalMount(_containerInfo: BridgeContainer): void {
+  preparePortalMount(_containerInfo: HostContainer): void {
     // noop
   },
 
   supportsMutation: true,
 
   appendChild(
-    parentInstance: BridgeInstance,
-    child: BridgeInstance | BridgeTextInstance,
+    parentInstance: HostInstance,
+    child: HostInstance | HostTextInstance,
   ): void {
     bridge.appendChild(parentInstance, child)
   },
 
   appendChildToContainer(
-    container: BridgeContainer,
-    child: BridgeInstance | BridgeTextInstance,
+    container: HostContainer,
+    child: HostInstance | HostTextInstance,
   ): void {
-    bridge.appendChildToContainer(container, child)
+    bridge.appendChild(container, child)
   },
 
   insertBefore(
-    parentInstance: BridgeInstance,
-    child: BridgeInstance | BridgeTextInstance,
-    beforeChild: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
+    parentInstance: HostInstance,
+    child: HostInstance | HostTextInstance,
+    beforeChild: HostInstance | HostTextInstance | HostSuspenseInstance,
   ): void {
     bridge.insertBefore(parentInstance, child, beforeChild)
   },
 
   insertInContainerBefore(
-    container: BridgeContainer,
-    child: BridgeInstance | BridgeTextInstance,
-    beforeChild: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
+    container: HostContainer,
+    child: HostInstance | HostTextInstance,
+    beforeChild: HostInstance | HostTextInstance | HostSuspenseInstance,
   ): void {
-    bridge.insertInContainerBefore(container, child, beforeChild)
+    bridge.insertBefore(container, child, beforeChild)
   },
 
   removeChild(
-    parentInstance: BridgeInstance,
-    child: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
+    parentInstance: HostInstance,
+    child: HostInstance | HostTextInstance | HostSuspenseInstance,
   ): void {
     bridge.removeChild(parentInstance, child)
   },
 
   removeChildFromContainer(
-    container: BridgeContainer,
-    child: BridgeInstance | BridgeTextInstance | BridgeSuspenseInstance,
+    container: HostContainer,
+    child: HostInstance | HostTextInstance | HostSuspenseInstance,
   ): void {
-    bridge.removeChildFromContainer(container, child)
+    bridge.removeChild(container, child)
   },
 
-  resetTextContent(_instance: BridgeInstance): void {
+  resetTextContent(_instance: HostInstance): void {
     throw new Error('Not implemented yet.')
   },
 
   commitTextUpdate(
-    textInstance: BridgeTextInstance,
+    textInstance: HostTextInstance,
     _oldText: string,
     newText: string,
   ): void {
@@ -203,42 +190,42 @@ const createHostConfig = (
   },
 
   commitMount(
-    _instance: BridgeInstance,
-    _type: BridgeType,
-    _props: BridgeProps,
+    _instance: HostInstance,
+    _type: HostType,
+    _props: HostProps,
     _internalInstanceHandle: OpaqueHandle,
   ): void {
     throw new Error('Not implemented yet.')
   },
 
   commitUpdate(
-    instance: BridgeInstance,
-    updatePayload: BridgeUpdatePayload,
-    _type: BridgeType,
-    _prevProps: BridgeProps,
-    _nextProps: BridgeProps,
+    _instance: HostInstance,
+    updatePayload: HostUpdatePayload,
+    _type: HostType,
+    _prevProps: HostProps,
+    _nextProps: HostProps,
     _internalHandle: OpaqueHandle,
   ): void {
-    bridge.commitUpdate(instance, updatePayload)
+    bridge.commitUpdate(updatePayload)
   },
 
-  hideInstance(_instance: BridgeInstance): void {
+  hideInstance(_instance: HostInstance): void {
     throw new Error('Not implemented yet.')
   },
 
-  hideTextInstance(_textInstance: BridgeTextInstance): void {
+  hideTextInstance(_textInstance: HostTextInstance): void {
     throw new Error('Not implemented yet.')
   },
 
-  unhideInstance(_instance: BridgeInstance, _props: BridgeProps): void {
+  unhideInstance(_instance: HostInstance, _props: HostProps): void {
     throw new Error('Not implemented yet.')
   },
 
-  unhideTextInstance(_textInstance: BridgeTextInstance, _text: string): void {
+  unhideTextInstance(_textInstance: HostTextInstance, _text: string): void {
     throw new Error('Not implemented yet.')
   },
 
-  clearContainer(container: BridgeContainer): void {
+  clearContainer(container: HostContainer): void {
     bridge.clearContainer(container)
   },
 
