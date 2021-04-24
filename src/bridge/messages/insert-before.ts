@@ -1,3 +1,5 @@
+import MessageType from './message-type'
+
 export interface InsertBeforeMessagePayload {
   parentId: number
   childId: number
@@ -5,7 +7,7 @@ export interface InsertBeforeMessagePayload {
 }
 
 interface InsertBeforeMessage {
-  type: 'INSERT_BEFORE'
+  type: MessageType.INSERT_BEFORE
   payload: InsertBeforeMessagePayload
 }
 

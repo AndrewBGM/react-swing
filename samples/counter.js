@@ -1,6 +1,6 @@
 // @ts-check
 import React, { useCallback, useState } from 'react'
-import { JButton, JFrame, JPanel, render } from '../'
+import { JButton, JFrame, JLabel, JPanel, render } from '../'
 
 const Counter = () => {
   const [count, setCount] = useState(0)
@@ -9,7 +9,7 @@ const Counter = () => {
     setCount(x => x + 1)
   }, [])
 
-  return <JButton onAction={handleClick}>Clicks: {count}</JButton>
+  return <JButton onAction={handleClick}>Count: {count}</JButton>
 }
 
 const App = () => {
@@ -24,6 +24,7 @@ const App = () => {
       {isFrameVisible && (
         <JFrame title='Counter' onClose={handleClose}>
           <JPanel>
+            <JLabel>Hello World!</JLabel>
             <Counter />
           </JPanel>
         </JFrame>

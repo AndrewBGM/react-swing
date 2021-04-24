@@ -1,43 +1,40 @@
-interface CachedCallbacks {
+export interface CachedCallback {
   id: number
 
   invoke: CallableFunction
 }
 
 class CallbackManager {
-  private nextId = 1
+  private nextCallbackId = 1
 
-  private callbacks: CachedCallbacks[] = []
+  private cachedCallbacks: CachedCallback[] = []
 
-  getOrCache(invoke: CallableFunction): number {
-    const existing = this.callbacks.find(x => x.invoke === invoke)
-    if (existing) {
-      return existing.id
+  invoke(id: number, args: unknown[] = []): void {
+    const rc = this.cachedCallbacks.find(x => x.id === id)
+    rc?.invoke(...args)
+  }
+
+  free(id: number): void {
+    const idx = this.cachedCallbacks.findIndex(x => x.id === id)
+    if (idx >= 0) {
+      this.cachedCallbacks.splice(idx, 1)
+    }
+  }
+
+  fromCache(invoke: CallableFunction): number {
+    const idx = this.cachedCallbacks.findIndex(rc => rc.invoke === invoke)
+    if (idx >= 0) {
+      return idx
     }
 
-    const id = this.nextId
-    this.nextId += 1
-
-    this.callbacks.push({
+    const id = this.nextCallbackId
+    this.nextCallbackId += 1
+    this.cachedCallbacks.push({
       id,
       invoke,
     })
 
     return id
-  }
-
-  free(id: number): void {
-    const idx = this.callbacks.findIndex(x => x.id === id)
-    if (idx >= 0) {
-      this.callbacks.splice(idx, 1)
-    }
-  }
-
-  invoke(id: number, args: unknown[]): void {
-    const callback = this.callbacks.find(x => x.id === id)
-    if (callback) {
-      callback.invoke(...args)
-    }
   }
 }
 

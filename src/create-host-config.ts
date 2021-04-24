@@ -1,20 +1,15 @@
 import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
-import Bridge, {
-  BridgeInstance,
-  BridgeProps,
-  BridgeType,
-  BridgeUpdatePayload,
-} from './bridge'
+import Bridge, { BridgeProps, BridgeType, BridgeUpdatePayload } from './bridge'
 
 type HostType = BridgeType
 type HostProps = BridgeProps
-type HostContainer = BridgeInstance
-type HostInstance = BridgeInstance
-type HostTextInstance = BridgeInstance
-type HostSuspenseInstance = BridgeInstance
-type HostHydratableInstance = BridgeInstance
-type HostPublicInstance = BridgeInstance
+type HostContainer = number
+type HostInstance = number
+type HostTextInstance = number
+type HostSuspenseInstance = number
+type HostHydratableInstance = number
+type HostPublicInstance = number
 type HostContext = Record<string, unknown>
 type HostUpdatePayload = BridgeUpdatePayload
 type HostChildSet = unknown
@@ -69,7 +64,7 @@ const createHostConfig = (
     parentInstance: HostInstance,
     child: HostInstance | HostTextInstance,
   ): void {
-    bridge.appendChild(parentInstance, child)
+    bridge.appendInitialChild(parentInstance, child)
   },
 
   finalizeInitialChildren(
@@ -97,17 +92,15 @@ const createHostConfig = (
     return false
   },
 
-  getRootHostContext(
-    _rootContainer: HostContainer,
-  ): Record<string, unknown> | null {
+  getRootHostContext(_rootContainer: HostContainer): HostContext | null {
     return null
   },
 
   getChildHostContext(
-    parentHostContext: Record<string, unknown>,
+    parentHostContext: HostContext,
     _type: HostType,
     _rootContainer: HostContainer,
-  ): Record<string, unknown> {
+  ): HostContext {
     return parentHostContext
   },
 
@@ -144,7 +137,7 @@ const createHostConfig = (
     container: HostContainer,
     child: HostInstance | HostTextInstance,
   ): void {
-    bridge.appendChild(container, child)
+    bridge.appendChildToContainer(container, child)
   },
 
   insertBefore(
@@ -160,7 +153,7 @@ const createHostConfig = (
     child: HostInstance | HostTextInstance,
     beforeChild: HostInstance | HostTextInstance | HostSuspenseInstance,
   ): void {
-    bridge.insertBefore(container, child, beforeChild)
+    bridge.insertInContainerBefore(container, child, beforeChild)
   },
 
   removeChild(
@@ -174,7 +167,7 @@ const createHostConfig = (
     container: HostContainer,
     child: HostInstance | HostTextInstance | HostSuspenseInstance,
   ): void {
-    bridge.removeChild(container, child)
+    bridge.removeChildFromContainer(container, child)
   },
 
   resetTextContent(_instance: HostInstance): void {
@@ -209,20 +202,20 @@ const createHostConfig = (
     bridge.commitUpdate(updatePayload)
   },
 
-  hideInstance(_instance: HostInstance): void {
-    throw new Error('Not implemented yet.')
+  hideInstance(instance: HostInstance): void {
+    bridge.hideInstance(instance)
   },
 
-  hideTextInstance(_textInstance: HostTextInstance): void {
-    throw new Error('Not implemented yet.')
+  hideTextInstance(textInstance: HostTextInstance): void {
+    bridge.hideTextInstance(textInstance)
   },
 
-  unhideInstance(_instance: HostInstance, _props: HostProps): void {
-    throw new Error('Not implemented yet.')
+  unhideInstance(instance: HostInstance, props: HostProps): void {
+    bridge.unhideInstance(instance, props)
   },
 
-  unhideTextInstance(_textInstance: HostTextInstance, _text: string): void {
-    throw new Error('Not implemented yet.')
+  unhideTextInstance(textInstance: HostTextInstance, text: string): void {
+    bridge.unhideTextInstance(textInstance, text)
   },
 
   clearContainer(container: HostContainer): void {

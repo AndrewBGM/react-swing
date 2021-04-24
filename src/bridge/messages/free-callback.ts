@@ -1,9 +1,11 @@
+import MessageType from './message-type'
+
 export interface FreeCallbackMessagePayload {
   callbackId: number
 }
 
 interface FreeCallbackMessage {
-  type: 'FREE_CALLBACK'
+  type: MessageType.FREE_CALLBACK
   payload: FreeCallbackMessagePayload
 }
 

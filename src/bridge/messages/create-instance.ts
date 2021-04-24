@@ -1,3 +1,5 @@
+import MessageType from './message-type'
+
 export interface CreateInstanceMessagePayload {
   instanceId: number
   type: string
@@ -5,7 +7,7 @@ export interface CreateInstanceMessagePayload {
 }
 
 interface CreateInstanceMessage {
-  type: 'CREATE_INSTANCE'
+  type: MessageType.CREATE_INSTANCE
   payload: CreateInstanceMessagePayload
 }
 

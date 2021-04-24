@@ -20,11 +20,14 @@ export const render = async (
     const hostConfig = createHostConfig(bridge)
     const ReactSwing = ReactReconciler(hostConfig)
 
+    const handleReady = () => {
+      bridge.startApplication()
+      resolve()
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const root = ReactSwing.createContainer(0, 0, false, null)
-    ReactSwing.updateContainer(element, root, null, () => {
-      resolve()
-    })
+    ReactSwing.updateContainer(element, root, null, handleReady)
   })
 }
 

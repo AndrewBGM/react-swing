@@ -1,10 +1,12 @@
+import MessageType from './message-type'
+
 export interface InvokeCallbackMessagePayload {
   callbackId: number
   args?: unknown[]
 }
 
 interface InvokeCallbackMessage {
-  type: 'INVOKE_CALLBACK'
+  type: MessageType.INVOKE_CALLBACK
   payload: InvokeCallbackMessagePayload
 }
 

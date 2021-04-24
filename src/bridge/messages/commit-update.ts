@@ -1,3 +1,5 @@
+import MessageType from './message-type'
+
 export interface CommitUpdateMessagePayload {
   instanceId: number
   oldProps: Record<string, unknown>
@@ -5,7 +7,7 @@ export interface CommitUpdateMessagePayload {
 }
 
 interface CommitUpdateMessage {
-  type: 'COMMIT_UPDATE'
+  type: MessageType.COMMIT_UPDATE
   payload: CommitUpdateMessagePayload
 }
 

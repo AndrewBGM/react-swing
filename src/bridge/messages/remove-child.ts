@@ -1,10 +1,12 @@
+import MessageType from './message-type'
+
 export interface RemoveChildMessagePayload {
   parentId: number
   childId: number
 }
 
 interface RemoveChildMessage {
-  type: 'REMOVE_CHILD'
+  type: MessageType.REMOVE_CHILD
   payload: RemoveChildMessagePayload
 }
 
