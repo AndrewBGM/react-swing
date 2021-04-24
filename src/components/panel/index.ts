@@ -1,10 +1,13 @@
-import { createElement, ReactNode } from 'react'
+import { createElement, forwardRef, ReactNode } from 'react'
+import { HostInstance } from '../../create-host-config'
 
 export interface JPanelProps {
   children?: ReactNode
 }
 
-const JPanel = ({ children, ...props }: JPanelProps): JSX.Element =>
-  createElement('JPanel', props, children)
+const JPanel = forwardRef<HostInstance, JPanelProps>(
+  ({ children, ...props }, ref) =>
+    createElement('JPanel', { ...props, ref }, children),
+)
 
 export default JPanel

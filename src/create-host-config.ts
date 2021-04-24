@@ -2,19 +2,19 @@ import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
 import Bridge, { BridgeProps, BridgeType, BridgeUpdatePayload } from './bridge'
 
-type HostType = BridgeType
-type HostProps = BridgeProps
-type HostContainer = number
-type HostInstance = number
-type HostTextInstance = number
-type HostSuspenseInstance = number
-type HostHydratableInstance = number
-type HostPublicInstance = number
-type HostContext = Record<string, unknown>
-type HostUpdatePayload = BridgeUpdatePayload
-type HostChildSet = unknown
-type HostTimeoutHandle = NodeJS.Timeout
-type HostNoTimeout = -1
+export type HostType = BridgeType
+export type HostProps = BridgeProps
+export type HostContainer = number
+export type HostInstance = number
+export type HostTextInstance = number
+export type HostSuspenseInstance = number
+export type HostHydratableInstance = number
+export type HostPublicInstance = number
+export type HostContext = Record<string, unknown>
+export type HostUpdatePayload = BridgeUpdatePayload
+export type HostChildSet = unknown
+export type HostTimeoutHandle = NodeJS.Timeout
+export type HostNoTimeout = -1
 
 const createHostConfig = (
   bridge: Bridge,
