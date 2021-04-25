@@ -21,7 +21,6 @@ export const render = async (
     const ReactSwing = ReactReconciler(hostConfig)
 
     const handleReady = () => {
-      bridge.startApplication()
       resolve()
     }
 

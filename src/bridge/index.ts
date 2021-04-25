@@ -1,12 +1,5 @@
 import WebSocket from 'ws'
-import CallbackManager from './callback-manager'
-import {
-  decodeMessage,
-  encodeMessage,
-  Message,
-  MessagePayload,
-  MessageType,
-} from './messages'
+import { encodeMessage, Message, MessagePayload, MessageType } from './messages'
 import {
   isArray,
   isFunction,
@@ -27,11 +20,8 @@ export interface BridgeUpdatePayload {
 class Bridge {
   private nextInstanceId = 1
 
-  private cbm = new CallbackManager()
-
   constructor(private ws: WebSocket) {
     ws.on('ping', data => ws.pong(data))
-    ws.on('message', data => this.handleMessage(String(data)))
   }
 
   createInstance(type: BridgeType, props: BridgeProps): number {
@@ -176,14 +166,6 @@ class Bridge {
     })
   }
 
-  startApplication(): void {
-    this.send(MessageType.START_APPLICATION, {})
-  }
-
-  stopApplication(): void {
-    this.send(MessageType.STOP_APPLICATION, {})
-  }
-
   send<T extends MessageType>(type: T, payload: MessagePayload<T>): void {
     const patchedPayload = this.patchPayload(payload)
 
@@ -193,20 +175,6 @@ class Bridge {
         payload: patchedPayload,
       } as Message),
     )
-  }
-
-  private handleMessage(data: string): void {
-    const message = decodeMessage(data)
-    switch (message.type) {
-      case MessageType.FREE_CALLBACK:
-        this.cbm.free(message.payload.callbackId)
-        break
-      case MessageType.INVOKE_CALLBACK:
-        this.cbm.invoke(message.payload.callbackId, message.payload.args)
-        break
-      default:
-        break
-    }
   }
 
   private patchPayload<T extends unknown>(payload: T): T {
@@ -228,7 +196,7 @@ class Bridge {
 
     // Cache functions and replace with a serializable reference
     if (isFunction(payload)) {
-      return this.cbm.fromCache(payload) as T
+      throw new Error('Serializing functions not yet implemented')
     }
 
     return payload

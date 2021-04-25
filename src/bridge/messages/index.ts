@@ -6,17 +6,13 @@ import CommitTextUpdateMessage from './commit-text-update'
 import CommitUpdateMessage from './commit-update'
 import CreateInstanceMessage from './create-instance'
 import CreateTextInstanceMessage from './create-text-instance'
-import FreeCallbackMessage from './free-callback'
 import HideInstanceMessage from './hide-instance'
 import HideTextInstanceMessage from './hide-text-instance'
 import InsertBeforeMessage from './insert-before'
 import InsertInContainerBeforeMessage from './insert-in-container-before'
-import InvokeCallbackMessage from './invoke-callback'
 import MessageType from './message-type'
 import RemoveChildMessage from './remove-child'
 import RemoveChildFromContainerMessage from './remove-child-from-container'
-import StartApplicationMessage from './start-application'
-import StopApplicationMessage from './stop-application'
 import UnhideInstanceMessage from './unhide-instance'
 import UnhideTextInstanceMessage from './unhide-text-instance'
 
@@ -36,8 +32,6 @@ export * from './create-instance'
 export type { default as CreateInstanceMessage } from './create-instance'
 export * from './create-text-instance'
 export type { default as CreateTextInstanceMessage } from './create-text-instance'
-export * from './free-callback'
-export type { default as FreeCallbackMessage } from './free-callback'
 export * from './hide-instance'
 export type { default as HideInstanceMessage } from './hide-instance'
 export * from './hide-text-instance'
@@ -46,17 +40,11 @@ export * from './insert-before'
 export type { default as InsertBeforeMessage } from './insert-before'
 export * from './insert-in-container-before'
 export type { default as InsertInContainerBeforeMessage } from './insert-in-container-before'
-export * from './invoke-callback'
-export type { default as InvokeCallbackMessage } from './invoke-callback'
 export { default as MessageType } from './message-type'
 export * from './remove-child'
 export type { default as RemoveChildMessage } from './remove-child'
 export * from './remove-child-from-container'
 export type { default as RemoveChildFromContainerMessage } from './remove-child-from-container'
-export * from './start-application'
-export type { default as StartApplicationMessage } from './start-application'
-export * from './stop-application'
-export type { default as StopApplicationMessage } from './stop-application'
 export * from './unhide-instance'
 export type { default as UnhideInstanceMessage } from './unhide-instance'
 export * from './unhide-text-instance'
@@ -71,16 +59,12 @@ export type Message =
   | CommitUpdateMessage
   | CreateInstanceMessage
   | CreateTextInstanceMessage
-  | FreeCallbackMessage
   | HideInstanceMessage
   | HideTextInstanceMessage
   | InsertBeforeMessage
   | InsertInContainerBeforeMessage
-  | InvokeCallbackMessage
   | RemoveChildMessage
   | RemoveChildFromContainerMessage
-  | StartApplicationMessage
-  | StopApplicationMessage
   | UnhideInstanceMessage
   | UnhideTextInstanceMessage
 

@@ -1,28 +1,8 @@
 // @ts-check
-import React, { useCallback, useRef, useState } from 'react'
-import { JButton, JFrame, JLabel, JPanel, render } from '../'
-
-const Counter = () => {
-  const button = useRef()
-
-  const [count, setCount] = useState(0)
-
-  const handleClick = useCallback(() => {
-    setCount(x => x + 1)
-  }, [])
-
-  return (
-    <JButton ref={button} onAction={handleClick}>
-      Count: {count}
-    </JButton>
-  )
-}
+import React, { useCallback, useState } from 'react'
+import { JFrame, JLabel, JPanel, render } from '../'
 
 const App = () => {
-  const frame = useRef()
-  const panel = useRef()
-  const label = useRef()
-
   const [isFrameVisible, setFrameVisible] = useState(true)
 
   const handleClose = useCallback(() => {
@@ -32,10 +12,9 @@ const App = () => {
   return (
     <>
       {isFrameVisible && (
-        <JFrame ref={frame} title='Counter' onClose={handleClose}>
-          <JPanel ref={panel}>
-            <JLabel ref={label}>Hello World!</JLabel>
-            <Counter />
+        <JFrame title='Counter' onClose={handleClose}>
+          <JPanel>
+            <JLabel>Hello World!</JLabel>
           </JPanel>
         </JFrame>
       )}
