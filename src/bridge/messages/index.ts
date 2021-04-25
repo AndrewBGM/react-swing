@@ -73,9 +73,3 @@ type MessagesByType = {
 }
 
 export type MessagePayload<T extends MessageType> = MessagesByType[T]
-
-export const decodeMessage = (data: string): Message =>
-  JSON.parse(data) as Message
-
-export const encodeMessage = (message: Message): string =>
-  JSON.stringify(message)

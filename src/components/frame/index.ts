@@ -1,5 +1,4 @@
-import { createElement, forwardRef, ReactNode } from 'react'
-import { HostInstance } from '../../create-host-config'
+import { createElement, ReactNode } from 'react'
 
 export type JFrameCloseHandler = () => void
 
@@ -11,9 +10,7 @@ export interface JFrameProps {
   children?: ReactNode
 }
 
-const JFrame = forwardRef<HostInstance, JFrameProps>(
-  ({ children, ...props }, ref) =>
-    createElement('JFrame', { ...props, ref }, children),
-)
+const JFrame = ({ children, ...props }: JFrameProps): JSX.Element =>
+  createElement('JFrame', props, children)
 
 export default JFrame

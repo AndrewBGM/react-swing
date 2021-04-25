@@ -1,13 +1,10 @@
-import { createElement, forwardRef, ReactNode } from 'react'
-import { HostInstance } from '../../create-host-config'
+import { createElement, ReactNode } from 'react'
 
 export interface JLabelProps {
   children?: ReactNode
 }
 
-const JLabel = forwardRef<HostInstance, JLabelProps>(
-  ({ children, ...props }, ref) =>
-    createElement('JLabel', { ...props, ref }, children),
-)
+const JLabel = ({ children, ...props }: JLabelProps): JSX.Element =>
+  createElement('JLabel', props, children)
 
 export default JLabel

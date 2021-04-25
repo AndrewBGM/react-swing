@@ -1,5 +1,4 @@
-import { createElement, forwardRef, ReactNode } from 'react'
-import { HostInstance } from '../../create-host-config'
+import { createElement, ReactNode } from 'react'
 
 export type JButtonActionHandler = () => void
 
@@ -9,9 +8,7 @@ export interface JButtonProps {
   children?: ReactNode
 }
 
-const JButton = forwardRef<HostInstance, JButtonProps>(
-  ({ children, ...props }, ref) =>
-    createElement('JButton', { ...props, ref }, children),
-)
+const JButton = ({ children, ...props }: JButtonProps): JSX.Element =>
+  createElement('JButton', props, children)
 
 export default JButton

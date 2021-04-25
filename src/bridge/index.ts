@@ -1,6 +1,7 @@
 import WebSocket from 'ws'
-import { encodeMessage, Message, MessagePayload, MessageType } from './messages'
+import { MessagePayload, MessageType } from './messages'
 import {
+  encodeMessage,
   isArray,
   isFunction,
   isObject,
@@ -20,7 +21,7 @@ export interface BridgeUpdatePayload {
 class Bridge {
   private nextInstanceId = 1
 
-  constructor(private ws: WebSocket) {
+  constructor(readonly host: string, private ws: WebSocket) {
     ws.on('ping', data => ws.pong(data))
   }
 
@@ -167,14 +168,7 @@ class Bridge {
   }
 
   send<T extends MessageType>(type: T, payload: MessagePayload<T>): void {
-    const patchedPayload = this.patchPayload(payload)
-
-    this.ws.send(
-      encodeMessage({
-        type,
-        payload: patchedPayload,
-      } as Message),
-    )
+    this.ws.send(encodeMessage(type, this.patchPayload(payload)))
   }
 
   private patchPayload<T extends unknown>(payload: T): T {
@@ -202,5 +196,15 @@ class Bridge {
     return payload
   }
 }
+
+export const configureBridge = (host: string): Promise<Bridge> =>
+  new Promise((resolve, reject) => {
+    try {
+      const ws = new WebSocket(host)
+      ws.once('open', () => resolve(new Bridge(host, ws)))
+    } catch (err) {
+      reject(err)
+    }
+  })
 
 export default Bridge

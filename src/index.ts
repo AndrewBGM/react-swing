@@ -1,14 +1,7 @@
 import { ReactNode } from 'react'
 import ReactReconciler from 'react-reconciler'
-import WebSocket from 'ws'
-import Bridge from './bridge'
+import { configureBridge } from './bridge'
 import createHostConfig from './create-host-config'
-
-const configureBridge = (host: string): Promise<Bridge> =>
-  new Promise(resolve => {
-    const ws = new WebSocket(host)
-    ws.once('open', () => resolve(new Bridge(ws)))
-  })
 
 export const render = async (
   element: ReactNode,

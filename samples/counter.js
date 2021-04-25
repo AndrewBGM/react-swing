@@ -1,24 +1,24 @@
 // @ts-check
 import React, { useCallback, useState } from 'react'
-import { JFrame, JLabel, JPanel, render } from '../'
+import { JButton, JFrame, JPanel, render } from '../'
 
 const App = () => {
-  const [isFrameVisible, setFrameVisible] = useState(true)
+  const [clicks, setClicks] = useState(0)
+
+  const handleClick = useCallback(() => {
+    setClicks(x => x + 1)
+  }, [])
 
   const handleClose = useCallback(() => {
-    setFrameVisible(false)
+    console.log('Closed')
   }, [])
 
   return (
-    <>
-      {isFrameVisible && (
-        <JFrame title='Counter' onClose={handleClose}>
-          <JPanel>
-            <JLabel>Hello World!</JLabel>
-          </JPanel>
-        </JFrame>
-      )}
-    </>
+    <JFrame title='Counter' onClose={handleClose}>
+      <JPanel>
+        <JButton onAction={handleClick}>Clicks: {clicks}</JButton>
+      </JPanel>
+    </JFrame>
   )
 }
 
