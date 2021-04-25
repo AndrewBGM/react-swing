@@ -199,12 +199,15 @@ class Bridge {
 
 export const configureBridge = (host: string): Promise<Bridge> =>
   new Promise((resolve, reject) => {
-    try {
-      const ws = new WebSocket(host)
-      ws.once('open', () => resolve(new Bridge(host, ws)))
-    } catch (err) {
+    const ws = new WebSocket(host)
+
+    const handleOpen = () => resolve(new Bridge(host, ws))
+    const handleError = (err: Error) => {
       reject(err)
     }
+
+    ws.once('open', handleOpen)
+    ws.once('error', handleError)
   })
 
 export default Bridge
