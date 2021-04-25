@@ -1,12 +1,16 @@
+import commonjs from '@rollup/plugin-commonjs'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import replace from '@rollup/plugin-replace'
 import { builtinModules } from 'module'
 import del from 'rollup-plugin-delete'
 import dts from 'rollup-plugin-dts'
+import { terser } from 'rollup-plugin-terser'
 import typescript from 'rollup-plugin-typescript2'
 import pkg from './package.json'
 
 export default [
   {
-    input: 'src/index.ts',
+    input: 'src/index.tsx',
     output: [
       {
         file: pkg.main,
@@ -22,11 +26,18 @@ export default [
       },
     ],
     plugins: [
+      nodeResolve(),
+      replace({
+        preventAssignment: true,
+        'process.env.NODE_ENV': JSON.stringify('production'),
+      }),
+      commonjs(),
       typescript({
         clean: true,
         rollupCommonJSResolveHack: true,
         useTsconfigDeclarationDir: true,
       }),
+      process.env.NODE_ENV === 'production' && terser(),
     ],
     external: [
       ...builtinModules,
