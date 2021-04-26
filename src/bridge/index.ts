@@ -1,7 +1,6 @@
 import WebSocket from 'ws'
-import { MessagePayload, MessageType } from './messages'
+import { encodeMessage, MessagePayload, MessageType } from './messages'
 import {
-  encodeMessage,
   isArray,
   isFunction,
   isObject,

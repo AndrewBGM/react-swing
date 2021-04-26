@@ -25,6 +25,6 @@ const App = () => {
   )
 }
 
-render(<App />, 'wss://localhost:8080/')
+render(<App />, 'ws://localhost:8080/')
   .then(() => console.log('Application ready'))
   .catch(e => console.error(e))

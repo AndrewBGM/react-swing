@@ -8,6 +8,8 @@ import { terser } from 'rollup-plugin-terser'
 import typescript from 'rollup-plugin-typescript2'
 import pkg from './package.json'
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 export default [
   {
     input: 'src/index.tsx',
@@ -29,20 +31,27 @@ export default [
       nodeResolve(),
       replace({
         preventAssignment: true,
-        'process.env.NODE_ENV': JSON.stringify('production'),
+        'process.env.NODE_ENV': process.env.NODE_ENV,
       }),
       commonjs(),
       typescript({
         clean: true,
         rollupCommonJSResolveHack: true,
         useTsconfigDeclarationDir: true,
+        tsconfig: './tsconfig.json',
+        tsconfigOverride: {
+          compilerOptions: {
+            jsx: isProduction ? 'react-jsx' : 'react-jsxdev',
+          },
+        },
       }),
-      process.env.NODE_ENV === 'production' && terser(),
+      isProduction && terser(),
     ],
     external: [
       ...builtinModules,
       ...Object.keys(pkg.dependencies),
       ...Object.keys(pkg.peerDependencies),
+      ...[isProduction ? 'react/jsx-runtime' : 'react/jsx-dev-runtime'],
     ],
   },
   {

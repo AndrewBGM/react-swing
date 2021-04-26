@@ -1,5 +1,3 @@
-import { Message, MessagePayload, MessageType } from './messages'
-
 export const isArray = (x: unknown): x is unknown[] => Array.isArray(x)
 
 export const isFunction = (x: unknown): x is CallableFunction =>
@@ -34,11 +32,3 @@ export const withoutChildren = <T extends Record<string, unknown>>(
   const { children, ...rest } = obj
   return rest
 }
-
-export const decodeMessage = (data: string): Message =>
-  JSON.parse(data) as Message
-
-export const encodeMessage = <T extends MessageType>(
-  type: T,
-  payload: MessagePayload<T>,
-): string => JSON.stringify({ type, payload })
