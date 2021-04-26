@@ -37,3 +37,4 @@ export const render = async (
 
 export * from './components'
 export * from './hooks'
+export type { default as Remote } from './remote'

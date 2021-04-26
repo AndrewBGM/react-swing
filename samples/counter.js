@@ -1,22 +1,25 @@
 // @ts-check
 import React, { useCallback, useState } from 'react'
-import { JButton, JFrame, JPanel, render } from '../'
+import { JButton, JFrame, JLabel, JPanel, render, useRemote } from '../'
 
-const App = () => {
+const Counter = () => {
   const [clicks, setClicks] = useState(0)
 
   const handleClick = useCallback(() => {
     setClicks(x => x + 1)
   }, [])
 
-  const handleClose = useCallback(() => {
-    console.log('Closed')
-  }, [])
+  return <JButton onAction={handleClick}>Clicks: {clicks}</JButton>
+}
+
+const App = () => {
+  const remote = useRemote()
 
   return (
-    <JFrame title='Counter' onClose={handleClose}>
+    <JFrame title='Counter'>
       <JPanel>
-        <JButton onAction={handleClick}>Clicks: {clicks}</JButton>
+        <JLabel>Host: {remote.host}</JLabel>
+        <Counter />
       </JPanel>
     </JFrame>
   )
