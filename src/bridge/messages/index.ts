@@ -15,7 +15,6 @@ import RemoveChildMessage from './remove-child'
 import RemoveChildFromContainerMessage from './remove-child-from-container'
 import UnhideInstanceMessage from './unhide-instance'
 import UnhideTextInstanceMessage from './unhide-text-instance'
-import UserDefinedMessage from './user-defined'
 
 export * from './append-child'
 export type { default as AppendChildMessage } from './append-child'
@@ -50,8 +49,6 @@ export * from './unhide-instance'
 export type { default as UnhideInstanceMessage } from './unhide-instance'
 export * from './unhide-text-instance'
 export type { default as UnhideTextInstanceMessage } from './unhide-text-instance'
-export * from './user-defined'
-export type { default as UserDefinedMessage } from './user-defined'
 
 export type Message =
   | AppendChildToContainerMessage
@@ -70,7 +67,6 @@ export type Message =
   | RemoveChildFromContainerMessage
   | UnhideInstanceMessage
   | UnhideTextInstanceMessage
-  | UserDefinedMessage
 
 type MessagesByType = {
   [T in Message as T['type']]: T['payload']

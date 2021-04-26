@@ -16,16 +16,15 @@ export interface ReactSwingProviderProps {
   children?: ReactNode
 }
 
-const buildValue = (host: string, bridge: Bridge): ReactSwingContextValue => ({
-  remote: buildRemote(host, bridge),
+const buildValue = (host: string): ReactSwingContextValue => ({
+  remote: buildRemote(host),
 })
 
 export const ReactSwingProvider = ({
   host,
-  bridge,
   children,
 }: ReactSwingProviderProps): JSX.Element => {
-  const value = useMemo(() => buildValue(host, bridge), [host, bridge])
+  const value = useMemo(() => buildValue(host), [host])
 
   return (
     <ReactSwingContext.Provider value={value}>
