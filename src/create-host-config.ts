@@ -1,14 +1,20 @@
 import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
-import Bridge, { BridgeProps, BridgeType, BridgeUpdatePayload } from './bridge'
+import Bridge, {
+  BridgeContainer,
+  BridgeInstance,
+  BridgeProps,
+  BridgeType,
+  BridgeUpdatePayload,
+} from './bridge'
 
 export type HostType = BridgeType
 export type HostProps = BridgeProps
-export type HostContainer = number
-export type HostInstance = number
-export type HostTextInstance = number
-export type HostSuspenseInstance = number
-export type HostHydratableInstance = number
+export type HostContainer = BridgeContainer
+export type HostInstance = BridgeInstance
+export type HostTextInstance = BridgeInstance
+export type HostSuspenseInstance = BridgeInstance
+export type HostHydratableInstance = BridgeInstance
 export type HostPublicInstance = number
 export type HostContext = Record<string, unknown>
 export type HostUpdatePayload = BridgeUpdatePayload
@@ -107,7 +113,7 @@ const createHostConfig = (
   getPublicInstance(
     instance: HostInstance | HostTextInstance,
   ): HostPublicInstance {
-    return instance
+    return instance.id
   },
 
   prepareForCommit(

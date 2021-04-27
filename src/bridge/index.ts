@@ -1,4 +1,10 @@
 import WebSocket from 'ws'
+import {
+  getInstanceIds,
+  HostInstance,
+  Instance,
+  TextInstance,
+} from './instance'
 import { encodeMessage, MessagePayload, MessageType } from './messages'
 import {
   isArray,
@@ -8,6 +14,8 @@ import {
   withoutChildren,
 } from './utils'
 
+export type BridgeContainer = number
+export type BridgeInstance = Instance
 export type BridgeType = string
 export type BridgeProps = Record<string, unknown>
 
@@ -24,7 +32,7 @@ class Bridge {
     ws.on('ping', data => ws.pong(data))
   }
 
-  createInstance(type: BridgeType, props: BridgeProps): number {
+  createInstance(type: BridgeType, props: BridgeProps): BridgeInstance {
     const instanceId = this.nextInstanceId
     this.nextInstanceId += 1
 
@@ -34,10 +42,10 @@ class Bridge {
       props: withoutChildren(props),
     })
 
-    return instanceId
+    return new HostInstance(instanceId)
   }
 
-  createTextInstance(text: string): number {
+  createTextInstance(text: string): BridgeInstance {
     const instanceId = this.nextInstanceId
     this.nextInstanceId += 1
     this.send(MessageType.CREATE_TEXT_INSTANCE, {
@@ -45,10 +53,12 @@ class Bridge {
       text,
     })
 
-    return instanceId
+    return new TextInstance(instanceId)
   }
 
-  appendInitialChild(parentId: number, childId: number): void {
+  appendInitialChild(parent: BridgeInstance, child: BridgeInstance): void {
+    const [parentId, childId] = getInstanceIds(parent, child)
+
     this.send(MessageType.APPEND_INITIAL_CHILD, {
       parentId,
       childId,
@@ -56,7 +66,7 @@ class Bridge {
   }
 
   prepareUpdate(
-    instanceId: number,
+    instance: BridgeInstance,
     oldProps: BridgeProps,
     newProps: BridgeProps,
   ): BridgeUpdatePayload | null {
@@ -68,6 +78,8 @@ class Bridge {
       return null
     }
 
+    const [instanceId] = getInstanceIds(instance)
+
     return {
       instanceId,
       oldProps: patchedOldProps,
@@ -75,21 +87,38 @@ class Bridge {
     }
   }
 
-  appendChild(parentId: number, childId: number): void {
+  appendChild(parent: BridgeInstance, child: BridgeInstance): void {
+    const [parentId, childId] = getInstanceIds(parent, child)
+
     this.send(MessageType.APPEND_CHILD, {
       parentId,
       childId,
     })
   }
 
-  appendChildToContainer(parentId: number, childId: number): void {
+  appendChildToContainer(
+    parentId: BridgeContainer,
+    child: BridgeInstance,
+  ): void {
+    const [childId] = getInstanceIds(child)
+
     this.send(MessageType.APPEND_CHILD_TO_CONTAINER, {
       parentId,
       childId,
     })
   }
 
-  insertBefore(parentId: number, childId: number, beforeChildId: number): void {
+  insertBefore(
+    parent: BridgeInstance,
+    child: BridgeInstance,
+    beforeChild: BridgeInstance,
+  ): void {
+    const [parentId, childId, beforeChildId] = getInstanceIds(
+      parent,
+      child,
+      beforeChild,
+    )
+
     this.send(MessageType.INSERT_BEFORE, {
       parentId,
       childId,
@@ -98,10 +127,12 @@ class Bridge {
   }
 
   insertInContainerBefore(
-    parentId: number,
-    childId: number,
-    beforeChildId: number,
+    parentId: BridgeContainer,
+    child: BridgeInstance,
+    beforeChild: BridgeInstance,
   ): void {
+    const [childId, beforeChildId] = getInstanceIds(child, beforeChild)
+
     this.send(MessageType.INSERT_IN_CONTAINER_BEFORE, {
       parentId,
       childId,
@@ -109,21 +140,30 @@ class Bridge {
     })
   }
 
-  removeChild(parentId: number, childId: number): void {
+  removeChild(parent: BridgeInstance, child: BridgeInstance): void {
+    const [parentId, childId] = getInstanceIds(parent, child)
+
     this.send(MessageType.REMOVE_CHILD, {
       parentId,
       childId,
     })
   }
 
-  removeChildFromContainer(parentId: number, childId: number): void {
+  removeChildFromContainer(
+    parentId: BridgeContainer,
+    child: BridgeInstance,
+  ): void {
+    const [childId] = getInstanceIds(child)
+
     this.send(MessageType.REMOVE_CHILD_FROM_CONTAINER, {
       parentId,
       childId,
     })
   }
 
-  commitTextUpdate(instanceId: number, text: string): void {
+  commitTextUpdate(instance: BridgeInstance, text: string): void {
+    const [instanceId] = getInstanceIds(instance)
+
     this.send(MessageType.COMMIT_TEXT_UPDATE, {
       instanceId,
       text,
@@ -134,33 +174,41 @@ class Bridge {
     this.send(MessageType.COMMIT_UPDATE, updatePayload)
   }
 
-  hideInstance(instanceId: number): void {
+  hideInstance(instance: BridgeInstance): void {
+    const [instanceId] = getInstanceIds(instance)
+
     this.send(MessageType.HIDE_INSTANCE, {
       instanceId,
     })
   }
 
-  hideTextInstance(instanceId: number): void {
+  hideTextInstance(instance: BridgeInstance): void {
+    const [instanceId] = getInstanceIds(instance)
+
     this.send(MessageType.HIDE_TEXT_INSTANCE, {
       instanceId,
     })
   }
 
-  unhideInstance(instanceId: number, props: BridgeProps): void {
+  unhideInstance(instance: BridgeInstance, props: BridgeProps): void {
+    const [instanceId] = getInstanceIds(instance)
+
     this.send(MessageType.UNHIDE_INSTANCE, {
       instanceId,
       props: withoutChildren(props),
     })
   }
 
-  unhideTextInstance(instanceId: number, text: string): void {
+  unhideTextInstance(instance: BridgeInstance, text: string): void {
+    const [instanceId] = getInstanceIds(instance)
+
     this.send(MessageType.UNHIDE_TEXT_INSTANCE, {
       instanceId,
       text,
     })
   }
 
-  clearContainer(instanceId: number): void {
+  clearContainer(instanceId: BridgeContainer): void {
     this.send(MessageType.CLEAR_CONTAINER, {
       instanceId,
     })

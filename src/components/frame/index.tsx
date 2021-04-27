@@ -1,4 +1,5 @@
-import { ReactNode } from 'react'
+import { forwardRef, ReactNode } from 'react'
+import { HostPublicInstance } from '../../create-host-config'
 import RemoteComponent from '../remote-component'
 
 export type JFrameCloseHandler = () => void
@@ -11,11 +12,13 @@ export interface JFrameProps {
   children?: ReactNode
 }
 
-const JFrame = ({ children, ...props }: JFrameProps): JSX.Element => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent type='JFrame' {...props}>
-    {children}
-  </RemoteComponent>
+const JFrame = forwardRef<HostPublicInstance, JFrameProps>(
+  ({ children, ...props }, ref) => (
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <RemoteComponent ref={ref} type='JFrame' {...props}>
+      {children}
+    </RemoteComponent>
+  ),
 )
 
 export default JFrame
