@@ -187,9 +187,10 @@ class Bridge {
       }, {}) as T
     }
 
-    // Cache functions and replace with a serializable reference
     if (isFunction(payload)) {
-      throw new Error('Serializing functions not yet implemented')
+      // Discard the callback.
+      // TODO: Need a system here.
+      return null as T
     }
 
     return payload
