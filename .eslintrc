@@ -31,12 +31,6 @@
         ]
       }
     ],
-    "no-underscore-dangle": [
-      "error",
-      {
-        "allowAfterThis": true
-      }
-    ],
     "prettier/prettier": "error",
     "react/jsx-key": "error",
     "react/prop-types": [
