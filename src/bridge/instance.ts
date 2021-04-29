@@ -1,8 +1,6 @@
-import Instance from './instance'
-
-export { default as HostInstance } from './host-instance'
-export { default as Instance } from './instance'
-export { default as TextInstance } from './text-instance'
+class Instance {
+  constructor(readonly id: number) {}
+}
 
 type InstanceIds<T extends Instance[]> = {
   [K in keyof T]: number
@@ -11,3 +9,5 @@ type InstanceIds<T extends Instance[]> = {
 export const getInstanceIds = <T extends Instance[]>(
   ...instances: T
 ): InstanceIds<T> => instances.map(x => x.id) as InstanceIds<T>
+
+export default Instance

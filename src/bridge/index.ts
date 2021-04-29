@@ -1,10 +1,5 @@
 import WebSocket from 'ws'
-import {
-  getInstanceIds,
-  HostInstance,
-  Instance,
-  TextInstance,
-} from './instance'
+import Instance, { getInstanceIds } from './instance'
 import { encodeMessage, MessagePayload, MessageType } from './messages'
 import {
   isArray,
@@ -42,7 +37,7 @@ class Bridge {
       props: withoutChildren(props),
     })
 
-    return new HostInstance(instanceId)
+    return new Instance(instanceId)
   }
 
   createTextInstance(text: string): BridgeInstance {
@@ -53,7 +48,7 @@ class Bridge {
       text,
     })
 
-    return new TextInstance(instanceId)
+    return new Instance(instanceId)
   }
 
   appendInitialChild(parent: BridgeInstance, child: BridgeInstance): void {
@@ -250,9 +245,7 @@ export const configureBridge = (host: string): Promise<Bridge> =>
     const ws = new WebSocket(host)
 
     const handleOpen = () => resolve(new Bridge(host, ws))
-    const handleError = (err: Error) => {
-      reject(err)
-    }
+    const handleError = (err: Error) => reject(err)
 
     ws.once('open', handleOpen)
     ws.once('error', handleError)
