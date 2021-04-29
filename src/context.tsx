@@ -1,6 +1,6 @@
-import { createContext, ReactNode, useMemo } from 'react'
-import Bridge from './bridge'
-import Remote, { buildRemote } from './remote'
+import { createContext, ReactNode, useContext, useMemo } from 'react'
+import { Client } from './client'
+import { configureRemote, Remote } from './remote'
 
 export interface ReactSwingContextValue {
   remote: Remote
@@ -10,21 +10,20 @@ export interface ReactSwingContextValue {
 export const ReactSwingContext = createContext<ReactSwingContextValue>(null!)
 
 export interface ReactSwingProviderProps {
-  host: string
-  bridge: Bridge
+  client: Client
 
-  children?: ReactNode
+  children: ReactNode
 }
 
-const buildValue = (host: string): ReactSwingContextValue => ({
-  remote: buildRemote(host),
+const configureValue = (client: Client): ReactSwingContextValue => ({
+  remote: configureRemote(client),
 })
 
 export const ReactSwingProvider = ({
-  host,
+  client,
   children,
 }: ReactSwingProviderProps): JSX.Element => {
-  const value = useMemo(() => buildValue(host), [host])
+  const value = useMemo(() => configureValue(client), [client])
 
   return (
     <ReactSwingContext.Provider value={value}>
@@ -32,3 +31,6 @@ export const ReactSwingProvider = ({
     </ReactSwingContext.Provider>
   )
 }
+
+export const useReactSwing = (): ReactSwingContextValue =>
+  useContext(ReactSwingContext)

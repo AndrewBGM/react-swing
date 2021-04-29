@@ -1,29 +1,23 @@
 import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
-import Bridge, {
-  BridgeContainer,
-  BridgeInstance,
-  BridgeProps,
-  BridgeType,
-  BridgeUpdatePayload,
-} from './bridge'
+import { Client } from './client'
 
-export type HostType = BridgeType
-export type HostProps = BridgeProps
-export type HostContainer = BridgeContainer
-export type HostInstance = BridgeInstance
-export type HostTextInstance = BridgeInstance
-export type HostSuspenseInstance = BridgeInstance
-export type HostHydratableInstance = BridgeInstance
-export type HostPublicInstance = number
-export type HostContext = Record<string, unknown>
-export type HostUpdatePayload = BridgeUpdatePayload
+export type HostType = unknown
+export type HostProps = unknown
+export type HostContainer = unknown
+export type HostInstance = unknown
+export type HostTextInstance = unknown
+export type HostSuspenseInstance = unknown
+export type HostHydratableInstance = unknown
+export type HostPublicInstance = unknown
+export type HostContext = unknown
+export type HostUpdatePayload = unknown
 export type HostChildSet = unknown
 export type HostTimeoutHandle = NodeJS.Timeout
 export type HostNoTimeout = -1
 
 const createHostConfig = (
-  bridge: Bridge,
+  _client: Client,
 ): HostConfig<
   HostType,
   HostProps,
@@ -48,29 +42,29 @@ const createHostConfig = (
   queueMicrotask,
 
   createInstance(
-    type: HostType,
-    props: HostProps,
+    _type: HostType,
+    _props: HostProps,
     _rootContainer: HostContainer,
     _hostContext: HostContext,
     _internalHandle: OpaqueHandle,
   ): HostInstance {
-    return bridge.createInstance(type, props)
+    throw new Error('Not implemented yet.')
   },
 
   createTextInstance(
-    text: string,
+    _text: string,
     _rootContainer: HostContainer,
     _hostContext: HostContext,
     _internalHandle: OpaqueHandle,
   ): HostTextInstance {
-    return bridge.createTextInstance(text)
+    throw new Error('Not implemented yet.')
   },
 
   appendInitialChild(
-    parentInstance: HostInstance,
-    child: HostInstance | HostTextInstance,
+    _parentInstance: HostInstance,
+    _child: HostInstance | HostTextInstance,
   ): void {
-    bridge.appendInitialChild(parentInstance, child)
+    throw new Error('Not implemented yet.')
   },
 
   finalizeInitialChildren(
@@ -80,46 +74,46 @@ const createHostConfig = (
     _rootContainer: HostContainer,
     _hostContext: HostContext,
   ): boolean {
-    return false
+    throw new Error('Not implemented yet.')
   },
 
   prepareUpdate(
-    instance: HostInstance,
+    _instance: HostInstance,
     _type: HostType,
-    oldProps: HostProps,
-    newProps: HostProps,
+    _oldProps: HostProps,
+    _newProps: HostProps,
     _rootContainer: HostContainer,
     _hostContext: HostContext,
   ): HostUpdatePayload | null {
-    return bridge.prepareUpdate(instance, oldProps, newProps)
+    throw new Error('Not implemented yet.')
   },
 
   shouldSetTextContent(_type: HostType, _props: HostProps): boolean {
-    return false
+    throw new Error('Not implemented yet.')
   },
 
   getRootHostContext(_rootContainer: HostContainer): HostContext | null {
-    return null
+    throw new Error('Not implemented yet.')
   },
 
   getChildHostContext(
-    parentHostContext: HostContext,
+    _parentHostContext: HostContext,
     _type: HostType,
     _rootContainer: HostContainer,
   ): HostContext {
-    return parentHostContext
+    throw new Error('Not implemented yet.')
   },
 
   getPublicInstance(
-    instance: HostInstance | HostTextInstance,
+    _instance: HostInstance | HostTextInstance,
   ): HostPublicInstance {
-    return instance.id
+    throw new Error('Not implemented yet.')
   },
 
   prepareForCommit(
     _containerInfo: HostContainer,
   ): Record<string, unknown> | null {
-    return null
+    throw new Error('Not implemented yet.')
   },
 
   resetAfterCommit(_containerInfo: HostContainer): void {
@@ -133,47 +127,47 @@ const createHostConfig = (
   supportsMutation: true,
 
   appendChild(
-    parentInstance: HostInstance,
-    child: HostInstance | HostTextInstance,
+    _parentInstance: HostInstance,
+    _child: HostInstance | HostTextInstance,
   ): void {
-    bridge.appendChild(parentInstance, child)
+    throw new Error('Not implemented yet.')
   },
 
   appendChildToContainer(
-    container: HostContainer,
-    child: HostInstance | HostTextInstance,
+    _container: HostContainer,
+    _child: HostInstance | HostTextInstance,
   ): void {
-    bridge.appendChildToContainer(container, child)
+    throw new Error('Not implemented yet.')
   },
 
   insertBefore(
-    parentInstance: HostInstance,
-    child: HostInstance | HostTextInstance,
-    beforeChild: HostInstance | HostTextInstance | HostSuspenseInstance,
+    _parentInstance: HostInstance,
+    _child: HostInstance | HostTextInstance,
+    _beforeChild: HostInstance | HostTextInstance | HostSuspenseInstance,
   ): void {
-    bridge.insertBefore(parentInstance, child, beforeChild)
+    throw new Error('Not implemented yet.')
   },
 
   insertInContainerBefore(
-    container: HostContainer,
-    child: HostInstance | HostTextInstance,
-    beforeChild: HostInstance | HostTextInstance | HostSuspenseInstance,
+    _container: HostContainer,
+    _child: HostInstance | HostTextInstance,
+    _beforeChild: HostInstance | HostTextInstance | HostSuspenseInstance,
   ): void {
-    bridge.insertInContainerBefore(container, child, beforeChild)
+    throw new Error('Not implemented yet.')
   },
 
   removeChild(
-    parentInstance: HostInstance,
-    child: HostInstance | HostTextInstance | HostSuspenseInstance,
+    _parentInstance: HostInstance,
+    _child: HostInstance | HostTextInstance | HostSuspenseInstance,
   ): void {
-    bridge.removeChild(parentInstance, child)
+    throw new Error('Not implemented yet.')
   },
 
   removeChildFromContainer(
-    container: HostContainer,
-    child: HostInstance | HostTextInstance | HostSuspenseInstance,
+    _container: HostContainer,
+    _child: HostInstance | HostTextInstance | HostSuspenseInstance,
   ): void {
-    bridge.removeChildFromContainer(container, child)
+    throw new Error('Not implemented yet.')
   },
 
   resetTextContent(_instance: HostInstance): void {
@@ -181,11 +175,11 @@ const createHostConfig = (
   },
 
   commitTextUpdate(
-    textInstance: HostTextInstance,
+    _textInstance: HostTextInstance,
     _oldText: string,
-    newText: string,
+    _newText: string,
   ): void {
-    bridge.commitTextUpdate(textInstance, newText)
+    throw new Error('Not implemented yet.')
   },
 
   commitMount(
@@ -199,33 +193,33 @@ const createHostConfig = (
 
   commitUpdate(
     _instance: HostInstance,
-    updatePayload: HostUpdatePayload,
+    _updatePayload: HostUpdatePayload,
     _type: HostType,
     _prevProps: HostProps,
     _nextProps: HostProps,
     _internalHandle: OpaqueHandle,
   ): void {
-    bridge.commitUpdate(updatePayload)
+    throw new Error('Not implemented yet.')
   },
 
-  hideInstance(instance: HostInstance): void {
-    bridge.hideInstance(instance)
+  hideInstance(_instance: HostInstance): void {
+    throw new Error('Not implemented yet.')
   },
 
-  hideTextInstance(textInstance: HostTextInstance): void {
-    bridge.hideTextInstance(textInstance)
+  hideTextInstance(_textInstance: HostTextInstance): void {
+    throw new Error('Not implemented yet.')
   },
 
-  unhideInstance(instance: HostInstance, props: HostProps): void {
-    bridge.unhideInstance(instance, props)
+  unhideInstance(_instance: HostInstance, _props: HostProps): void {
+    throw new Error('Not implemented yet.')
   },
 
-  unhideTextInstance(textInstance: HostTextInstance, text: string): void {
-    bridge.unhideTextInstance(textInstance, text)
+  unhideTextInstance(_textInstance: HostTextInstance, _text: string): void {
+    throw new Error('Not implemented yet.')
   },
 
-  clearContainer(container: HostContainer): void {
-    bridge.clearContainer(container)
+  clearContainer(_container: HostContainer): void {
+    throw new Error('Not implemented yet.')
   },
 
   supportsHydration: false,
