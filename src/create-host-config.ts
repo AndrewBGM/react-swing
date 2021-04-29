@@ -1,23 +1,23 @@
 import { performance } from 'perf_hooks'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
-import { Client } from './client'
+import { Client, UpdatePayload } from './client'
 
-export type HostType = unknown
-export type HostProps = unknown
-export type HostContainer = unknown
-export type HostInstance = unknown
-export type HostTextInstance = unknown
-export type HostSuspenseInstance = unknown
-export type HostHydratableInstance = unknown
-export type HostPublicInstance = unknown
-export type HostContext = unknown
-export type HostUpdatePayload = unknown
+export type HostType = string
+export type HostProps = Record<string, unknown>
+export type HostContainer = number
+export type HostInstance = number
+export type HostTextInstance = number
+export type HostSuspenseInstance = number
+export type HostHydratableInstance = number
+export type HostPublicInstance = number
+export type HostContext = Record<string, unknown>
+export type HostUpdatePayload = UpdatePayload
 export type HostChildSet = unknown
 export type HostTimeoutHandle = NodeJS.Timeout
 export type HostNoTimeout = -1
 
 const createHostConfig = (
-  _client: Client,
+  client: Client,
 ): HostConfig<
   HostType,
   HostProps,
@@ -42,29 +42,29 @@ const createHostConfig = (
   queueMicrotask,
 
   createInstance(
-    _type: HostType,
-    _props: HostProps,
+    type: HostType,
+    props: HostProps,
     _rootContainer: HostContainer,
     _hostContext: HostContext,
     _internalHandle: OpaqueHandle,
   ): HostInstance {
-    throw new Error('Not implemented yet.')
+    return client.createInstance(type, props)
   },
 
   createTextInstance(
-    _text: string,
+    text: string,
     _rootContainer: HostContainer,
     _hostContext: HostContext,
     _internalHandle: OpaqueHandle,
   ): HostTextInstance {
-    throw new Error('Not implemented yet.')
+    return client.createTextInstance(text)
   },
 
   appendInitialChild(
-    _parentInstance: HostInstance,
-    _child: HostInstance | HostTextInstance,
+    parentInstance: HostInstance,
+    child: HostInstance | HostTextInstance,
   ): void {
-    throw new Error('Not implemented yet.')
+    client.appendInitialChild(parentInstance, child)
   },
 
   finalizeInitialChildren(
@@ -74,46 +74,46 @@ const createHostConfig = (
     _rootContainer: HostContainer,
     _hostContext: HostContext,
   ): boolean {
-    throw new Error('Not implemented yet.')
+    return false
   },
 
   prepareUpdate(
     _instance: HostInstance,
     _type: HostType,
-    _oldProps: HostProps,
-    _newProps: HostProps,
+    oldProps: HostProps,
+    newProps: HostProps,
     _rootContainer: HostContainer,
     _hostContext: HostContext,
   ): HostUpdatePayload | null {
-    throw new Error('Not implemented yet.')
+    return client.prepareUpdate(oldProps, newProps)
   },
 
   shouldSetTextContent(_type: HostType, _props: HostProps): boolean {
-    throw new Error('Not implemented yet.')
+    return false
   },
 
   getRootHostContext(_rootContainer: HostContainer): HostContext | null {
-    throw new Error('Not implemented yet.')
+    return null
   },
 
   getChildHostContext(
-    _parentHostContext: HostContext,
+    parentHostContext: HostContext,
     _type: HostType,
     _rootContainer: HostContainer,
   ): HostContext {
-    throw new Error('Not implemented yet.')
+    return parentHostContext
   },
 
   getPublicInstance(
-    _instance: HostInstance | HostTextInstance,
+    instance: HostInstance | HostTextInstance,
   ): HostPublicInstance {
-    throw new Error('Not implemented yet.')
+    return instance
   },
 
   prepareForCommit(
     _containerInfo: HostContainer,
   ): Record<string, unknown> | null {
-    throw new Error('Not implemented yet.')
+    return null
   },
 
   resetAfterCommit(_containerInfo: HostContainer): void {
@@ -127,47 +127,47 @@ const createHostConfig = (
   supportsMutation: true,
 
   appendChild(
-    _parentInstance: HostInstance,
-    _child: HostInstance | HostTextInstance,
+    parentInstance: HostInstance,
+    child: HostInstance | HostTextInstance,
   ): void {
-    throw new Error('Not implemented yet.')
+    client.appendChild(parentInstance, child)
   },
 
   appendChildToContainer(
-    _container: HostContainer,
-    _child: HostInstance | HostTextInstance,
+    container: HostContainer,
+    child: HostInstance | HostTextInstance,
   ): void {
-    throw new Error('Not implemented yet.')
+    client.appendChildToContainer(container, child)
   },
 
   insertBefore(
-    _parentInstance: HostInstance,
-    _child: HostInstance | HostTextInstance,
-    _beforeChild: HostInstance | HostTextInstance | HostSuspenseInstance,
+    parentInstance: HostInstance,
+    child: HostInstance | HostTextInstance,
+    beforeChild: HostInstance | HostTextInstance | HostSuspenseInstance,
   ): void {
-    throw new Error('Not implemented yet.')
+    client.insertBefore(parentInstance, child, beforeChild)
   },
 
   insertInContainerBefore(
-    _container: HostContainer,
-    _child: HostInstance | HostTextInstance,
-    _beforeChild: HostInstance | HostTextInstance | HostSuspenseInstance,
+    container: HostContainer,
+    child: HostInstance | HostTextInstance,
+    beforeChild: HostInstance | HostTextInstance | HostSuspenseInstance,
   ): void {
-    throw new Error('Not implemented yet.')
+    client.insertInContainerBefore(container, child, beforeChild)
   },
 
   removeChild(
-    _parentInstance: HostInstance,
-    _child: HostInstance | HostTextInstance | HostSuspenseInstance,
+    parentInstance: HostInstance,
+    child: HostInstance | HostTextInstance | HostSuspenseInstance,
   ): void {
-    throw new Error('Not implemented yet.')
+    client.removeChild(parentInstance, child)
   },
 
   removeChildFromContainer(
-    _container: HostContainer,
-    _child: HostInstance | HostTextInstance | HostSuspenseInstance,
+    container: HostContainer,
+    child: HostInstance | HostTextInstance | HostSuspenseInstance,
   ): void {
-    throw new Error('Not implemented yet.')
+    client.removeChildFromContainer(container, child)
   },
 
   resetTextContent(_instance: HostInstance): void {
@@ -175,11 +175,11 @@ const createHostConfig = (
   },
 
   commitTextUpdate(
-    _textInstance: HostTextInstance,
-    _oldText: string,
-    _newText: string,
+    textInstance: HostTextInstance,
+    oldText: string,
+    newText: string,
   ): void {
-    throw new Error('Not implemented yet.')
+    client.commitTextUpdate(textInstance, oldText, newText)
   },
 
   commitMount(
@@ -192,14 +192,14 @@ const createHostConfig = (
   },
 
   commitUpdate(
-    _instance: HostInstance,
-    _updatePayload: HostUpdatePayload,
+    instance: HostInstance,
+    updatePayload: HostUpdatePayload,
     _type: HostType,
     _prevProps: HostProps,
     _nextProps: HostProps,
     _internalHandle: OpaqueHandle,
   ): void {
-    throw new Error('Not implemented yet.')
+    client.commitUpdate(instance, updatePayload)
   },
 
   hideInstance(_instance: HostInstance): void {
@@ -218,8 +218,8 @@ const createHostConfig = (
     throw new Error('Not implemented yet.')
   },
 
-  clearContainer(_container: HostContainer): void {
-    throw new Error('Not implemented yet.')
+  clearContainer(container: HostContainer): void {
+    client.clearContainer(container)
   },
 
   supportsHydration: false,

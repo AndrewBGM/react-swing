@@ -5,5 +5,5 @@ import Remote from './remote'
 export const configureRemote = (client: Client): Remote => ({
   host: client.host,
 
-  send: data => client.send(data),
+  send: (type, data) => client.send(type, data),
 })
