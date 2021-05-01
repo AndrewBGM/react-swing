@@ -13,6 +13,7 @@ export const shallowDiff = (
       diff[key] = right
     }
   })
+
   return diff
 }
 
