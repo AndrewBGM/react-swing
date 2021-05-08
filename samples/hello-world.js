@@ -1,6 +1,6 @@
 // @ts-check
 import React from 'react'
-import { Button, Frame, Panel, startApplication, useRemote } from '../'
+import { Button, Frame, Label, Panel, startApplication, useRemote } from '../'
 
 class ErrorBoundary extends React.Component {
   componentDidCatch(err) {
@@ -42,6 +42,7 @@ const App = () => {
       {isFrameOpen && (
         <Frame title='Hello World!' onClose={handleFrameClose}>
           <Panel>
+            <Label>Host: {remote.host}</Label>
             <Button onAction={handleClick}>Count: {count}</Button>
           </Panel>
         </Frame>

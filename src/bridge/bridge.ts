@@ -19,6 +19,8 @@ interface CallbackMap {
 class Bridge {
   private callbackMapByView: Record<BridgeView, CallbackMap | undefined> = {}
 
+  private childrenById: Record<string, string[] | undefined> = {}
+
   constructor(readonly host: string, private ws: WebSocket) {
     ws.on('ping', data => ws.pong(data))
     ws.on('message', data => this.handleMessage(String(data)))
@@ -50,6 +52,8 @@ class Bridge {
   }
 
   setChildren(parent: BridgeView, children: BridgeView[]): void {
+    this.childrenById[parent] = children
+
     this.send('SET_CHILDREN', {
       parentId: parent,
       childrenIds: children,
@@ -57,6 +61,9 @@ class Bridge {
   }
 
   appendChild(parent: BridgeView, child: BridgeView): void {
+    const children = this.childrenById[parent] ?? []
+    this.childrenById[parent] = children.concat(child)
+
     this.send('APPEND_CHILD', {
       parentId: parent,
       childId: child,
@@ -64,10 +71,16 @@ class Bridge {
   }
 
   removeChild(parent: BridgeView, child: BridgeView): void {
+    const children = this.childrenById[parent] ?? []
+    children.splice(children.indexOf(child), 1)
+    this.childrenById[parent] = children
+
     this.send('REMOVE_CHILD', {
       parentId: parent,
       childId: child,
     })
+
+    this.removeHostReferences(child)
   }
 
   insertChild(
@@ -75,6 +88,13 @@ class Bridge {
     child: BridgeView,
     beforeChild: BridgeView,
   ): void {
+    const children = this.childrenById[parent] ?? []
+    if (children.includes(child)) {
+      children.splice(children.indexOf(child))
+    }
+
+    children.splice(children.indexOf(beforeChild), 0, child)
+
     this.send('INSERT_CHILD', {
       parentId: parent,
       childId: child,
@@ -100,6 +120,12 @@ class Bridge {
       default:
         break
     }
+  }
+
+  private removeHostReferences(id: string): void {
+    this.childrenById[id]?.forEach(x => this.removeHostReferences(x))
+    delete this.childrenById[id]
+    delete this.callbackMapByView[id]
   }
 
   private syncCallbacks(id: string, props: Record<string, unknown>): void {
