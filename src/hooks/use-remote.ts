@@ -1,6 +1,7 @@
 import { useContext } from 'react'
-import { ReactSwingContext } from '../context'
-import { Remote } from '../remote'
+import { ReactSwingContext, Remote } from '../context'
+
+export type { Remote }
 
 const useRemote = (): Remote => {
   const { remote } = useContext(ReactSwingContext)

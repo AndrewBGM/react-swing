@@ -1,2 +1,2 @@
-// eslint-disable-next-line import/prefer-default-export
+export * from './use-remote'
 export { default as useRemote } from './use-remote'
