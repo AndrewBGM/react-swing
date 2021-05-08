@@ -123,7 +123,7 @@ const createHostConfig = (
   },
 
   shouldSetTextContent(type: HostType, _props: HostProps): boolean {
-    return ['BUTTON', 'LABEL'].includes(type)
+    return ['BUTTON', 'LABEL', 'MENU_ITEM'].includes(type)
   },
 
   getRootHostContext(_rootContainer: HostContainer): HostContext | null {
