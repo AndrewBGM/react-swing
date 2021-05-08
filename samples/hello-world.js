@@ -76,7 +76,7 @@ const SecondaryFrame = ({ isOpen, onClose }) => {
       {isOpen && (
         <Frame title='Secondary Frame' onClose={onClose}>
           <Panel>
-            <TextField defaultValue={value} onChange={setValue} />
+            <TextField initialValue={value} onChange={setValue} />
             <Label>Hello {value}!</Label>
           </Panel>
         </Frame>

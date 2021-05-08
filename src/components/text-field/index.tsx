@@ -3,7 +3,7 @@ import RemoteComponent from '../remote-component'
 export type TextFieldChangeHandler = (value: string) => void
 
 export interface TextFieldProps {
-  defaultValue?: string
+  initialValue?: string
 
   onChange?: TextFieldChangeHandler
 }
