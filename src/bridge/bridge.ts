@@ -115,7 +115,11 @@ class Bridge {
       }
     })
 
-    this.callbackMapByView[id] = cbm
+    if (Object.keys(cbm).length === 0) {
+      delete this.callbackMapByView[id]
+    } else {
+      this.callbackMapByView[id] = cbm
+    }
   }
 
   private invokeCallback(id: string, name: string, args: unknown[]): void {
