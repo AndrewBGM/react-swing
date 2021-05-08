@@ -3,13 +3,11 @@ import React from 'react'
 import {
   Button,
   Frame,
-  Label,
   Menu,
   MenuBar,
   MenuItem,
   Panel,
   startApplication,
-  TextField,
   useRemote,
 } from '../'
 
@@ -33,65 +31,13 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-const PrimaryFrame = ({
-  isOpen,
-  isSecondaryFrameOpen,
-  onClose,
-  onSecondaryFrameToggle,
-}) => {
-  const labelPrefix = isSecondaryFrameOpen ? 'Close' : 'Open'
-
-  return (
-    <>
-      {isOpen && (
-        <Frame title='Primary Frame' onClose={onClose}>
-          <MenuBar>
-            <Menu text='File'>
-              <MenuItem>New</MenuItem>
-              <MenuItem>Open</MenuItem>
-              <MenuItem>Save</MenuItem>
-              <MenuItem>Save As</MenuItem>
-              <MenuItem onAction={onClose}>Exit</MenuItem>
-            </Menu>
-            <Menu text='Help'>
-              <MenuItem>About</MenuItem>
-            </Menu>
-          </MenuBar>
-          <Panel>
-            <Button onAction={onSecondaryFrameToggle}>
-              {labelPrefix} secondary frame
-            </Button>
-          </Panel>
-        </Frame>
-      )}
-    </>
-  )
-}
-
-const SecondaryFrame = ({ isOpen, onClose }) => {
-  const [value, setValue] = React.useState('World')
-
-  return (
-    <>
-      {isOpen && (
-        <Frame title='Secondary Frame' onClose={onClose}>
-          <Panel>
-            <TextField initialValue={value} onChange={setValue} />
-            <Label>Hello {value}!</Label>
-          </Panel>
-        </Frame>
-      )}
-    </>
-  )
-}
-
 const App = () => {
   const remote = useRemote()
-  const [isPrimaryFrameOpen, setPrimaryFrameOpen] = React.useState(true)
-  const [isSecondaryFrameOpen, setSecondaryFrameOpen] = React.useState(false)
+  const [isFrameOpen, setFrameOpen] = React.useState(true)
+  const [count, setCount] = React.useState(0)
 
   React.useEffect(() => {
-    if (isPrimaryFrameOpen) {
+    if (isFrameOpen) {
       return
     }
 
@@ -100,33 +46,41 @@ const App = () => {
     }, 250)
 
     return () => clearTimeout(id)
-  }, [remote, isPrimaryFrameOpen])
+  }, [remote, isFrameOpen])
 
-  const handlePrimaryFrameClose = React.useCallback(() => {
-    setPrimaryFrameOpen(false)
-    setSecondaryFrameOpen(false)
+  const handleClick = React.useCallback(() => {
+    setCount(x => x + 1)
   }, [])
 
-  const handleSecondaryFrameClose = React.useCallback(() => {
-    setSecondaryFrameOpen(false)
-  }, [])
-
-  const handleSecondaryFrameToggle = React.useCallback(() => {
-    setSecondaryFrameOpen(x => !x)
+  const handleClose = React.useCallback(() => {
+    setFrameOpen(false)
   }, [])
 
   return (
     <>
-      <PrimaryFrame
-        isOpen={isPrimaryFrameOpen}
-        isSecondaryFrameOpen={isSecondaryFrameOpen}
-        onClose={handlePrimaryFrameClose}
-        onSecondaryFrameToggle={handleSecondaryFrameToggle}
-      />
-      <SecondaryFrame
-        isOpen={isSecondaryFrameOpen}
-        onClose={handleSecondaryFrameClose}
-      />
+      {isFrameOpen && (
+        <Frame title='Sample App' onClose={handleClose}>
+          <MenuBar>
+            <Menu text='File'>
+              <MenuItem>One</MenuItem>
+              {count >= 5 && count < 10 && <MenuItem>HELLO</MenuItem>}
+              <MenuItem>Two</MenuItem>
+              <MenuItem>Three</MenuItem>
+            </Menu>
+            {count > 10 && (
+              <Menu text='HELLO'>
+                <MenuItem>One</MenuItem>
+              </Menu>
+            )}
+            <Menu text='Help'>
+              <MenuItem>One</MenuItem>
+            </Menu>
+          </MenuBar>
+          <Panel>
+            <Button onAction={handleClick}>Count: {count}</Button>
+          </Panel>
+        </Frame>
+      )}
     </>
   )
 }
