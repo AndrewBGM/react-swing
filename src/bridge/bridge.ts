@@ -6,20 +6,14 @@ import {
   MessageType,
   UpdateViewMessagePayload,
 } from './message'
+import BridgeView from './view'
 
 export type BridgeType = string
 export type BridgeProps = Record<string, unknown>
-export type BridgeView = string
 export type BridgeUpdatePayload = Omit<UpdateViewMessagePayload, 'id'>
 
-interface CallbackMap {
-  [name: string]: CallableFunction | undefined
-}
-
 class Bridge {
-  private callbackMapByView: Record<BridgeView, CallbackMap | undefined> = {}
-
-  private childrenById: Record<string, string[] | undefined> = {}
+  private viewById: Record<string, BridgeView> = {}
 
   constructor(readonly host: string, private ws: WebSocket) {
     ws.on('ping', data => ws.pong(data))
@@ -30,54 +24,56 @@ class Bridge {
     this.ws.close()
   }
 
-  createView(view: BridgeView, type: BridgeType, props: BridgeProps): void {
-    this.syncCallbacks(view, props)
+  createView(id: string, type: BridgeType, props: BridgeProps): BridgeView {
+    const view = new BridgeView(id, type)
+
+    this.viewById[id] = view
+    view.syncCallbacks(props)
 
     this.send('CREATE_VIEW', {
-      id: view,
+      id,
       type,
       props,
     })
+
+    return view
   }
 
   updateView(view: BridgeView, payload: BridgeUpdatePayload): void {
     const { changedProps } = payload
 
-    this.syncCallbacks(view, changedProps)
+    view.syncCallbacks(changedProps)
 
     this.send('UPDATE_VIEW', {
-      id: view,
+      id: view.id,
       changedProps,
     })
   }
 
   setChildren(parent: BridgeView, children: BridgeView[]): void {
-    this.childrenById[parent] = children
+    parent.setChildren(children)
 
     this.send('SET_CHILDREN', {
-      parentId: parent,
-      childrenIds: children,
+      parentId: parent.id,
+      childrenIds: children.map(x => x.id),
     })
   }
 
   appendChild(parent: BridgeView, child: BridgeView): void {
-    const children = this.childrenById[parent] ?? []
-    this.childrenById[parent] = children.concat(child)
+    parent.appendChild(child)
 
     this.send('APPEND_CHILD', {
-      parentId: parent,
-      childId: child,
+      parentId: parent.id,
+      childId: child.id,
     })
   }
 
   removeChild(parent: BridgeView, child: BridgeView): void {
-    const children = this.childrenById[parent] ?? []
-    children.splice(children.indexOf(child), 1)
-    this.childrenById[parent] = children
+    parent.removeChild(child)
 
     this.send('REMOVE_CHILD', {
-      parentId: parent,
-      childId: child,
+      parentId: parent.id,
+      childId: child.id,
     })
 
     this.removeHostReferences(child)
@@ -88,17 +84,12 @@ class Bridge {
     child: BridgeView,
     beforeChild: BridgeView,
   ): void {
-    const children = this.childrenById[parent] ?? []
-    if (children.includes(child)) {
-      children.splice(children.indexOf(child))
-    }
-
-    children.splice(children.indexOf(beforeChild), 0, child)
+    parent.insertBefore(child, beforeChild)
 
     this.send('INSERT_CHILD', {
-      parentId: parent,
-      childId: child,
-      beforeChildId: beforeChild,
+      parentId: parent.id,
+      childId: child.id,
+      beforeChildId: beforeChild.id,
     })
   }
 
@@ -122,44 +113,21 @@ class Bridge {
     }
   }
 
-  private removeHostReferences(id: string): void {
-    this.childrenById[id]?.forEach(x => this.removeHostReferences(x))
-    delete this.childrenById[id]
-    delete this.callbackMapByView[id]
-  }
+  private removeHostReferences(view: BridgeView): void {
+    const { id } = view
 
-  private syncCallbacks(id: string, props: Record<string, unknown>): void {
-    const cbm = this.callbackMapByView[id] ?? {}
-    const keys = new Set([...Object.keys(cbm), ...Object.keys(props)])
-
-    keys.forEach(key => {
-      if (key in props) {
-        const value = props[key]
-        if (typeof value === 'function') {
-          cbm[key] = value
-        } else delete cbm[key]
-      }
-    })
-
-    if (Object.keys(cbm).length === 0) {
-      delete this.callbackMapByView[id]
-    } else {
-      this.callbackMapByView[id] = cbm
-    }
+    view.getChildren().forEach(x => this.removeHostReferences(x))
+    view.clearCallbacks()
+    delete this.viewById[id]
   }
 
   private invokeCallback(id: string, name: string, args: unknown[]): void {
-    const cbm = this.callbackMapByView[id]
-    if (!cbm) {
+    const view = this.viewById[id]
+    if (!view) {
       return
     }
 
-    const cb = cbm[name]
-    if (!cb) {
-      return
-    }
-
-    cb(...args)
+    view.invokeCallback(name, args)
   }
 }
 

@@ -1,15 +1,6 @@
 // @ts-check
 import React from 'react'
-import {
-  Button,
-  Frame,
-  Menu,
-  MenuBar,
-  MenuItem,
-  Panel,
-  startApplication,
-  useRemote,
-} from '../'
+import { Button, Frame, Panel, startApplication, useRemote } from '../'
 
 class ErrorBoundary extends React.Component {
   state = { error: null }
@@ -60,22 +51,6 @@ const App = () => {
     <>
       {isFrameOpen && (
         <Frame title='Sample App' onClose={handleClose}>
-          <MenuBar>
-            <Menu text='File'>
-              <MenuItem>One</MenuItem>
-              {count >= 5 && count < 10 && <MenuItem>HELLO</MenuItem>}
-              <MenuItem>Two</MenuItem>
-              <MenuItem>Three</MenuItem>
-            </Menu>
-            {count > 10 && (
-              <Menu text='HELLO'>
-                <MenuItem>One</MenuItem>
-              </Menu>
-            )}
-            <Menu text='Help'>
-              <MenuItem>One</MenuItem>
-            </Menu>
-          </MenuBar>
           <Panel>
             <Button onAction={handleClick}>Count: {count}</Button>
           </Panel>

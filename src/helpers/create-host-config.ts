@@ -17,15 +17,12 @@ export type HostInstance = BridgeView
 export type HostTextInstance = BridgeView
 export type HostSuspenseInstance = BridgeView
 export type HostHydratableInstance = BridgeView
-export type HostPublicInstance = BridgeView
+export type HostPublicInstance = string
 export type HostContext = unknown
 export type HostUpdatePayload = BridgeUpdatePayload
 export type HostChildSet = unknown
 export type HostTimeoutHandle = NodeJS.Timeout
 export type HostNoTimeout = -1
-
-// TODO: I don't like that this just lives here.
-const initialChildrenById: Record<string, string[]> = {}
 
 const createHostConfig = (
   bridge: Bridge,
@@ -59,9 +56,7 @@ const createHostConfig = (
     _hostContext: HostContext,
     _internalHandle: OpaqueHandle,
   ): HostInstance {
-    const id = uuid()
-    bridge.createView(id, type, filterChildren(props))
-    return id
+    return bridge.createView(uuid(), type, filterChildren(props))
   },
 
   createTextInstance(
@@ -77,9 +72,7 @@ const createHostConfig = (
     parentInstance: HostInstance,
     child: HostInstance | HostTextInstance,
   ): void {
-    const initialChildren = initialChildrenById[parentInstance] ?? []
-    initialChildrenById[parentInstance] = initialChildren
-    initialChildren.push(child)
+    parentInstance.appendChild(child)
   },
 
   finalizeInitialChildren(
@@ -89,13 +82,12 @@ const createHostConfig = (
     _rootContainer: HostContainer,
     _hostContext: HostContext,
   ): boolean {
-    const initialChildren = initialChildrenById[instance]
-    if (!initialChildren || initialChildren.length === 0) {
+    const children = instance.getChildren()
+    if (children.length === 0) {
       return false
     }
 
-    bridge.setChildren(instance, initialChildren)
-    delete initialChildrenById[instance]
+    bridge.setChildren(instance, children)
 
     return false
   },
@@ -141,7 +133,7 @@ const createHostConfig = (
   getPublicInstance(
     instance: HostInstance | HostTextInstance,
   ): HostPublicInstance {
-    return instance
+    return instance.id
   },
 
   prepareForCommit(
