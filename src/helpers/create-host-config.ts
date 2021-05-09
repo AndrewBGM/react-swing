@@ -114,8 +114,13 @@ const createHostConfig = (
     }
   },
 
-  shouldSetTextContent(type: HostType, _props: HostProps): boolean {
-    return ['BUTTON', 'LABEL', 'MENU_ITEM'].includes(type)
+  shouldSetTextContent(_type: HostType, props: HostProps): boolean {
+    const { children } = props
+    const items = Array.isArray(children) ? children : [children]
+
+    return items
+      .flat()
+      .every(x => typeof x === 'string' || typeof x === 'number')
   },
 
   getRootHostContext(_rootContainer: HostContainer): HostContext | null {
