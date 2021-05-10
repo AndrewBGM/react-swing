@@ -16,7 +16,7 @@ class BridgeView {
   removeChild(child: BridgeView): void {
     const idx = this.children.indexOf(child)
     if (idx >= 0) {
-      this.children.slice(idx, 1)
+      this.children.splice(idx, 1)
     }
   }
 
