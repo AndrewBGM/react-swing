@@ -1,6 +1,6 @@
 // @ts-check
 import React from 'react'
-import { Button, Frame, Panel, startApplication, useRemote } from '../'
+import { Frame, Label, Panel, startApplication, useRemote } from '../'
 
 class ErrorBoundary extends React.Component {
   state = { error: null }
@@ -25,23 +25,15 @@ class ErrorBoundary extends React.Component {
 const App = () => {
   const remote = useRemote()
   const [isFrameOpen, setFrameOpen] = React.useState(true)
-  const [count, setCount] = React.useState(0)
+  const [selectedValue, setSelectedValue] = React.useState('one')
 
   React.useEffect(() => {
     if (isFrameOpen) {
       return
     }
 
-    const id = setTimeout(() => {
-      remote.close()
-    }, 250)
-
-    return () => clearTimeout(id)
+    remote.close()
   }, [remote, isFrameOpen])
-
-  const handleClick = React.useCallback(() => {
-    setCount(x => x + 1)
-  }, [])
 
   const handleClose = React.useCallback(() => {
     setFrameOpen(false)
@@ -52,7 +44,7 @@ const App = () => {
       {isFrameOpen && (
         <Frame title='Sample App' onClose={handleClose}>
           <Panel>
-            <Button onAction={handleClick}>Count: {count}</Button>
+            <Label>Hello World!</Label>
           </Panel>
         </Frame>
       )}
