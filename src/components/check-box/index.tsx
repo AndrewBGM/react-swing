@@ -13,7 +13,7 @@ export interface JCheckBoxProps {
 
 const JCheckBox = ({ children, ...props }: JCheckBoxProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent type='JCheckBox' {...props}>
+  <RemoteComponent tag='JCheckBox' {...props}>
     {children}
   </RemoteComponent>
 )

@@ -13,7 +13,7 @@ export interface JMenuProps {
 
 const JMenu = ({ children, ...props }: JMenuProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent type='JMenu' {...props}>
+  <RemoteComponent tag='JMenu' {...props}>
     {children}
   </RemoteComponent>
 )

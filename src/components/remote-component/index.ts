@@ -1,15 +1,15 @@
 import { createElement, ReactNode } from 'react'
 
 export interface RemoteComponentProps {
-  type: string
+  tag: string
 
   children?: ReactNode
 }
 
 const RemoteComponent = ({
-  type,
+  tag,
   children,
   ...props
-}: RemoteComponentProps): JSX.Element => createElement(type, props, children)
+}: RemoteComponentProps): JSX.Element => createElement(tag, props, children)
 
 export default RemoteComponent

@@ -7,7 +7,7 @@ export interface JLabelProps {
 
 const JLabel = ({ children, ...props }: JLabelProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent type='JLabel' {...props}>
+  <RemoteComponent tag='JLabel' {...props}>
     {children}
   </RemoteComponent>
 )

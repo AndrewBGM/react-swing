@@ -10,7 +10,7 @@ export interface JTextFieldProps {
 
 const JTextField = (props: JTextFieldProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent type='JTextField' {...props} />
+  <RemoteComponent tag='JTextField' {...props} />
 )
 
 export default JTextField
