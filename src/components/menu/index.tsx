@@ -1,21 +1,21 @@
 import { ReactNode } from 'react'
 import RemoteComponent from '../remote-component'
 
-export type MenuActionHandler = () => void
+export type JMenuActionHandler = () => void
 
-export interface MenuProps {
+export interface JMenuProps {
   text?: string
 
-  onAction?: MenuActionHandler
+  onAction?: JMenuActionHandler
 
   children?: ReactNode
 }
 
-const Menu = ({ children, ...props }: MenuProps): JSX.Element => (
+const JMenu = ({ children, ...props }: JMenuProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent type='MENU' {...props}>
+  <RemoteComponent type='JMenu' {...props}>
     {children}
   </RemoteComponent>
 )
 
-export default Menu
+export default JMenu

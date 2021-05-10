@@ -1,15 +1,15 @@
 import { ReactNode } from 'react'
 import RemoteComponent from '../remote-component'
 
-export interface LabelProps {
+export interface JLabelProps {
   children?: ReactNode
 }
 
-const Label = ({ children, ...props }: LabelProps): JSX.Element => (
+const JLabel = ({ children, ...props }: JLabelProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent type='LABEL' {...props}>
+  <RemoteComponent type='JLabel' {...props}>
     {children}
   </RemoteComponent>
 )
 
-export default Label
+export default JLabel

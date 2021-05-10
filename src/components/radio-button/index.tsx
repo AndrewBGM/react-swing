@@ -1,21 +1,24 @@
 import { ReactNode } from 'react'
 import RemoteComponent from '../remote-component'
 
-export type RadioButtonChangeHandler = (value: boolean) => void
+export type JRadioButtonChangeHandler = (value: boolean) => void
 
-export interface RadioButtonProps {
+export interface JRadioButtonProps {
   initialValue?: boolean
 
-  onChange?: RadioButtonChangeHandler
+  onChange?: JRadioButtonChangeHandler
 
   children?: ReactNode
 }
 
-const RadioButton = ({ children, ...props }: RadioButtonProps): JSX.Element => (
+const JRadioButton = ({
+  children,
+  ...props
+}: JRadioButtonProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent type='RADIO_BUTTON' {...props}>
+  <RemoteComponent type='JRadioButton' {...props}>
     {children}
   </RemoteComponent>
 )
 
-export default RadioButton
+export default JRadioButton

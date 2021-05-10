@@ -1,6 +1,6 @@
 // @ts-check
 import React from 'react'
-import { Frame, Label, Panel, startApplication, useRemote } from '../'
+import { JFrame, JLabel, JPanel, startApplication, useRemote } from '../'
 
 class ErrorBoundary extends React.Component {
   state = { error: null }
@@ -25,7 +25,6 @@ class ErrorBoundary extends React.Component {
 const App = () => {
   const remote = useRemote()
   const [isFrameOpen, setFrameOpen] = React.useState(true)
-  const [selectedValue, setSelectedValue] = React.useState('one')
 
   React.useEffect(() => {
     if (isFrameOpen) {
@@ -42,11 +41,11 @@ const App = () => {
   return (
     <>
       {isFrameOpen && (
-        <Frame title='Sample App' onClose={handleClose}>
-          <Panel>
-            <Label>Hello World!</Label>
-          </Panel>
-        </Frame>
+        <JFrame title='Sample App' onClose={handleClose}>
+          <JPanel>
+            <JLabel>Hello World!</JLabel>
+          </JPanel>
+        </JFrame>
       )}
     </>
   )

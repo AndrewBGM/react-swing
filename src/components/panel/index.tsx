@@ -1,15 +1,15 @@
 import { ReactNode } from 'react'
 import RemoteComponent from '../remote-component'
 
-export interface PanelProps {
+export interface JPanelProps {
   children?: ReactNode
 }
 
-const Panel = ({ children, ...props }: PanelProps): JSX.Element => (
+const JPanel = ({ children, ...props }: JPanelProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent type='PANEL' {...props}>
+  <RemoteComponent type='JPanel' {...props}>
     {children}
   </RemoteComponent>
 )
 
-export default Panel
+export default JPanel

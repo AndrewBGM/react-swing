@@ -1,19 +1,19 @@
 import { ReactNode } from 'react'
 import RemoteComponent from '../remote-component'
 
-export type ButtonActionHandler = () => void
+export type JButtonActionHandler = () => void
 
-export interface ButtonProps {
-  onAction?: ButtonActionHandler
+export interface JButtonProps {
+  onAction?: JButtonActionHandler
 
   children?: ReactNode
 }
 
-const Button = ({ children, ...props }: ButtonProps): JSX.Element => (
+const JButton = ({ children, ...props }: JButtonProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent type='BUTTON' {...props}>
+  <RemoteComponent type='JButton' {...props}>
     {children}
   </RemoteComponent>
 )
 
-export default Button
+export default JButton

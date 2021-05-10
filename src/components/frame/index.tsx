@@ -1,21 +1,21 @@
 import { ReactNode } from 'react'
 import RemoteComponent from '../remote-component'
 
-export type FrameCloseHandler = () => void
+export type JFrameCloseHandler = () => void
 
-export interface FrameProps {
+export interface JFrameProps {
   title?: string
 
-  onClose?: FrameCloseHandler
+  onClose?: JFrameCloseHandler
 
   children?: ReactNode
 }
 
-const Frame = ({ children, ...props }: FrameProps): JSX.Element => (
+const JFrame = ({ children, ...props }: JFrameProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent type='FRAME' {...props}>
+  <RemoteComponent type='JFrame' {...props}>
     {children}
   </RemoteComponent>
 )
 
-export default Frame
+export default JFrame

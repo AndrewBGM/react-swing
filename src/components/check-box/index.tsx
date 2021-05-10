@@ -1,21 +1,21 @@
 import { ReactNode } from 'react'
 import RemoteComponent from '../remote-component'
 
-export type CheckBoxChangeHandler = (value: boolean) => void
+export type JCheckBoxChangeHandler = (value: boolean) => void
 
-export interface CheckBoxProps {
+export interface JCheckBoxProps {
   initialValue?: boolean
 
-  onChange?: CheckBoxChangeHandler
+  onChange?: JCheckBoxChangeHandler
 
   children?: ReactNode
 }
 
-const CheckBox = ({ children, ...props }: CheckBoxProps): JSX.Element => (
+const JCheckBox = ({ children, ...props }: JCheckBoxProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent type='CHECK_BOX' {...props}>
+  <RemoteComponent type='JCheckBox' {...props}>
     {children}
   </RemoteComponent>
 )
 
-export default CheckBox
+export default JCheckBox
