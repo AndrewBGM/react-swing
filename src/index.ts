@@ -5,7 +5,7 @@ import { BridgeView } from './bridge'
 import { withProvider } from './context'
 import { createBridge, createHostConfig } from './helpers'
 
-const ROOT_VIEW = new BridgeView(NIL, 'ROOT')
+const ROOT_VIEW = new BridgeView(NIL)
 
 export const startApplication = async (
   element: ReactNode,

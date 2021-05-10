@@ -29,7 +29,7 @@ class Bridge {
 
   createView(type: BridgeType, props: BridgeProps): BridgeView {
     const id = uuid()
-    const view = new BridgeView(id, type)
+    const view = new BridgeView(id)
     const filteredProps = filterProps(props)
 
     this.viewById[id] = view

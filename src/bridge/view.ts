@@ -3,7 +3,7 @@ class BridgeView {
 
   private children: BridgeView[] = []
 
-  constructor(readonly id: string, readonly type: string) {}
+  constructor(readonly id: string) {}
 
   appendChild(child: BridgeView): void {
     this.children.push(child)
