@@ -31,7 +31,8 @@ const App = () => {
       return
     }
 
-    remote.close()
+    const id = setTimeout(() => remote.close())
+    return () => clearTimeout(id)
   }, [remote, isFrameOpen])
 
   const handleClose = React.useCallback(() => {

@@ -249,8 +249,8 @@ const createHostConfig = (
     throw new Error('Suspense instances are not supported')
   },
 
-  clearContainer(container: HostContainer): void {
-    bridge.setChildren(container, [])
+  clearContainer(_container: HostContainer): void {
+    // noop
   },
 
   supportsHydration: false,
