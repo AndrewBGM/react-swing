@@ -1,7 +1,5 @@
 import { performance } from 'perf_hooks'
-import { Children } from 'react'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
-import { v4 as uuid } from 'uuid'
 import {
   Bridge,
   BridgeProps,
@@ -9,7 +7,6 @@ import {
   BridgeUpdatePayload,
   BridgeView,
 } from '../bridge'
-import { filterProps, isValidText, shallowDiff } from '../utils'
 
 export type HostType = BridgeType
 export type HostProps = BridgeProps
@@ -57,7 +54,7 @@ const createHostConfig = (
     _hostContext: HostContext,
     _internalHandle: OpaqueHandle,
   ): HostInstance {
-    return bridge.createView(uuid(), type, filterProps(props))
+    return bridge.createView(type, props)
   },
 
   createTextInstance(
@@ -94,24 +91,11 @@ const createHostConfig = (
     _rootContainer: HostContainer,
     _hostContext: HostContext,
   ): HostUpdatePayload | null {
-    const prevProps = filterProps(oldProps)
-    const nextProps = filterProps(newProps)
-    const changedProps = shallowDiff(prevProps, nextProps)
-
-    const needsUpdate = Object.keys(changedProps).length > 0
-    if (!needsUpdate) {
-      return null
-    }
-
-    return {
-      changedProps,
-    }
+    return bridge.prepareUpdate(oldProps, newProps)
   },
 
   shouldSetTextContent(_type: HostType, props: HostProps): boolean {
-    const { children } = props
-
-    return Children.toArray(children).every(isValidText)
+    return bridge.shouldSetTextContent(props)
   },
 
   getRootHostContext(_rootContainer: HostContainer): HostContext | null {

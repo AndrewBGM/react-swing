@@ -1,5 +1,7 @@
-import { PropsWithChildren } from 'react'
+import { Children, PropsWithChildren } from 'react'
+import { v4 as uuid } from 'uuid'
 import WebSocket from 'ws'
+import { filterProps, isValidText, shallowDiff } from '../utils'
 import {
   decodeMessage,
   encodeMessage,
@@ -25,19 +27,45 @@ class Bridge {
     this.ws.close()
   }
 
-  createView(id: string, type: BridgeType, props: BridgeProps): BridgeView {
+  createView(type: BridgeType, props: BridgeProps): BridgeView {
+    const id = uuid()
     const view = new BridgeView(id, type)
+    const filteredProps = filterProps(props)
 
     this.viewById[id] = view
-    view.syncCallbacks(props)
+    view.syncCallbacks(filteredProps)
 
     this.send('CREATE_VIEW', {
       id,
       type,
-      props,
+      props: filteredProps,
     })
 
     return view
+  }
+
+  prepareUpdate(
+    oldProps: BridgeProps,
+    newProps: BridgeProps,
+  ): BridgeUpdatePayload | null {
+    const prevProps = filterProps(oldProps)
+    const nextProps = filterProps(newProps)
+    const changedProps = shallowDiff(prevProps, nextProps)
+
+    const needsUpdate = Object.keys(changedProps).length > 0
+    if (!needsUpdate) {
+      return null
+    }
+
+    return {
+      changedProps,
+    }
+  }
+
+  shouldSetTextContent(props: BridgeProps): boolean {
+    const { children } = props
+
+    return Children.toArray(children).every(isValidText)
   }
 
   updateView(view: BridgeView, payload: BridgeUpdatePayload): void {
