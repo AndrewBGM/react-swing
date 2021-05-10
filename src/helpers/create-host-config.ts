@@ -1,5 +1,5 @@
 import { performance } from 'perf_hooks'
-import { Children, PropsWithChildren } from 'react'
+import { Children } from 'react'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
 import { v4 as uuid } from 'uuid'
 import {
@@ -109,7 +109,7 @@ const createHostConfig = (
   },
 
   shouldSetTextContent(_type: HostType, props: HostProps): boolean {
-    const { children } = props as PropsWithChildren<Record<string, unknown>>
+    const { children } = props
 
     return Children.toArray(children).every(isValidText)
   },

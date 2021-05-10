@@ -1,3 +1,4 @@
+import { PropsWithChildren } from 'react'
 import WebSocket from 'ws'
 import {
   decodeMessage,
@@ -9,7 +10,7 @@ import {
 import BridgeView from './view'
 
 export type BridgeTag = string
-export type BridgeProps = Record<string, unknown>
+export type BridgeProps = PropsWithChildren<Record<string, unknown>>
 export type BridgeUpdatePayload = Omit<UpdateViewMessagePayload, 'id'>
 
 class Bridge {
