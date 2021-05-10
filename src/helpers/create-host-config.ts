@@ -5,13 +5,13 @@ import { v4 as uuid } from 'uuid'
 import {
   Bridge,
   BridgeProps,
-  BridgeTag,
+  BridgeType,
   BridgeUpdatePayload,
   BridgeView,
 } from '../bridge'
 import { filterProps, isValidText, shallowDiff } from '../utils'
 
-export type HostType = BridgeTag
+export type HostType = BridgeType
 export type HostProps = BridgeProps
 export type HostContainer = BridgeView
 export type HostInstance = BridgeView

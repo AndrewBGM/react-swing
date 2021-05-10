@@ -13,7 +13,7 @@ export interface JFrameProps {
 
 const JFrame = ({ children, ...props }: JFrameProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent tag='JFrame' {...props}>
+  <RemoteComponent type='JFrame' {...props}>
     {children}
   </RemoteComponent>
 )

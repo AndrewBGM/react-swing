@@ -1,6 +1,6 @@
 export interface CreateViewMessagePayload {
   id: string
-  tag: string
+  type: string
   props: Record<string, unknown>
 }
 

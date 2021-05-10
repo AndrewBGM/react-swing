@@ -11,7 +11,7 @@ export interface JButtonProps {
 
 const JButton = ({ children, ...props }: JButtonProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent tag='JButton' {...props}>
+  <RemoteComponent type='JButton' {...props}>
     {children}
   </RemoteComponent>
 )

@@ -9,7 +9,7 @@ import {
 } from './message'
 import BridgeView from './view'
 
-export type BridgeTag = string
+export type BridgeType = string
 export type BridgeProps = PropsWithChildren<Record<string, unknown>>
 export type BridgeUpdatePayload = Omit<UpdateViewMessagePayload, 'id'>
 
@@ -25,15 +25,15 @@ class Bridge {
     this.ws.close()
   }
 
-  createView(id: string, tag: BridgeTag, props: BridgeProps): BridgeView {
-    const view = new BridgeView(id, tag)
+  createView(id: string, type: BridgeType, props: BridgeProps): BridgeView {
+    const view = new BridgeView(id, type)
 
     this.viewById[id] = view
     view.syncCallbacks(props)
 
     this.send('CREATE_VIEW', {
       id,
-      tag,
+      type,
       props,
     })
 

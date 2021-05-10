@@ -16,7 +16,7 @@ const JRadioButton = ({
   ...props
 }: JRadioButtonProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent tag='JRadioButton' {...props}>
+  <RemoteComponent type='JRadioButton' {...props}>
     {children}
   </RemoteComponent>
 )

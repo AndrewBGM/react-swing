@@ -7,7 +7,7 @@ export interface JScrollPaneProps {
 
 const JScrollPane = ({ children, ...props }: JScrollPaneProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent tag='JScrollPane' {...props}>
+  <RemoteComponent type='JScrollPane' {...props}>
     {children}
   </RemoteComponent>
 )
