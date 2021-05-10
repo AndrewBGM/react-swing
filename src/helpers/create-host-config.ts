@@ -1,4 +1,5 @@
 import { performance } from 'perf_hooks'
+import { Children, PropsWithChildren } from 'react'
 import { HostConfig, OpaqueHandle } from 'react-reconciler'
 import { v4 as uuid } from 'uuid'
 import {
@@ -8,7 +9,7 @@ import {
   BridgeUpdatePayload,
   BridgeView,
 } from '../bridge'
-import { filterChildren, shallowDiff } from '../utils'
+import { filterProps, isValidText, shallowDiff } from '../utils'
 
 export type HostType = BridgeTag
 export type HostProps = BridgeProps
@@ -56,7 +57,7 @@ const createHostConfig = (
     _hostContext: HostContext,
     _internalHandle: OpaqueHandle,
   ): HostInstance {
-    return bridge.createView(uuid(), type, filterChildren(props))
+    return bridge.createView(uuid(), type, filterProps(props))
   },
 
   createTextInstance(
@@ -93,8 +94,8 @@ const createHostConfig = (
     _rootContainer: HostContainer,
     _hostContext: HostContext,
   ): HostUpdatePayload | null {
-    const prevProps = filterChildren(oldProps)
-    const nextProps = filterChildren(newProps)
+    const prevProps = filterProps(oldProps)
+    const nextProps = filterProps(newProps)
     const changedProps = shallowDiff(prevProps, nextProps)
 
     const needsUpdate = Object.keys(changedProps).length > 0
@@ -108,12 +109,9 @@ const createHostConfig = (
   },
 
   shouldSetTextContent(_type: HostType, props: HostProps): boolean {
-    const { children } = props
-    const items = Array.isArray(children) ? children : [children]
+    const { children } = props as PropsWithChildren<Record<string, unknown>>
 
-    return items
-      .flat()
-      .every(x => typeof x === 'string' || typeof x === 'number')
+    return Children.toArray(children).every(isValidText)
   },
 
   getRootHostContext(_rootContainer: HostContainer): HostContext | null {
