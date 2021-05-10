@@ -1,7 +1,7 @@
 export interface InvokeCallbackMessagePayload {
   id: string
   name: string
-  args: unknown[]
+  args?: unknown[]
 }
 
 interface InvokeCallbackMessage {

@@ -124,7 +124,7 @@ class Bridge {
     const message = decodeMessage(data)
     switch (message.type) {
       case 'INVOKE_CALLBACK': {
-        const { id, name, args } = message.payload
+        const { id, name, args = [] } = message.payload
         this.invokeCallback(id, name, args)
         break
       }
