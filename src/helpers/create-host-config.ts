@@ -72,23 +72,16 @@ const createHostConfig = (
     parentInstance: HostInstance,
     child: HostInstance | HostTextInstance,
   ): void {
-    parentInstance.appendChild(child)
+    bridge.appendChild(parentInstance, child)
   },
 
   finalizeInitialChildren(
-    instance: HostInstance,
+    _instance: HostInstance,
     _type: HostType,
     _props: HostProps,
     _rootContainer: HostContainer,
     _hostContext: HostContext,
   ): boolean {
-    const children = instance.getChildren()
-    if (children.length === 0) {
-      return false
-    }
-
-    bridge.setChildren(instance, children)
-
     return false
   },
 

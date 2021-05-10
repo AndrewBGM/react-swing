@@ -4,14 +4,12 @@ import {
   InsertChildMessage,
   InvokeCallbackMessage,
   RemoveChildMessage,
-  SetChildrenMessage,
   UpdateViewMessage,
 } from './messages'
 
 export type Message =
   | CreateViewMessage
   | UpdateViewMessage
-  | SetChildrenMessage
   | AppendChildMessage
   | RemoveChildMessage
   | InsertChildMessage

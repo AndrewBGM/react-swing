@@ -50,15 +50,6 @@ class Bridge {
     })
   }
 
-  setChildren(parent: BridgeView, children: BridgeView[]): void {
-    parent.setChildren(children)
-
-    this.send('SET_CHILDREN', {
-      parentId: parent.id,
-      childrenIds: children.map(x => x.id),
-    })
-  }
-
   appendChild(parent: BridgeView, child: BridgeView): void {
     parent.appendChild(child)
 

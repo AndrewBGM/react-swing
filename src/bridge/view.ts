@@ -5,10 +5,6 @@ class BridgeView {
 
   constructor(readonly id: string, readonly type: string) {}
 
-  setChildren(children: BridgeView[]): void {
-    this.children = children
-  }
-
   appendChild(child: BridgeView): void {
     this.children.push(child)
   }
