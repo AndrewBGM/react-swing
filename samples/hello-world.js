@@ -1,6 +1,15 @@
 // @ts-check
 import React from 'react'
-import { JButton, JFrame, JPanel, startApplication, useRemote } from '../'
+import {
+  JButton,
+  JFrame,
+  JMenu,
+  JMenuBar,
+  JMenuItem,
+  JSplitPane,
+  startApplication,
+  useRemote,
+} from '../'
 
 class ErrorBoundary extends React.Component {
   state = { error: null }
@@ -25,7 +34,6 @@ class ErrorBoundary extends React.Component {
 const App = () => {
   const remote = useRemote()
   const [isFrameOpen, setFrameOpen] = React.useState(true)
-  const [count, setCount] = React.useState(0)
 
   React.useEffect(() => {
     if (isFrameOpen) {
@@ -40,17 +48,28 @@ const App = () => {
     setFrameOpen(false)
   }, [])
 
-  const handleClick = React.useCallback(() => {
-    setCount(x => x + 1)
-  }, [])
-
   return (
     <>
       {isFrameOpen && (
         <JFrame title='Sample App' onClose={handleClose}>
-          <JPanel>
-            <JButton onAction={handleClick}>Count: {count}</JButton>
-          </JPanel>
+          <JMenuBar>
+            <JMenu text='File'>
+              <JMenuItem>New</JMenuItem>
+              <JMenuItem>Open</JMenuItem>
+              <JMenuItem>Save</JMenuItem>
+              <JMenuItem>Save As</JMenuItem>
+              <JMenuItem onAction={handleClose}>Exit</JMenuItem>
+            </JMenu>
+            <JMenu text='Edit'>
+              <JMenuItem>Undo</JMenuItem>
+              <JMenuItem>Redo</JMenuItem>
+            </JMenu>
+          </JMenuBar>
+          <JSplitPane orientation='HORIZONTAL'>
+            <JButton>LEFT</JButton>
+
+            <JButton>RIGHT</JButton>
+          </JSplitPane>
         </JFrame>
       )}
     </>
