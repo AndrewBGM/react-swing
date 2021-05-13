@@ -18,7 +18,7 @@ const JButton = ({ children, ...props }: JButtonProps): JSX.Element => {
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <RemoteComponent type='JButton' {...props} {...attrs} />
+    <RemoteComponent type='JBUTTON' {...props} {...attrs} />
   )
 }
 

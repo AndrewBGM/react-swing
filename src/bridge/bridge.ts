@@ -79,6 +79,9 @@ class Bridge {
 
   finalizeInitialChildren(parent: BridgeView): boolean {
     const childrenIds = parent.getChildren().map(x => x.id)
+    if (childrenIds.length === 0) {
+      return false
+    }
 
     this.send('SET_CHILDREN', {
       parentId: parent.id,

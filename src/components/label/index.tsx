@@ -14,7 +14,7 @@ const JLabel = ({ children, ...props }: JLabelProps): JSX.Element => {
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <RemoteComponent type='JLabel' {...props} {...attrs} />
+    <RemoteComponent type='JLABEL' {...props} {...attrs} />
   )
 }
 

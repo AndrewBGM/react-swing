@@ -7,7 +7,7 @@ export interface JPanelProps {
 
 const JPanel = ({ children, ...props }: JPanelProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent type='JPanel' {...props}>
+  <RemoteComponent type='JPANEL' {...props}>
     {children}
   </RemoteComponent>
 )
