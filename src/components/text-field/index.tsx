@@ -1,16 +1,21 @@
+import { ReactNode } from 'react'
 import RemoteComponent from '../remote-component'
 
 export type JTextFieldChangeHandler = (value: string) => void
 
 export interface JTextFieldProps {
-  initialValue?: string
+  value?: string
 
   onChange?: JTextFieldChangeHandler
+
+  children?: ReactNode
 }
 
-const JTextField = (props: JTextFieldProps): JSX.Element => (
+const JTextField = ({ children, ...props }: JTextFieldProps): JSX.Element => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <RemoteComponent type='JTextField' {...props} />
+  <RemoteComponent type='JTextField' {...props}>
+    {children}
+  </RemoteComponent>
 )
 
 export default JTextField

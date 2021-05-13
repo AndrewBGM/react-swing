@@ -70,17 +70,17 @@ const createHostConfig = (
     parentInstance: HostInstance,
     child: HostInstance | HostTextInstance,
   ): void {
-    bridge.appendChild(parentInstance, child)
+    bridge.appendInitialChild(parentInstance, child)
   },
 
   finalizeInitialChildren(
-    _instance: HostInstance,
+    instance: HostInstance,
     _type: HostType,
     _props: HostProps,
     _rootContainer: HostContainer,
     _hostContext: HostContext,
   ): boolean {
-    return false
+    return bridge.finalizeInitialChildren(instance)
   },
 
   prepareUpdate(
@@ -94,8 +94,8 @@ const createHostConfig = (
     return bridge.prepareUpdate(oldProps, newProps)
   },
 
-  shouldSetTextContent(_type: HostType, props: HostProps): boolean {
-    return bridge.shouldSetTextContent(props)
+  shouldSetTextContent(_type: HostType, _props: HostProps): boolean {
+    return false
   },
 
   getRootHostContext(_rootContainer: HostContainer): HostContext | null {

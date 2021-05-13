@@ -1,6 +1,16 @@
 // @ts-check
 import React from 'react'
-import { JFrame, JLabel, JPanel, startApplication, useRemote } from '../'
+import {
+  ButtonGroup,
+  JButton,
+  JFrame,
+  JLabel,
+  JPanel,
+  JRadioButton,
+  JTextField,
+  startApplication,
+  useRemote,
+} from '../'
 
 class ErrorBoundary extends React.Component {
   state = { error: null }
@@ -20,6 +30,33 @@ class ErrorBoundary extends React.Component {
 
     return this.props.children
   }
+}
+
+const SizeSelector = () => {
+  const [name, setName] = React.useState('Bob')
+  const [size, setSize] = React.useState('small')
+
+  const handleSubmit = React.useCallback(() => {
+    console.log({
+      name,
+      size,
+    })
+  }, [name, size])
+
+  return (
+    <>
+      <JLabel>
+        Your name is {name} and you are {size}
+      </JLabel>
+      <JTextField value={name} onChange={setName} />
+      <ButtonGroup selectedValue={size} onChange={setSize}>
+        <JRadioButton value='small'>Small</JRadioButton>
+        <JRadioButton value='medium'>Medium</JRadioButton>
+        <JRadioButton value='large'>Large</JRadioButton>
+      </ButtonGroup>
+      <JButton onAction={handleSubmit}>Submit</JButton>
+    </>
+  )
 }
 
 const App = () => {
@@ -44,7 +81,7 @@ const App = () => {
       {isFrameOpen && (
         <JFrame title='Sample App' onClose={handleClose}>
           <JPanel>
-            <JLabel>Hello World!</JLabel>
+            <SizeSelector />
           </JPanel>
         </JFrame>
       )}
