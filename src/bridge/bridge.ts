@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react'
 import { v4 as uuid } from 'uuid'
 import WebSocket from 'ws'
-import { filterProps, shallowDiff } from '../utils'
+import { shallowDiff } from '../utils'
 import {
   decodeMessage,
   encodeMessage,
@@ -30,15 +30,14 @@ class Bridge {
   createView(type: BridgeType, props: BridgeProps): BridgeView {
     const id = uuid()
     const view = new BridgeView(id)
-    const filteredProps = filterProps(props)
 
     this.viewById[id] = view
-    view.syncCallbacks(filteredProps)
+    view.syncCallbacks(props)
 
     this.send('CREATE_VIEW', {
       id,
       type,
-      props: filteredProps,
+      props,
     })
 
     return view
@@ -48,9 +47,7 @@ class Bridge {
     oldProps: BridgeProps,
     newProps: BridgeProps,
   ): BridgeUpdatePayload | null {
-    const prevProps = filterProps(oldProps)
-    const nextProps = filterProps(newProps)
-    const changedProps = shallowDiff(prevProps, nextProps)
+    const changedProps = shallowDiff(oldProps, newProps)
 
     const needsUpdate = Object.keys(changedProps).length > 0
     if (!needsUpdate) {
