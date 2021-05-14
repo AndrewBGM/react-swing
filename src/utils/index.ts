@@ -1,2 +1,2 @@
-export { default as isValidText } from './is-valid-text'
 export { default as shallowDiff } from './shallow-diff'
+export { default as withoutChildren } from './without-children'
