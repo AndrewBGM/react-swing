@@ -1,15 +1,5 @@
-// @ts-check
 import React from 'react'
-import {
-  JButton,
-  JFrame,
-  JMenu,
-  JMenuBar,
-  JMenuItem,
-  JSplitPane,
-  startApplication,
-  useRemote,
-} from '../'
+import { JFrame, JLabel, JPanel, startApplication, useRemote } from '../'
 
 class ErrorBoundary extends React.Component {
   state = { error: null }
@@ -52,24 +42,9 @@ const App = () => {
     <>
       {isFrameOpen && (
         <JFrame title='Sample App' onClose={handleClose}>
-          <JMenuBar>
-            <JMenu text='File'>
-              <JMenuItem>New</JMenuItem>
-              <JMenuItem>Open</JMenuItem>
-              <JMenuItem>Save</JMenuItem>
-              <JMenuItem>Save As</JMenuItem>
-              <JMenuItem onAction={handleClose}>Exit</JMenuItem>
-            </JMenu>
-            <JMenu text='Edit'>
-              <JMenuItem>Undo</JMenuItem>
-              <JMenuItem>Redo</JMenuItem>
-            </JMenu>
-          </JMenuBar>
-          <JSplitPane orientation='HORIZONTAL'>
-            <JButton>LEFT</JButton>
-
-            <JButton>RIGHT</JButton>
-          </JSplitPane>
+          <JPanel>
+            <JLabel>Host: {remote.host}</JLabel>
+          </JPanel>
         </JFrame>
       )}
     </>
